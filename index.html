@@ -29,6 +29,9 @@
       --info-tx: #1d4ed8;
       --gray-bg: #e2e8f0;
       --gray-tx: #334155;
+      --negado-bg: #fef2f2;
+      --negado-tx: #b91c1c;
+      --negado-bd: #fca5a5;
     }
 
     body {
@@ -179,6 +182,10 @@
       color: #1e293b;
     }
 
+    .btn-danger {
+      background: #b91c1c;
+    }
+
     .actions {
       display: flex;
       gap: 10px;
@@ -221,7 +228,7 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 12px;
       margin-bottom: 14px;
     }
@@ -260,6 +267,11 @@
       padding: 16px;
       margin-top: 12px;
       box-shadow: 0 6px 18px rgba(15, 76, 129, 0.05);
+    }
+
+    .ticket.negado {
+      border-color: var(--negado-bd);
+      background: #fffafa;
     }
 
     .ticket-top {
@@ -319,6 +331,11 @@
     .st-finalizado {
       background: var(--success-bg);
       color: var(--success-tx);
+    }
+
+    .st-negado {
+      background: var(--negado-bg);
+      color: var(--negado-tx);
     }
 
     .pr-baixa {
@@ -391,6 +408,27 @@
       line-height: 1.45;
     }
 
+    .negado-box {
+      margin-top: 12px;
+      background: var(--negado-bg);
+      border: 1px solid var(--negado-bd);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .negado-box small {
+      display: block;
+      font-weight: bold;
+      color: var(--negado-tx);
+      margin-bottom: 6px;
+    }
+
+    .negado-box div {
+      color: #7f1d1d;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+
     .admin-box {
       margin-top: 14px;
       padding: 12px;
@@ -431,7 +469,7 @@
       }
 
       .stats {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
       }
 
       .toolbar {
@@ -559,6 +597,10 @@
             <div class="num" id="stFinalizado">0</div>
             <div class="lab">Finalizado</div>
           </div>
+          <div class="stat">
+            <div class="num" id="stNegado">0</div>
+            <div class="lab">Negado</div>
+          </div>
         </div>
 
         <div class="toolbar">
@@ -569,6 +611,7 @@
             <option value="Encaminhado">Encaminhado</option>
             <option value="Em andamento">Em andamento</option>
             <option value="Finalizado">Finalizado</option>
+            <option value="Negado">Negado</option>
           </select>
           <select id="filtroSetor">
             <option value="">Todos os setores</option>
@@ -655,6 +698,7 @@
       if (status === 'Encaminhado') return 'st-encaminhado'
       if (status === 'Em andamento') return 'st-andamento'
       if (status === 'Finalizado') return 'st-finalizado'
+      if (status === 'Negado') return 'st-negado'
       return ''
     }
 
@@ -738,7 +782,8 @@
             prioridade,
             status: 'Aguardando triagem',
             observacao_admin: null,
-            responsavel_designado: null
+            responsavel_designado: null,
+            justificativa_negativa: null
           }])
 
         if (error) {
@@ -784,12 +829,14 @@
       const encaminhado = chamados.filter(c => c.status === 'Encaminhado').length
       const andamento = chamados.filter(c => c.status === 'Em andamento').length
       const finalizado = chamados.filter(c => c.status === 'Finalizado').length
+      const negado = chamados.filter(c => c.status === 'Negado').length
 
       $('stTotal').textContent = total
       $('stAguardando').textContent = aguardando
       $('stEncaminhado').textContent = encaminhado
       $('stAndamento').textContent = andamento
       $('stFinalizado').textContent = finalizado
+      $('stNegado').textContent = negado
     }
 
     function responsavelOptions(selectedValue = '') {
@@ -816,7 +863,8 @@
           c.status,
           c.prioridade,
           c.observacao_admin,
-          c.responsavel_designado
+          c.responsavel_designado,
+          c.justificativa_negativa
         ].join(' ').toLowerCase()
 
         const okSearch = !search || haystack.includes(search)
@@ -832,7 +880,7 @@
       }
 
       $('lista').innerHTML = filtered.map(c => `
-        <div class="ticket">
+        <div class="ticket ${c.status === 'Negado' ? 'negado' : ''}">
           <div class="ticket-top">
             <div>
               <div class="ticket-title">${escapeHtml(c.titulo)}</div>
@@ -889,6 +937,13 @@
             </div>
           ` : ''}
 
+          ${c.status === 'Negado' && c.justificativa_negativa ? `
+            <div class="negado-box">
+              <small>⛔ Justificativa da negativa</small>
+              <div>${escapeHtml(c.justificativa_negativa)}</div>
+            </div>
+          ` : ''}
+
           ${adminMode ? `
             <div class="admin-box">
               <div class="admin-grid">
@@ -912,22 +967,43 @@
                     <option value="Encaminhado" ${c.status === 'Encaminhado' ? 'selected' : ''}>Encaminhado</option>
                     <option value="Em andamento" ${c.status === 'Em andamento' ? 'selected' : ''}>Em andamento</option>
                     <option value="Finalizado" ${c.status === 'Finalizado' ? 'selected' : ''}>Finalizado</option>
+                    <option value="Negado" ${c.status === 'Negado' ? 'selected' : ''}>Negado</option>
                   </select>
                 </div>
               </div>
 
-              <div class="admin-grid-1">
+              <div class="admin-grid">
+                <div>
+                  <label>Prioridade</label>
+                  <select onchange="alterarPrioridade('${c.id}', this.value)">
+                    <option value="Baixa" ${c.prioridade === 'Baixa' ? 'selected' : ''}>Baixa</option>
+                    <option value="Média" ${c.prioridade === 'Média' ? 'selected' : ''}>Média</option>
+                    <option value="Alta" ${c.prioridade === 'Alta' ? 'selected' : ''}>Alta</option>
+                  </select>
+                </div>
+
                 <div>
                   <label>Responsável designado</label>
                   <select onchange="alterarResponsavel('${c.id}', this.value)">
                     ${responsavelOptions(c.responsavel_designado || '')}
                   </select>
                 </div>
+              </div>
 
+              <div class="admin-grid-1">
                 <div>
                   <label>Observações da triagem</label>
                   <textarea onblur="alterarObservacao('${c.id}', this.value)" placeholder="Escreva aqui a orientação da triagem...">${escapeHtml(c.observacao_admin || '')}</textarea>
                 </div>
+
+                <div>
+                  <label>Justificativa da negativa</label>
+                  <textarea onblur="alterarJustificativaNegativa('${c.id}', this.value)" placeholder="Preencha quando o chamado for negado...">${escapeHtml(c.justificativa_negativa || '')}</textarea>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button type="button" class="btn-danger" onclick="negarChamado('${c.id}')">⛔ Negar chamado</button>
               </div>
             </div>
           ` : ''}
@@ -967,10 +1043,27 @@
         return
       }
 
+      if (status === 'Negado') {
+        const chamado = chamados.find(c => c.id === id)
+        const justificativa = (chamado?.justificativa_negativa || '').trim()
+
+        if (!justificativa) {
+          showMessage('Para negar o chamado, preencha a justificativa da negativa.', 'erro')
+          await loadTickets()
+          return
+        }
+      }
+
       try {
+        const updateData = { status }
+
+        if (status !== 'Negado') {
+          updateData.justificativa_negativa = null
+        }
+
         const { error } = await supabase
           .from('chamados')
-          .update({ status })
+          .update(updateData)
           .eq('id', id)
 
         if (error) {
@@ -984,6 +1077,32 @@
       } catch (e) {
         console.error('Erro conexão status:', e)
         showMessage('Erro de conexão ao atualizar status.', 'erro')
+      }
+    }
+
+    async function alterarPrioridade(id, prioridade) {
+      if (!adminMode) {
+        showMessage('Somente administrador pode alterar a prioridade.', 'erro')
+        return
+      }
+
+      try {
+        const { error } = await supabase
+          .from('chamados')
+          .update({ prioridade })
+          .eq('id', id)
+
+        if (error) {
+          console.error('Erro update prioridade:', error)
+          showMessage('Erro ao atualizar prioridade: ' + error.message, 'erro')
+          return
+        }
+
+        await loadTickets()
+        showMessage('Prioridade atualizada com sucesso.', 'ok')
+      } catch (e) {
+        console.error('Erro conexão prioridade:', e)
+        showMessage('Erro de conexão ao atualizar prioridade.', 'erro')
       }
     }
 
@@ -1041,6 +1160,72 @@
       }
     }
 
+    async function alterarJustificativaNegativa(id, justificativa) {
+      if (!adminMode) {
+        showMessage('Somente administrador pode alterar a justificativa.', 'erro')
+        return
+      }
+
+      try {
+        const texto = justificativa.trim()
+
+        const { error } = await supabase
+          .from('chamados')
+          .update({ justificativa_negativa: texto || null })
+          .eq('id', id)
+
+        if (error) {
+          console.error('Erro update justificativa:', error)
+          showMessage('Erro ao atualizar justificativa: ' + error.message, 'erro')
+          return
+        }
+
+        await loadTickets()
+        showMessage('Justificativa da negativa atualizada com sucesso.', 'ok')
+      } catch (e) {
+        console.error('Erro conexão justificativa:', e)
+        showMessage('Erro de conexão ao atualizar justificativa.', 'erro')
+      }
+    }
+
+    async function negarChamado(id) {
+      if (!adminMode) {
+        showMessage('Somente administrador pode negar chamado.', 'erro')
+        return
+      }
+
+      const chamado = chamados.find(c => c.id === id)
+      const justificativa = (chamado?.justificativa_negativa || '').trim()
+
+      if (!justificativa) {
+        showMessage('Preencha a justificativa da negativa antes de negar o chamado.', 'erro')
+        return
+      }
+
+      try {
+        const { error } = await supabase
+          .from('chamados')
+          .update({
+            status: 'Negado',
+            setor_responsavel: null,
+            responsavel_designado: null
+          })
+          .eq('id', id)
+
+        if (error) {
+          console.error('Erro negar chamado:', error)
+          showMessage('Erro ao negar chamado: ' + error.message, 'erro')
+          return
+        }
+
+        await loadTickets()
+        showMessage('Chamado negado com sucesso.', 'ok')
+      } catch (e) {
+        console.error('Erro conexão negar chamado:', e)
+        showMessage('Erro de conexão ao negar chamado.', 'erro')
+      }
+    }
+
     function clearForm() {
       $('titulo').value = ''
       $('descricao').value = ''
@@ -1062,8 +1247,11 @@
 
     window.alterarSetor = alterarSetor
     window.alterarStatus = alterarStatus
+    window.alterarPrioridade = alterarPrioridade
     window.alterarResponsavel = alterarResponsavel
     window.alterarObservacao = alterarObservacao
+    window.alterarJustificativaNegativa = alterarJustificativaNegativa
+    window.negarChamado = negarChamado
 
     updateAdminUI()
     loadTickets()
