@@ -1,254 +1,470 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HelpDesk Interno</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HelpDesk Interno</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #eef2f7;
+      color: #1f2937;
+    }
 
-// ✅ CONFIGURAÇÃO CORRETA
-const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO'
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      background: #fff;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+    h1 {
+      margin: 0 0 6px;
+      color: #0f4c81;
+    }
 
-window.supabase = supabase
-</script>
+    h2 {
+      margin-top: 26px;
+      color: #0f4c81;
+    }
 
-<style>
-* { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+    .muted {
+      color: #64748b;
+    }
 
-body {
-  margin: 0;
-  padding: 20px;
-  background: #eef2f7;
-  color: #1f2937;
-}
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
 
-.container {
-  max-width: 1000px;
-  margin: auto;
-  background: #fff;
-  border-radius: 18px;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-}
+    input, textarea, select, button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 14px;
+    }
 
-h1 {
-  margin-top: 0;
-  color: #0f4c81;
-}
+    textarea {
+      min-height: 95px;
+      resize: vertical;
+    }
 
-h2 {
-  margin-top: 24px;
-  color: #0f4c81;
-}
+    button {
+      border: none;
+      background: #0f4c81;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-input, textarea, select, button {
-  width: 100%;
-  margin-top: 8px;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
-}
+    button:hover {
+      opacity: 0.96;
+    }
 
-textarea {
-  min-height: 90px;
-}
+    .btn-sec {
+      background: #475569;
+    }
 
-button {
-  background: #0f4c81;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-}
+    .acoes-topo {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
 
-button:hover {
-  opacity: 0.95;
-}
+    .acoes-topo button {
+      width: auto;
+      min-width: 160px;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
+    .card {
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 12px;
+      border: 1px solid #e2e8f0;
+    }
 
-.card {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 12px;
-  margin-top: 12px;
-  border: 1px solid #e2e8f0;
-}
+    .ticket-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
 
-.status {
-  font-weight: bold;
-  margin-top: 8px;
-}
+    .linha {
+      margin-top: 6px;
+    }
 
-.muted {
-  color: #64748b;
-}
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 10px;
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
 
-@media (max-width: 700px) {
-  .grid { grid-template-columns: 1fr; }
-}
-</style>
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .msg {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .msg.ok {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #86efac;
+    }
+
+    .msg.erro {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+
+    .sem-registros {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    @media (max-width: 750px) {
+      .grid,
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .acoes-topo {
+        flex-direction: column;
+      }
+
+      .acoes-topo button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <h1>🛠️ HelpDesk Interno</h1>
+    <div class="muted">Registro e acompanhamento de chamados</div>
 
-<div class="container">
+    <div id="mensagem"></div>
 
-<h1>🛠️ HelpDesk Interno</h1>
-<div class="muted">Registro e acompanhamento de chamados</div>
-
-<h2>👤 Identificação</h2>
-
-<input id="nome" placeholder="Digite seu nome">
-<input id="matricula" placeholder="Digite sua matrícula">
-
-<h2>📋 Abrir chamado</h2>
-
-<input id="titulo" placeholder="Título do chamado">
-<textarea id="descricao" placeholder="Descrição do problema"></textarea>
-
-<div class="grid">
-  <input id="local" placeholder="Local">
-  
-  <select id="prioridade">
-    <option value="Baixa">Baixa</option>
-    <option value="Média" selected>Média</option>
-    <option value="Alta">Alta</option>
-  </select>
-</div>
-
-<button onclick="abrirChamado()">Registrar chamado</button>
-
-<hr>
-
-<h2>📂 Chamados</h2>
-
-<input id="busca" placeholder="Buscar chamado">
-
-<div id="lista"></div>
-
-</div>
-
-<script type="module">
-
-const $ = (id) => document.getElementById(id)
-let chamados = []
-
-// 🔹 CRIAR CHAMADO
-async function abrirChamado() {
-  const nome = $('nome').value.trim()
-  const matricula = $('matricula').value.trim()
-  const titulo = $('titulo').value.trim()
-  const descricao = $('descricao').value.trim()
-  const local = $('local').value.trim()
-  const prioridade = $('prioridade').value
-
-  if (!nome || !matricula || !titulo) {
-    alert("Preencha nome, matrícula e título")
-    return
-  }
-
-  try {
-    const { error } = await supabase.from('chamados').insert([{
-      nome_solicitante: nome,
-      matricula_solicitante: matricula,
-      titulo,
-      descricao,
-      local,
-      prioridade,
-      status: "Aguardando triagem"
-    }])
-
-    if (error) {
-      alert("Erro: " + error.message)
-      console.error(error)
-      return
-    }
-
-    alert("Chamado registrado com sucesso")
-
-    limpar()
-    carregar()
-
-  } catch (e) {
-    alert("Erro conexão: " + e.message)
-    console.error(e)
-  }
-}
-
-// 🔹 LISTAR CHAMADOS
-async function carregar() {
-  try {
-    const { data, error } = await supabase
-      .from('chamados')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      document.getElementById('lista').innerHTML = "Erro ao carregar"
-      console.error(error)
-      return
-    }
-
-    chamados = data || []
-    render()
-
-  } catch (e) {
-    document.getElementById('lista').innerHTML = "Erro de conexão"
-    console.error(e)
-  }
-}
-
-// 🔹 RENDER
-function render() {
-  const busca = $('busca').value.toLowerCase()
-
-  const filtrados = chamados.filter(c =>
-    JSON.stringify(c).toLowerCase().includes(busca)
-  )
-
-  if (!filtrados.length) {
-    $('lista').innerHTML = "Nenhum chamado encontrado"
-    return
-  }
-
-  $('lista').innerHTML = filtrados.map(c => `
-    <div class="card">
-      <b>${c.titulo}</b><br>
-      ${c.descricao || ''}<br>
-      📍 ${c.local || '-'}<br>
-      👤 ${c.nome_solicitante} (${c.matricula_solicitante})<br>
-      ⚡ ${c.prioridade}<br>
-      🏢 ${c.setor_responsavel || 'Não definido'}<br>
-      <div class="status">📌 ${c.status}</div>
+    <h2>👤 Identificação</h2>
+    <div class="grid">
+      <div>
+        <label for="nome">Nome</label>
+        <input id="nome" placeholder="Digite seu nome">
+      </div>
+      <div>
+        <label for="matricula">Matrícula</label>
+        <input id="matricula" placeholder="Digite sua matrícula">
+      </div>
     </div>
-  `).join('')
-}
 
-// 🔹 LIMPAR
-function limpar() {
-  $('titulo').value = ''
-  $('descricao').value = ''
-  $('local').value = ''
-}
+    <h2>📋 Abrir chamado</h2>
 
-// 🔹 EVENTOS
-$('busca').addEventListener('input', render)
+    <label for="titulo">Título</label>
+    <input id="titulo" placeholder="Título do chamado">
 
-// 🔹 INIT
-carregar()
+    <label for="descricao">Descrição</label>
+    <textarea id="descricao" placeholder="Descrição do problema"></textarea>
 
-window.abrirChamado = abrirChamado
+    <div class="grid">
+      <div>
+        <label for="local">Local</label>
+        <input id="local" placeholder="Local">
+      </div>
+      <div>
+        <label for="prioridade">Prioridade</label>
+        <select id="prioridade">
+          <option value="Baixa">Baixa</option>
+          <option value="Média" selected>Média</option>
+          <option value="Alta">Alta</option>
+        </select>
+      </div>
+    </div>
 
-</script>
+    <div class="acoes-topo">
+      <button id="btnAbrir">Registrar chamado</button>
+      <button id="btnLimpar" class="btn-sec" type="button">Limpar</button>
+    </div>
 
+    <hr style="margin: 28px 0; border: 0; border-top: 1px solid #e5e7eb;">
+
+    <h2>📂 Chamados</h2>
+
+    <div class="grid">
+      <div>
+        <label for="busca">Buscar</label>
+        <input id="busca" placeholder="Buscar por título, descrição, nome, matrícula, local">
+      </div>
+      <div>
+        <label for="filtroStatus">Filtrar por status</label>
+        <select id="filtroStatus">
+          <option value="">Todos</option>
+          <option value="Aguardando triagem">Aguardando triagem</option>
+          <option value="Encaminhado">Encaminhado</option>
+          <option value="Em andamento">Em andamento</option>
+          <option value="Finalizado">Finalizado</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="lista"></div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+    const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co'
+    const SUPABASE_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO'
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    const $ = (id) => document.getElementById(id)
+    let chamados = []
+
+    function mostrarMensagem(texto, tipo = 'ok') {
+      const box = $('mensagem')
+      box.className = `msg ${tipo}`
+      box.textContent = texto
+      box.style.display = 'block'
+
+      setTimeout(() => {
+        box.style.display = 'none'
+        box.className = 'msg'
+        box.textContent = ''
+      }, 4000)
+    }
+
+    function escapeHtml(texto) {
+      return String(texto ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;')
+    }
+
+    function formatarData(data) {
+      if (!data) return '-'
+      return new Date(data).toLocaleString('pt-BR')
+    }
+
+    async function abrirChamado() {
+      const nome = $('nome').value.trim()
+      const matricula = $('matricula').value.trim()
+      const titulo = $('titulo').value.trim()
+      const descricao = $('descricao').value.trim()
+      const local = $('local').value.trim()
+      const prioridade = $('prioridade').value
+
+      if (!nome || !matricula || !titulo) {
+        mostrarMensagem('Preencha nome, matrícula e título.', 'erro')
+        return
+      }
+
+      try {
+        const { error } = await supabase
+          .from('chamados')
+          .insert([{
+            nome_solicitante: nome,
+            matricula_solicitante: matricula,
+            titulo,
+            descricao,
+            local,
+            prioridade,
+            status: 'Aguardando triagem'
+          }])
+
+        if (error) {
+          console.error('Erro insert:', error)
+          mostrarMensagem('Erro ao registrar chamado: ' + error.message, 'erro')
+          return
+        }
+
+        limparFormulario()
+        await carregarChamados()
+        mostrarMensagem('Chamado registrado com sucesso.', 'ok')
+      } catch (e) {
+        console.error('Erro conexão insert:', e)
+        mostrarMensagem('Erro de conexão ao registrar chamado.', 'erro')
+      }
+    }
+
+    async function carregarChamados() {
+      try {
+        const { data, error } = await supabase
+          .from('chamados')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (error) {
+          console.error('Erro select:', error)
+          $('lista').innerHTML = `<div class="sem-registros">Erro ao carregar chamados: ${escapeHtml(error.message)}</div>`
+          return
+        }
+
+        chamados = data || []
+        renderChamados()
+      } catch (e) {
+        console.error('Erro conexão select:', e)
+        $('lista').innerHTML = `<div class="sem-registros">Erro de conexão ao carregar chamados.</div>`
+      }
+    }
+
+    function renderChamados() {
+      const busca = $('busca').value.trim().toLowerCase()
+      const filtroStatus = $('filtroStatus').value
+
+      const filtrados = chamados.filter(c => {
+        const texto = [
+          c.titulo,
+          c.descricao,
+          c.nome_solicitante,
+          c.matricula_solicitante,
+          c.local,
+          c.setor_responsavel,
+          c.status
+        ].join(' ').toLowerCase()
+
+        const okBusca = !busca || texto.includes(busca)
+        const okStatus = !filtroStatus || c.status === filtroStatus
+
+        return okBusca && okStatus
+      })
+
+      if (!filtrados.length) {
+        $('lista').innerHTML = `<div class="sem-registros">Nenhum chamado encontrado.</div>`
+        return
+      }
+
+      $('lista').innerHTML = filtrados.map(c => `
+        <div class="card">
+          <div class="ticket-title">${escapeHtml(c.titulo)}</div>
+
+          <div class="linha">${escapeHtml(c.descricao || '')}</div>
+          <div class="linha">📍 ${escapeHtml(c.local || '-')}</div>
+          <div class="linha">👤 ${escapeHtml(c.nome_solicitante)} (${escapeHtml(c.matricula_solicitante)})</div>
+          <div class="linha">⚡ ${escapeHtml(c.prioridade || '-')}</div>
+          <div class="linha">🏢 Setor responsável: ${escapeHtml(c.setor_responsavel || 'Não definido')}</div>
+          <div class="linha">🕒 ${escapeHtml(formatarData(c.created_at))}</div>
+
+          <div class="badge">${escapeHtml(c.status || '-')}</div>
+
+          <div class="admin-grid">
+            <div>
+              <label>Setor responsável</label>
+              <select onchange="alterarSetor('${c.id}', this.value)">
+                <option value="" ${!c.setor_responsavel ? 'selected' : ''}>Não definido</option>
+                <option value="B1" ${c.setor_responsavel === 'B1' ? 'selected' : ''}>B1</option>
+                <option value="B2" ${c.setor_responsavel === 'B2' ? 'selected' : ''}>B2</option>
+                <option value="B3" ${c.setor_responsavel === 'B3' ? 'selected' : ''}>B3</option>
+                <option value="B4" ${c.setor_responsavel === 'B4' ? 'selected' : ''}>B4</option>
+                <option value="B5" ${c.setor_responsavel === 'B5' ? 'selected' : ''}>B5</option>
+                <option value="Sseg" ${c.setor_responsavel === 'Sseg' ? 'selected' : ''}>Sseg</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Status</label>
+              <select onchange="alterarStatus('${c.id}', this.value)">
+                <option value="Aguardando triagem" ${c.status === 'Aguardando triagem' ? 'selected' : ''}>Aguardando triagem</option>
+                <option value="Encaminhado" ${c.status === 'Encaminhado' ? 'selected' : ''}>Encaminhado</option>
+                <option value="Em andamento" ${c.status === 'Em andamento' ? 'selected' : ''}>Em andamento</option>
+                <option value="Finalizado" ${c.status === 'Finalizado' ? 'selected' : ''}>Finalizado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `).join('')
+    }
+
+    async function alterarSetor(id, setor) {
+      try {
+        const { error } = await supabase
+          .from('chamados')
+          .update({ setor_responsavel: setor || null })
+          .eq('id', id)
+
+        if (error) {
+          console.error('Erro update setor:', error)
+          mostrarMensagem('Erro ao atualizar setor: ' + error.message, 'erro')
+          return
+        }
+
+        await carregarChamados()
+        mostrarMensagem('Setor atualizado com sucesso.', 'ok')
+      } catch (e) {
+        console.error('Erro conexão setor:', e)
+        mostrarMensagem('Erro de conexão ao atualizar setor.', 'erro')
+      }
+    }
+
+    async function alterarStatus(id, status) {
+      try {
+        const { error } = await supabase
+          .from('chamados')
+          .update({ status })
+          .eq('id', id)
+
+        if (error) {
+          console.error('Erro update status:', error)
+          mostrarMensagem('Erro ao atualizar status: ' + error.message, 'erro')
+          return
+        }
+
+        await carregarChamados()
+        mostrarMensagem('Status atualizado com sucesso.', 'ok')
+      } catch (e) {
+        console.error('Erro conexão status:', e)
+        mostrarMensagem('Erro de conexão ao atualizar status.', 'erro')
+      }
+    }
+
+    function limparFormulario() {
+      $('titulo').value = ''
+      $('descricao').value = ''
+      $('local').value = ''
+      $('prioridade').value = 'Média'
+    }
+
+    $('btnAbrir').addEventListener('click', abrirChamado)
+    $('btnLimpar').addEventListener('click', limparFormulario)
+    $('busca').addEventListener('input', renderChamados)
+    $('filtroStatus').addEventListener('change', renderChamados)
+
+    window.alterarSetor = alterarSetor
+    window.alterarStatus = alterarStatus
+
+    carregarChamados()
+  </script>
 </body>
 </html>
