@@ -249,10 +249,24 @@
       box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.10);
     }
 
+    input[readonly],
+    textarea[readonly] {
+      background: #f7f8f9;
+      color: #52606d;
+    }
+
     button {
       border: 0;
       cursor: pointer;
       font-weight: bold;
+    }
+
+    button:disabled,
+    input:disabled,
+    textarea:disabled,
+    select:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
     }
 
     .btn-primary {
@@ -503,6 +517,29 @@
       line-height: 1.45;
     }
 
+    .login-status {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.4;
+      border: 1px solid var(--wa-border);
+      background: #f8fafb;
+      color: #334155;
+    }
+
+    .login-status.ok {
+      background: #eefaf5;
+      border-color: #cce9db;
+      color: #245644;
+    }
+
+    .login-status.warn {
+      background: #fff8e8;
+      border-color: #f3d58a;
+      color: #7c5800;
+    }
+
     .tabbar {
       position: fixed;
       left: 50%;
@@ -697,17 +734,34 @@
 
     <section id="screen-novo" class="screen">
       <div class="card">
-        <h2>👤 Identificação</h2>
-        <div class="sub">Estes dados ficam salvos no aparelho.</div>
+        <h2>🔐 Acesso do solicitante</h2>
+        <div class="sub">Somente usuários pré-cadastrados podem abrir chamado. Informe o <strong>Id Func.</strong> para identificar automaticamente o solicitante.</div>
+
+        <label for="idFuncLogin">Id Func.</label>
+        <input id="idFuncLogin" inputmode="numeric" placeholder="Digite somente números" maxlength="20" />
+
+        <div class="actions">
+          <button id="btnValidarIdFunc" class="btn-primary" type="button">Validar Id Func.</button>
+          <button id="btnSairSolicitante" class="btn-ghost" type="button">Limpar acesso</button>
+        </div>
+
+        <div id="loginStatusSolicitante" class="login-status warn">
+          Nenhum solicitante autenticado. Para abrir chamado, valide um Id Func. cadastrado.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>👤 Solicitante identificado</h2>
+        <div class="sub">Preenchimento automático a partir do Id Func. validado.</div>
 
         <div class="grid-2">
           <div>
             <label for="nome">Nome</label>
-            <input id="nome" placeholder="Digite seu nome" />
+            <input id="nome" readonly placeholder="Será preenchido automaticamente" />
           </div>
           <div>
-            <label for="matricula">Matrícula</label>
-            <input id="matricula" placeholder="Digite sua matrícula" />
+            <label for="matricula">Matrícula / Id Func.</label>
+            <input id="matricula" readonly placeholder="Será preenchido automaticamente" />
           </div>
         </div>
       </div>
@@ -777,18 +831,18 @@
 
     <section id="screen-perfil" class="screen">
       <div class="card">
-        <h2>👤 Perfil salvo</h2>
-        <div class="sub">Dados guardados no navegador.</div>
+        <h2>👤 Solicitante autenticado</h2>
+        <div class="sub">Dados do usuário validado neste aparelho.</div>
 
-        <label>Nome salvo no aparelho</label>
-        <input id="perfilNome" disabled />
+        <label>Nome do solicitante</label>
+        <input id="perfilNome" readonly />
 
-        <label>Matrícula salva no aparelho</label>
-        <input id="perfilMatricula" disabled />
+        <label>Matrícula / Id Func.</label>
+        <input id="perfilMatricula" readonly />
 
         <div class="actions">
-          <button id="btnSalvarIdentificacao" class="btn-success" type="button">Salvar identificação</button>
-          <button id="btnLimparIdentificacao" class="btn-danger" type="button">Limpar identificação</button>
+          <button id="btnRevalidarSolicitante" class="btn-success" type="button">Usar este acesso</button>
+          <button id="btnLimparIdentificacao" class="btn-danger" type="button">Encerrar acesso</button>
         </div>
       </div>
 
@@ -836,14 +890,37 @@
       'SD LARSSON'
     ]
 
+    const USUARIOS_AUTORIZADOS = {
+      '2614960': { nome: 'ALESSANDRO BASTOS VICENTE', matricula: '2614960' },
+      '2882930': { nome: 'ANDERSON SILVA DA SILVA', matricula: '2882930' },
+      '4626338': { nome: 'CAIQUE MOTTA', matricula: '4626338' },
+      '2972719': { nome: 'EDI DIEFERSON RIBEIRO DE VARGAS', matricula: '2972719' },
+      '3698696': { nome: 'GABRIEL VELEDA CAMACHO', matricula: '3698696' },
+      '2692449': { nome: 'JULIANO INSAURRIAGA BATISTA', matricula: '2692449' },
+      '4490380': { nome: 'LARSSON FROMMING FREDES', matricula: '4490380' },
+      '3218627': { nome: 'MAGNO NORNBERG TOMASCHEWSKI', matricula: '3218627' },
+      '2423286': { nome: 'MARCELO BANDEIRA TAVARES', matricula: '2423286' },
+      '3697665': { nome: 'MARLON ISQUIERDO AZEVEDO', matricula: '3697665' },
+      '3084620': { nome: 'MAX STEVENS OLIVEIRA NUNES', matricula: '3084620' },
+      '3698530': { nome: 'RAFAEL LISCANO', matricula: '3698530' },
+      '3698440': { nome: 'SAYMON CARLOS ARAUJO BORGES', matricula: '3698440' },
+      '4625595': { nome: 'THIAGO CHAGAS SOARES', matricula: '4625595' },
+      '4783069': { nome: 'VANDERLEI JESKE PEGLOW', matricula: '4783069' },
+      '3702847': { nome: 'VINICIUS INSAURRIAGA BATISTA', matricula: '3702847' },
+      '2910233': { nome: 'VINICIUS MACHADO DE MORAES', matricula: '2910233' },
+      '4355504': { nome: 'WILLIAM RIBEIRO MEDEIROS', matricula: '4355504' }
+    }
+
     const SETOR_FIXO = 'B4'
     const PRIORIDADE_PADRAO = 'Média'
+    const STORAGE_USUARIO = 'helpdesk_usuario_autenticado'
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
     const $ = (id) => document.getElementById(id)
 
     let chamados = []
     let adminMode = localStorage.getItem('helpdesk_admin_mode') === 'true'
+    let usuarioSolicitante = null
 
     function showMessage(text, type = 'ok') {
       const box = $('mensagem')
@@ -906,6 +983,10 @@
       return status === 'Finalizado'
     }
 
+    function normalizarIdFunc(valor) {
+      return String(valor || '').replace(/\D/g, '')
+    }
+
     function updateAdminUI() {
       const status = $('adminStatus')
       const enterBtn = $('btnEntrarAdmin')
@@ -946,10 +1027,6 @@
       showMessage('Modo administrador encerrado.', 'ok')
     }
 
-    function toUpperSafe(value) {
-      return String(value || '').trim().toUpperCase()
-    }
-
     function limparFiltros() {
       $('busca').value = ''
       $('filtroStatus').value = ''
@@ -959,34 +1036,100 @@
       renderTickets()
     }
 
-    function carregarIdentificacaoLocal() {
-      const nome = localStorage.getItem('helpdesk_nome') || ''
-      const matricula = localStorage.getItem('helpdesk_matricula') || ''
-      $('nome').value = nome
-      $('matricula').value = matricula
-      $('perfilNome').value = nome
-      $('perfilMatricula').value = matricula
+    function preencherDadosSolicitante(usuario) {
+      $('nome').value = usuario?.nome || ''
+      $('matricula').value = usuario?.matricula || ''
+      $('perfilNome').value = usuario?.nome || ''
+      $('perfilMatricula').value = usuario?.matricula || ''
+      $('idFuncLogin').value = usuario?.matricula || ''
     }
 
-    function salvarIdentificacaoLocal() {
-      const nome = toUpperSafe($('nome').value)
-      const matricula = $('matricula').value.trim()
-      localStorage.setItem('helpdesk_nome', nome)
-      localStorage.setItem('helpdesk_matricula', matricula)
-      $('nome').value = nome
-      $('perfilNome').value = nome
-      $('perfilMatricula').value = matricula
-      showMessage('Identificação salva no aparelho.', 'ok')
+    function atualizarEstadoFormulario() {
+      const habilitado = !!usuarioSolicitante
+
+      $('titulo').disabled = !habilitado
+      $('descricao').disabled = !habilitado
+      $('local').disabled = !habilitado
+      $('btnAbrir').disabled = !habilitado
+      $('btnLimpar').disabled = !habilitado
+
+      const statusBox = $('loginStatusSolicitante')
+
+      if (habilitado) {
+        statusBox.className = 'login-status ok'
+        statusBox.innerHTML = `✅ <strong>Solicitante identificado:</strong> ${escapeHtml(usuarioSolicitante.nome)}<br><strong>Id Func.:</strong> ${escapeHtml(usuarioSolicitante.matricula)}`
+      } else {
+        statusBox.className = 'login-status warn'
+        statusBox.textContent = 'Nenhum solicitante autenticado. Para abrir chamado, valide um Id Func. cadastrado.'
+      }
     }
 
-    function limparIdentificacaoLocal() {
+    function salvarUsuarioLocal(usuario) {
+      usuarioSolicitante = usuario
+      localStorage.setItem(STORAGE_USUARIO, JSON.stringify(usuario))
+      localStorage.setItem('helpdesk_nome', usuario.nome)
+      localStorage.setItem('helpdesk_matricula', usuario.matricula)
+      preencherDadosSolicitante(usuario)
+      atualizarEstadoFormulario()
+    }
+
+    function limparUsuarioLocal(mostrarMensagem = true) {
+      usuarioSolicitante = null
+      localStorage.removeItem(STORAGE_USUARIO)
       localStorage.removeItem('helpdesk_nome')
       localStorage.removeItem('helpdesk_matricula')
-      $('nome').value = ''
-      $('matricula').value = ''
-      $('perfilNome').value = ''
-      $('perfilMatricula').value = ''
-      showMessage('Identificação removida do aparelho.', 'ok')
+      preencherDadosSolicitante(null)
+      $('idFuncLogin').value = ''
+      atualizarEstadoFormulario()
+      clearForm()
+      if (mostrarMensagem) {
+        showMessage('Acesso do solicitante encerrado.', 'ok')
+      }
+    }
+
+    function carregarUsuarioLocal() {
+      try {
+        const salvo = localStorage.getItem(STORAGE_USUARIO)
+        if (!salvo) {
+          preencherDadosSolicitante(null)
+          atualizarEstadoFormulario()
+          return
+        }
+
+        const usuario = JSON.parse(salvo)
+        if (!usuario || !usuario.matricula || !USUARIOS_AUTORIZADOS[usuario.matricula]) {
+          limparUsuarioLocal(false)
+          return
+        }
+
+        usuarioSolicitante = USUARIOS_AUTORIZADOS[usuario.matricula]
+        preencherDadosSolicitante(usuarioSolicitante)
+        atualizarEstadoFormulario()
+      } catch {
+        limparUsuarioLocal(false)
+      }
+    }
+
+    function validarIdFuncSolicitante() {
+      const id = normalizarIdFunc($('idFuncLogin').value)
+
+      if (!id) {
+        showMessage('Digite o Id Func. para validar.', 'erro')
+        return
+      }
+
+      const usuario = USUARIOS_AUTORIZADOS[id]
+
+      if (!usuario) {
+        preencherDadosSolicitante(null)
+        usuarioSolicitante = null
+        atualizarEstadoFormulario()
+        showMessage('Id Func. não cadastrado para abertura de chamados.', 'erro')
+        return
+      }
+
+      salvarUsuarioLocal(usuario)
+      showMessage(`Solicitante confirmado: ${usuario.nome}`, 'ok')
     }
 
     function populateResponsavelFilter() {
@@ -1002,16 +1145,19 @@
     }
 
     async function createTicket() {
-      const nome = toUpperSafe($('nome').value)
-      const matricula = $('matricula').value.trim()
-      const titulo = toUpperSafe($('titulo').value)
+      if (!usuarioSolicitante) {
+        showMessage('Valide um Id Func. cadastrado antes de abrir chamado.', 'erro')
+        return
+      }
+
+      const nome = usuarioSolicitante.nome
+      const matricula = usuarioSolicitante.matricula
+      const titulo = String($('titulo').value || '').trim().toUpperCase()
       const descricao = $('descricao').value.trim()
-      const local = toUpperSafe($('local').value)
+      const local = String($('local').value || '').trim().toUpperCase()
 
-      $('nome').value = nome
-
-      if (!nome || !matricula || !titulo) {
-        showMessage('Preencha nome, matrícula e título.', 'erro')
+      if (!titulo) {
+        showMessage('Preencha o título do chamado.', 'erro')
         return
       }
 
@@ -1038,11 +1184,7 @@
           return
         }
 
-        localStorage.setItem('helpdesk_nome', nome)
-        localStorage.setItem('helpdesk_matricula', matricula)
-        $('perfilNome').value = nome
-        $('perfilMatricula').value = matricula
-
+        preencherDadosSolicitante(usuarioSolicitante)
         clearForm()
         await loadTickets(false)
         showMessage('Chamado registrado com sucesso.', 'ok')
@@ -1305,7 +1447,6 @@
       btn.addEventListener('click', () => trocarTela(btn.dataset.screen))
     })
 
-    $('nome').addEventListener('input', (e) => { e.target.value = e.target.value.toUpperCase() })
     $('btnAbrir').addEventListener('click', createTicket)
     $('btnLimpar').addEventListener('click', clearForm)
     $('btnEntrarAdmin').addEventListener('click', enterAdminMode)
@@ -1317,10 +1458,22 @@
     $('somenteNegados').addEventListener('change', renderTickets)
     $('btnLimparFiltros').addEventListener('click', limparFiltros)
     $('btnAtualizarLista').addEventListener('click', () => loadTickets(true))
-    $('btnSalvarIdentificacao').addEventListener('click', salvarIdentificacaoLocal)
-    $('btnLimparIdentificacao').addEventListener('click', limparIdentificacaoLocal)
-    $('matricula').addEventListener('input', () => { $('perfilMatricula').value = $('matricula').value.trim() })
-    $('nome').addEventListener('input', () => { $('perfilNome').value = $('nome').value })
+
+    $('btnValidarIdFunc').addEventListener('click', validarIdFuncSolicitante)
+    $('btnSairSolicitante').addEventListener('click', () => limparUsuarioLocal(true))
+    $('btnLimparIdentificacao').addEventListener('click', () => limparUsuarioLocal(true))
+    $('btnRevalidarSolicitante').addEventListener('click', () => trocarTela('novo'))
+
+    $('idFuncLogin').addEventListener('input', (e) => {
+      e.target.value = normalizarIdFunc(e.target.value)
+    })
+
+    $('idFuncLogin').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        validarIdFuncSolicitante()
+      }
+    })
 
     window.alterarStatus = alterarStatus
     window.alterarPrioridade = alterarPrioridade
@@ -1336,7 +1489,7 @@
     }
 
     updateAdminUI()
-    carregarIdentificacaoLocal()
+    carregarUsuarioLocal()
     limparFiltros()
     loadTickets(false)
   </script>
