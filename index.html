@@ -478,6 +478,49 @@
       color: #334155;
     }
 
+    .timer-box {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #dbe5ea;
+      background: #f8fbfd;
+      color: #23404c;
+      display: grid;
+      gap: 4px;
+    }
+
+    .timer-box .timer-label {
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      opacity: 0.85;
+    }
+
+    .timer-box .timer-value {
+      font-size: 15px;
+      font-weight: bold;
+      line-height: 1.2;
+    }
+
+    .timer-box.running {
+      background: #eef6ff;
+      border-color: #bfdbfe;
+      color: #0b57d0;
+    }
+
+    .timer-box.done {
+      background: #eefaf5;
+      border-color: #bbf7d0;
+      color: #166534;
+    }
+
+    .timer-box.denied {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: #9a3412;
+    }
+
     .obs-box, .neg-box {
       margin-top: 10px;
       padding: 10px;
@@ -921,6 +964,7 @@
     let chamados = []
     let adminMode = localStorage.getItem('helpdesk_admin_mode') === 'true'
     let usuarioSolicitante = null
+    let timerUpdater = null
 
     function showMessage(text, type = 'ok') {
       const box = $('mensagem')
@@ -985,6 +1029,43 @@
 
     function normalizarIdFunc(valor) {
       return String(valor || '').replace(/\D/g, '')
+    }
+
+    function formatDuration(ms) {
+      const totalSeconds = Math.max(0, Math.floor(ms / 1000))
+      const dias = Math.floor(totalSeconds / 86400)
+      const horas = Math.floor((totalSeconds % 86400) / 3600)
+      const minutos = Math.floor((totalSeconds % 3600) / 60)
+
+      const partes = []
+      if (dias > 0) partes.push(`${dias}d`)
+      if (horas > 0 || dias > 0) partes.push(`${horas}h`)
+      partes.push(`${minutos}min`)
+
+      return partes.join(' ')
+    }
+
+    function getTempoChamado(c) {
+      const inicio = c.created_at ? new Date(c.created_at).getTime() : Date.now()
+      let fim = Date.now()
+      let label = '⏱ Em aberto há'
+      let classe = 'running'
+
+      if (c.status === 'Finalizado') {
+        fim = c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
+        label = '✅ Tempo até finalização'
+        classe = 'done'
+      } else if (c.status === 'Negado') {
+        fim = c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
+        label = '⛔ Tempo até negativa'
+        classe = 'denied'
+      }
+
+      return {
+        label,
+        classe,
+        valor: formatDuration(fim - inicio)
+      }
     }
 
     function updateAdminUI() {
@@ -1240,6 +1321,16 @@
       return first + others
     }
 
+    function buildTimerHTML(c) {
+      const tempo = getTempoChamado(c)
+      return `
+        <div class="timer-box ${tempo.classe}">
+          <div class="timer-label">${tempo.label}</div>
+          <div class="timer-value" data-timer-card="${escapeHtml(c.id)}">${tempo.valor}</div>
+        </div>
+      `
+    }
+
     function buildTicketHTML(c) {
       return `
         <div class="ticket ${ticketClass(c.prioridade, c.status)}">
@@ -1258,6 +1349,8 @@
             <span class="badge">📍 ${escapeHtml(c.local || '-')}</span>
             <span class="badge">🏢 ${escapeHtml(c.setor_responsavel || 'Não definido')}</span>
           </div>
+
+          ${buildTimerHTML(c)}
 
           <div class="meta">
             <div><strong>Solicitante:</strong> ${escapeHtml(c.nome_solicitante || '-')}</div>
@@ -1352,6 +1445,27 @@
       }
 
       $('lista').innerHTML = html
+      updateTicketTimers()
+      startTimerUpdater()
+    }
+
+    function updateTicketTimers() {
+      const nodes = document.querySelectorAll('[data-timer-card]')
+      if (!nodes.length) return
+
+      nodes.forEach(node => {
+        const id = node.getAttribute('data-timer-card')
+        const chamado = chamados.find(c => String(c.id) === String(id))
+        if (!chamado) return
+        node.textContent = getTempoChamado(chamado).valor
+      })
+    }
+
+    function startTimerUpdater() {
+      if (timerUpdater) return
+      timerUpdater = setInterval(() => {
+        updateTicketTimers()
+      }, 60000)
     }
 
     async function alterarStatus(id, status) {
