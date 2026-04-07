@@ -1,6 +1,6 @@
 {
-  "name": "HelpDesk Interno Mobile PRO",
-  "short_name": "HelpDesk",
+  "name": "📋 Chamados de Manutenção • CB SLS",
+  "short_name": "Chamados",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#efeae2",
