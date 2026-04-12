@@ -917,26 +917,26 @@
 
     <section id="screen-novo" class="screen">
       <div class="card">
-        <h2>👤 Identificação do solicitante</h2>
-        <div class="sub">Qualquer pessoa com o link pode abrir chamado. Preencha o nome e a matrícula/Id Func. se desejar identificar o solicitante.</div>
+        <h2>👤 Identificação Livre</h2>
+        <div class="sub">Acesso livre para registrar pedidos de melhorias. Preencha o nome e a matrícula/Id Func. se desejar identificar o solicitante.</div>
 
         <div id="loginStatusSolicitante" class="login-status ok">
-          Abertura liberada para qualquer pessoa com o link.
+          Abertura liberada para qualquer pessoa sem identificação.
         </div>
       </div>
 
       <div class="card">
         <h2>👤 Dados do solicitante</h2>
-        <div class="sub">Campos livres para identificação opcional do solicitante.</div>
+        <div class="sub">Quando não preencher nome, o sistema grava como “NÃO IDENTIFICADO”.</div>
 
         <div class="grid-2">
           <div>
             <label for="nome">Nome</label>
-            <input id="nome" placeholder="Digite o nome do solicitante" />
+            <input id="nome" placeholder="Digite o nome do solicitante (Opcional)" />
           </div>
           <div>
             <label for="matricula">Matrícula / Id Func.</label>
-            <input id="matricula" inputmode="numeric" maxlength="20" placeholder="Digite a matrícula ou Id Func." />
+            <input id="matricula" inputmode="numeric" maxlength="20" placeholder="Digite a matrícula ou Id Func. (Opcional)" />
           </div>
         </div>
       </div>
