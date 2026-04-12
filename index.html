@@ -1505,12 +1505,15 @@
 
           ${buildTimerHTML(c)}
 
-          <div class="meta">
-            <div><strong>Solicitante:</strong> ${escapeHtml(c.nome_solicitante || '-')}</div>
-            <div><strong>Matrícula:</strong> ${escapeHtml(c.matricula_solicitante || '-')}</div>
-            <div><strong>Responsável:</strong> ${escapeHtml(c.responsavel_designado || 'Não definido')}</div>
-            <div><strong>Abertura:</strong> ${escapeHtml(formatDate(c.created_at))}</div>
-          </div>
+         <div class="meta">
+  ${MOSTRAR_IDENTIDADE_SOLICITANTE ? `
+    <div><strong>Solicitante:</strong> ${escapeHtml(c.nome_solicitante || '-')}</div>
+    <div><strong>Matrícula:</strong> ${escapeHtml(c.matricula_solicitante || '-')}</div>
+  ` : ''}
+
+  <div><strong>Responsável:</strong> ${escapeHtml(c.responsavel_designado || 'Não definido')}</div>
+  <div><strong>Abertura:</strong> ${escapeHtml(formatDate(c.created_at))}</div>
+</div>
 
           ${c.observacao_admin ? `<div class="obs-box"><strong>Observação da triagem:</strong><br>${escapeHtml(c.observacao_admin)}</div>` : ''}
           ${c.justificativa_negativa ? `<div class="neg-box"><strong>Justificativa da negativa:</strong><br>${escapeHtml(c.justificativa_negativa)}</div>` : ''}
