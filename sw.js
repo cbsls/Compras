@@ -1,4 +1,4 @@
-const CACHE_NAME = 'helpdesk-whatsapp-v20';
+const CACHE_NAME = 'helpdesk-whatsapp-v21';
 
 const ASSETS = [
   './',
@@ -22,6 +22,7 @@ self.addEventListener('activate', (event) => {
           if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
+          return null;
         })
       )
     )
@@ -30,9 +31,21 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request);
+      if (cached) return cached;
+
+      return fetch(event.request)
+        .then((response) => {
+          const respostaClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, respostaClone);
+          });
+          return response;
+        })
+        .catch(() => caches.match('./index.html'));
     })
   );
 });
