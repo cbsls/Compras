@@ -297,6 +297,12 @@
       color: #fff;
     }
 
+    .btn-install {
+      background: #1f8f63;
+      color: #fff;
+      margin-top: 10px;
+    }
+
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -894,20 +900,18 @@
         </div>
 
         <div class="card">
-  <h2>🛠️ Bem-vindo à Central de Reclamações</h2>
-  <div class="install-tip">
- <div class="install-tip">
-⚠️ Encontrou algum problema? Nos avise aqui 😊<br><br>
+          <h2>🛠️ Bem-vindo à Central de Reclamações</h2>
+          <div class="install-tip">
+            ⚠️ Encontrou algum problema? Nos avise aqui 😊<br><br>
+            📋 Descreva o que aconteceu<br>
+            📍 Informe o local do problema<br>
+            🛠️ Nos ajude na descrição sugerindo uma solução ou material, se necessário<br><br>
+            👉 Nossa equipe vai buscar a melhor solução.
+          </div>
+          <button id="btnInstalarApp" type="button" class="btn-install hidden">📲 Instalar app</button>
+        </div>
 
-  📋 Descreva o que aconteceu<br>
-  📍 Informe o local do problema<br>
-  🛠️ Nos ajude na descrição sugerindo uma solução ou material, se necessário<br><br>
-
-  👉 Nossa equipe vai buscar a melhor solução.
-</div>
-</div>
-
-      <div class="card">
+        <div class="card">
         <h2>📋 Chamados abertos</h2>
         <div class="sub">Resumo rápido dos chamados que ainda não foram finalizados.</div>
         <div class="home-actions">
@@ -1078,6 +1082,7 @@
     let adminMode = localStorage.getItem('helpdesk_admin_mode') === 'true'
     let timerUpdater = null
     let homeExpandedState = {}
+    let deferredPrompt = null
 
     function showMessage(text, type = 'ok') {
       const box = $('mensagem')
@@ -1181,6 +1186,29 @@
       }
     }
 
+
+    function atualizarBotaoInstalarApp() {
+      const btn = $('btnInstalarApp')
+      if (!btn) return
+      btn.classList.toggle('hidden', !deferredPrompt)
+    }
+
+    async function instalarApp() {
+      if (!deferredPrompt) {
+        showMessage('A opção de instalar ainda não está disponível neste navegador.', 'erro')
+        return
+      }
+
+      deferredPrompt.prompt()
+      const escolha = await deferredPrompt.userChoice
+      deferredPrompt = null
+      atualizarBotaoInstalarApp()
+
+      if (escolha && escolha.outcome === 'accepted') {
+        showMessage('Instalação iniciada.', 'ok')
+      }
+    }
+
     function updateAdminUI() {
       const status = $('adminStatus')
       const enterBtn = $('btnEntrarAdmin')
@@ -1211,6 +1239,7 @@
       adminMode = true
       localStorage.setItem('helpdesk_admin_mode', 'true')
       updateAdminUI()
+    atualizarBotaoInstalarApp()
       showMessage('Modo administrador ativado.', 'ok')
     }
 
@@ -1797,6 +1826,7 @@
     $('btnAbrir').addEventListener('click', createTicket)
     $('btnLimpar').addEventListener('click', clearForm)
     $('btnEntrarAdmin').addEventListener('click', enterAdminMode)
+    $('btnInstalarApp').addEventListener('click', instalarApp)
     $('btnSairAdmin').addEventListener('click', exitAdminMode)
     $('btnToggleAllHome').addEventListener('click', toggleAllHomeItems)
 
@@ -1830,6 +1860,19 @@
     window.alterarJustificativaNegativa = alterarJustificativaNegativa
     window.negarChamado = negarChamado
     window.toggleHomeDetails = toggleHomeDetails
+
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault()
+      deferredPrompt = event
+      atualizarBotaoInstalarApp()
+    })
+
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null
+      atualizarBotaoInstalarApp()
+      showMessage('App instalado com sucesso.', 'ok')
+    })
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
