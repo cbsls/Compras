@@ -1875,10 +1875,30 @@
     })
 
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {})
-      })
-    }
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+
+      // Detecta nova versão
+      reg.onupdatefound = () => {
+        const newWorker = reg.installing
+
+        if (!newWorker) return
+
+        newWorker.onstatechange = () => {
+          if (newWorker.state === 'installed') {
+            if (navigator.serviceWorker.controller) {
+              // Nova versão disponível
+              if (confirm('Nova versão disponível. Atualizar agora?')) {
+                window.location.reload()
+              }
+            }
+          }
+        }
+      }
+
+    }).catch(() => {})
+  })
+}
 
     updateAdminUI()
     carregarUsuarioLocal()
