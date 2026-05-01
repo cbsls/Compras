@@ -3,153 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Chamados CB SLS</title>
+    <title>Central de Reclamações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        form { display: grid; gap: 10px; }
-        label { font-weight: bold; }
-        input, textarea, select { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        #listaChamados ul { list-style: none; padding: 0; }
-        #listaChamados li { border: 1px solid #ddd; margin: 10px 0; padding: 15px; }
-        .delete-btn { background: #dc3545; margin-left: 10px; padding: 5px 10px; font-size: 12px; }
-    </style>
 </head>
-<body>
-    <h1>Central de Reclamações CB SLS</h1>
-    
-    <form id="formChamado">
-        <label>Título:
-            <input id="titulo" required style="text-transform: uppercase;">
-        </label>
-        <label>Nome:
-            <input id="nome" required style="text-transform: uppercase;">
-        </label>
-        <label>Local:
-            <input id="local" required style="text-transform: uppercase;">
-        </label>
-        <label>Descrição:
-            <textarea id="descricao" rows="5"></textarea>
-        </label>
-        <label>Nome do Solicitante:
-            <select id="solicitante" required>
-                <option value="">Selecione um solicitante</option>
-                <option>1º TEN MARCELO</option>
-                <option>1º SGT VICENTE</option>
-                <option>1º SGT DIEFERSON</option>
-                <option>1º SGT BATISTA</option>
-                <option>2º SGT ANDERSON</option>
-                <option>2º SGT VINICIUS</option>
-                <option>2º SGT LISCANO</option>
-                <option>SD TOMASCHEWSKI</option>
-                <option>SD CAMACHO</option>
-                <option>SD ISQUIERDO</option>
-                <option>SD BORGES</option>
-                <option>SD BATISTA</option>
-                <option>SD MAX</option>
-                <option>SD WILLIAM</option>
-                <option>SD MOTTA</option>
-                <option>SD SOARES</option>
-                <option>SD PEGLOW</option>
-                <option>SD LARSSON</option>
-                <option>NÃO IDENTIFICADO</option>
-            </select>
-        </label>
-        <button type="submit">Enviar Chamado</button>
-    </form>
+<body class="bg-light">
+    <div class="container my-5">
+        <!-- Formulário de Novo Chamado -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-primary text-white text-center py-4">
+                        <h3 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Novo Chamado</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="newTicketForm">
+                            <div class="mb-4">
+                                <label for="title" class="form-label fw-bold">Título *</label>
+                                <input type="text" class="form-control form-control-lg" id="title" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="name" class="form-label fw-bold">Nome *</label>
+                                <select class="form-select form-select-lg" id="name" required>
+                                    <option value="">Selecione o militar...</option>
+                                    <option value="1º TEN MARCELO">1º TEN MARCELO</option>
+                                    <option value="1º SGT VICENTE">1º SGT VICENTE</option>
+                                    <option value="1º SGT DIEFERSON">1º SGT DIEFERSON</option>
+                                    <option value="1º SGT BATISTA">1º SGT BATISTA</option>
+                                    <option value="2º SGT ANDERSON">2º SGT ANDERSON</option>
+                                    <option value="2º SGT VINICIUS">2º SGT VINICIUS</option>
+                                    <option value="2º SGT LISCANO">2º SGT LISCANO</option>
+                                    <option value="SD TOMASCHEWSKI">SD TOMASCHEWSKI</option>
+                                    <option value="SD CAMACHO">SD CAMACHO</option>
+                                    <option value="SD ISQUIERDO">SD ISQUIERDO</option>
+                                    <option value="SD BORGES">SD BORGES</option>
+                                    <option value="SD BATISTA">SD BATISTA</option>
+                                    <option value="SD MAX">SD MAX</option>
+                                    <option value="SD WILLIAM">SD WILLIAM</option>
+                                    <option value="SD MOTTA">SD MOTTA</option>
+                                    <option value="SD SOARES">SD SOARES</option>
+                                    <option value="SD PEGLOW">SD PEGLOW</option>
+                                    <option value="SD LARSSON">SD LARSSON</option>
+                                    <option value="NÃO IDENTIFICADO">NÃO IDENTIFICADO</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="local" class="form-label fw-bold">Local *</label>
+                                <input type="text" class="form-control form-control-lg" id="local" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="description" class="form-label fw-bold">Descrição</label>
+                                <textarea class="form-control" id="description" rows="4" placeholder="Descreva o problema (opcional)"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow">
+                                <i class="bi bi-send me-2"></i>Criar Chamado
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <hr>
+        <hr class="my-5">
 
-    <h2>Área Admin</h2>
-    <input type="password" id="senhaAdmin" placeholder="Digite a senha admin">
-    <button id="btnListar">Listar Chamados</button>
-    <div id="listaChamados"></div>
+        <!-- Lista de Chamados -->
+        <h2 class="text-center mb-5 text-primary fw-bold">Chamados Recentes</h2>
+        <div id="ticketsContainer" class="row g-4"></div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
-        const supabaseUrl = 'YOUR_SUPABASE_URL'; // Substitua pela URL do seu projeto Supabase
-        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // Substitua pela chave anon do seu projeto
-        const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
+        // Configuração do Supabase - SUBSTITUA pelos seus valores
+        const supabaseUrl = 'https://your-project.supabase.co';
+        const supabaseKey = 'your-anon-key';
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-        // Forçar campos em MAIÚSCULO no input
-        ['titulo', 'nome', 'local'].forEach(id => {
-            const el = document.getElementById(id);
-            el.addEventListener('input', () => {
-                el.value = el.value.toUpperCase();
-            });
-            el.addEventListener('paste', () => {
-                setTimeout(() => {
-                    el.value = el.value.toUpperCase();
-                }, 10);
-            });
-        });
+        const form = document.getElementById('newTicketForm');
 
-        // Envio do formulário
-        document.getElementById('formChamado').addEventListener('submit', async (e) => {
+        async function createTicket(e) {
             e.preventDefault();
-            const data = {
-                titulo: document.getElementById('titulo').value.toUpperCase().trim(),
-                nome: document.getElementById('nome').value.toUpperCase().trim(),
-                local: document.getElementById('local').value.toUpperCase().trim(),
-                descricao: document.getElementById('descricao').value.trim(),
-                solicitante: document.getElementById('solicitante').value
-            };
-            if (!data.titulo || !data.nome || !data.local || !data.solicitante) {
-                alert('Preencha os campos obrigatórios.');
+
+            const title = document.getElementById('title').value.toUpperCase().trim();
+            const name = document.getElementById('name').value.toUpperCase().trim();
+            const local = document.getElementById('local').value.toUpperCase().trim();
+            const description = document.getElementById('description').value.trim();
+
+            // Validação apenas para campos obrigatórios
+            if (!title || !name || !local) {
+                alert('Por favor, preencha Título, Nome e Local.');
                 return;
             }
-            const { error } = await supabase.from('chamados').insert([data]);
+
+            const { error } = await supabase
+                .from('chamados')
+                .insert([
+                    {
+                        titulo: title,
+                        nome: name,
+                        local: local,
+                        descricao: description || null
+                    }
+                ]);
+
             if (error) {
-                alert('Erro ao enviar: ' + error.message);
+                console.error('Erro:', error);
+                alert('Erro ao criar chamado: ' + error.message);
             } else {
-                alert('Chamado enviado com sucesso!');
-                document.getElementById('formChamado').reset();
+                form.reset();
+                loadTickets();
+                alert('Chamado criado com sucesso!');
             }
-        });
+        }
 
-        // Funções Admin
-        const SENHA_ADMIN = 'admin123'; // Senha hardcoded para simplicidade (mude em produção)
-
-        async function listarChamados() {
-            const senha = document.getElementById('senhaAdmin').value;
-            if (senha !== SENHA_ADMIN) {
-                alert('Senha incorreta!');
-                return;
-            }
+        async function loadTickets() {
             const { data, error } = await supabase
                 .from('chamados')
                 .select('*')
                 .order('created_at', { ascending: false });
+
             if (error) {
-                alert('Erro ao listar: ' + error.message);
+                console.error('Erro ao carregar chamados:', error);
                 return;
             }
-            let html = '<h3>Lista de Chamados:</h3><ul>';
-            data.forEach((row) => {
-                html += `<li>
-                    <strong>${row.titulo}</strong> - ${row.nome} - ${row.local} - ${row.solicitante}<br>
-                    <em>${new Date(row.created_at).toLocaleString('pt-BR')}</em><br>
-                    ${row.descricao ? `<p>${row.descricao}</p>` : '<p>Sem descrição</p>'}
-                    <button class="delete-btn" onclick="deletarChamado(${row.id})">Deletar</button>
-                </li>`;
-            });
-            html += '</ul>';
-            document.getElementById('listaChamados').innerHTML = html;
+
+            const container = document.getElementById('ticketsContainer');
+            if (data.length === 0) {
+                container.innerHTML = '<div class="col-12"><div class="text-center py-5"><h5 class="text-muted">Nenhum chamado registrado ainda.</h5></div></div>';
+                return;
+            }
+
+            container.innerHTML = data.map(ticket => `
+                <div class="col-lg-6 col-xl-4">
+                    <div class="card h-100 shadow-sm border-0 hover-shadow">
+                        <div class="card-header bg-info text-white py-3">
+                            <h6 class="mb-0 fw-bold">${ticket.titulo}</h6>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <p class="card-text"><strong>Nome:</strong> ${ticket.nome}</p>
+                            <p class="card-text"><strong>Local:</strong> ${ticket.local}</p>
+                            ${ticket.descricao ? `<p class="card-text"><strong>Descrição:</strong> ${ticket.descricao}</p>` : ''}
+                            <p class="card-text mt-auto small text-muted">Criado em: ${new Date(ticket.created_at).toLocaleString('pt-BR')}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        window.deletarChamado = async (id) => {
-            if (!confirm('Tem certeza que deseja deletar este chamado?')) return;
-            const { error } = await supabase.from('chamados').delete().eq('id', id);
-            if (error) {
-                alert('Erro ao deletar: ' + error.message);
-            } else {
-                alert('Chamado deletado!');
-                listarChamados(); // Recarrega a lista
-            }
-        };
+        // Eventos
+        form.addEventListener('submit', createTicket);
+        loadTickets();
 
-        document.getElementById('btnListar').addEventListener('click', listarChamados);
+        // Estilo hover simples
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => card.style.boxShadow = '0 0.5rem 1rem rgba(0,0,0,.15)');
+                card.addEventListener('mouseleave', () => card.style.boxShadow = '0 0.125rem 0.25rem rgba(0,0,0,.075)');
+            });
+        });
     </script>
+    <style>
+        .hover-shadow {
+            transition: box-shadow 0.3s ease;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
 </body>
 </html>
