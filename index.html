@@ -566,6 +566,24 @@
       border-top: 1px solid #e6eaed;
     }
 
+    .uppercase-field,
+    #nome {
+      text-transform: uppercase;
+    }
+
+    .admin-compra-fields {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #dbe5ea;
+      background: #f8fbfd;
+    }
+
+    .admin-compra-fields.hidden {
+      display: none;
+    }
+
     .install-tip {
       padding: 12px;
       border-radius: 14px;
@@ -900,18 +918,6 @@
         </div>
 
         <div class="card">
-          <h2>REMOVIDO</h2>
-          <div class="install-tip">
-            ⚠️ Encontrou algum problema? Nos avise aqui 😊<br><br>
-            📋 Descreva o que aconteceu<br>
-            📍 Informe o local do problema<br>
-            🛠️ Nos ajude na descrição sugerindo uma solução ou material, se necessário<br><br>
-            👉 Nossa equipe vai buscar a melhor solução.
-          </div>
-          <button id="btnInstalarApp" type="button" class="btn-install hidden">📲 Instalar app</button>
-        </div>
-
-        <div class="card">
         <h2>📋 Chamados abertos</h2>
         <div class="sub">Resumo rápido dos chamados que ainda não foram finalizados.</div>
         <div class="home-actions">
@@ -919,26 +925,19 @@
         </div>
         <div id="homeListaAbertos" class="home-lista"></div>
       </div>
+
+      <button id="btnInstalarApp" type="button" class="btn-install hidden">📲 Instalar app</button>
     </section>
 
     <section id="screen-novo" class="screen">
       <div class="card">
-        <h2>REMOVIDO</h2>
-        <div class="sub">Acesso livre para registrar pedidos de melhorias. Preencha o nome e a matrícula/Id Func. se desejar identificar o solicitante.</div>
-
-        <div id="loginStatusSolicitante" class="login-status ok">
-          Abertura liberada para qualquer pessoa com o link.
-        </div>
-      </div>
-
-      <div class="card">
         <h2>👤 Dados do solicitante</h2>
-        <div class="sub">Quando não preencher nome, o sistema grava como “NÃO IDENTIFICADO”.</div>
+        <div class="sub">Selecione o militar cadastrado. Caso necessário, mantenha a opção “NÃO IDENTIFICADO”.</div>
 
         <div class="grid-2">
           <div>
             <label for="nome">Nome</label>
-            <input id="nome" placeholder="Digite o nome do solicitante (Opcional)" />
+            <select id="nome"></select>
           </div>
           <div>
             <label for="matricula">Id Func.</label>
@@ -952,13 +951,13 @@
         <div class="sub">O setor será definido automaticamente como <strong>B4</strong> e a prioridade inicial será <strong>Média</strong>.</div>
 
         <label for="titulo">Título</label>
-        <input id="titulo" placeholder="Ex: TORNEIRA DA COZINHA NÃO FECHA" />
+        <input id="titulo" class="uppercase-field" placeholder="Ex: TORNEIRA DA COZINHA NÃO FECHA" />
 
         <label for="descricao">Descrição</label>
-        <textarea id="descricao" placeholder="Descreva o problema com detalhes"></textarea>
+        <textarea id="descricao" placeholder="Descreva o problema com detalhes (Opcional)"></textarea>
 
         <label for="local">Local</label>
-        <input id="local" placeholder="Ex: COZINHA, SALA 2, CORREDOR" />
+        <input id="local" class="uppercase-field" placeholder="Ex: COZINHA, SALA 2, CORREDOR" />
 
         <div class="actions">
           <button id="btnAbrir" class="btn-primary">Enviar chamado</button>
@@ -1074,6 +1073,7 @@
     const SETOR_FIXO = 'B4'
     const PRIORIDADE_PADRAO = 'Média'
     const MOSTRAR_IDENTIDADE_SOLICITANTE = false;
+    const STATUS_COM_COMPRA = ['Encaminhado', 'Em andamento', 'Finalizado']
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
     const $ = (id) => document.getElementById(id)
@@ -1109,6 +1109,39 @@
     function formatDate(value) {
       if (!value) return '-'
       return new Date(value).toLocaleString('pt-BR')
+    }
+
+    function formatDateOnly(value) {
+      if (!value) return '-'
+      const date = new Date(`${value}T00:00:00`)
+      if (Number.isNaN(date.getTime())) return '-'
+      return date.toLocaleDateString('pt-BR')
+    }
+
+    function formatDateForInput(value) {
+      if (!value) return ''
+      return String(value).slice(0, 10)
+    }
+
+    function formatCurrency(value) {
+      const numeric = Number(value)
+      if (!Number.isFinite(numeric)) return '-'
+      return numeric.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    }
+
+    function parseCurrencyInput(value) {
+      const cleaned = String(value || '')
+        .replace(/\s/g, '')
+        .replace(/R\$/gi, '')
+        .replace(/\./g, '')
+        .replace(',', '.')
+        .replace(/[^\d.-]/g, '')
+      const numeric = Number(cleaned)
+      return Number.isFinite(numeric) ? numeric : null
+    }
+
+    function shouldShowPurchaseFields(status) {
+      return STATUS_COM_COMPRA.includes(status)
     }
 
     function statusClass(status) {
@@ -1281,22 +1314,11 @@
       $('btnAbrir').disabled = false
       $('btnLimpar').disabled = false
 
-      const nome = $('nome').value.trim()
-      const matricula = $('matricula').value.trim()
-      const statusBox = $('loginStatusSolicitante')
-
-      statusBox.className = 'login-status ok'
-      if (nome || matricula) {
-        statusBox.innerHTML = `✅ Identificação livre preenchida.<br><strong>Nome:</strong> ${escapeHtml(nome || '-')}<br><strong>Id Func.:</strong> ${escapeHtml(matricula || '-')}`
-      } else {
-        statusBox.textContent = 'Abertura liberada para qualquer pessoa com o link.'
-      }
-
       atualizarPerfilSolicitante()
     }
 
     function limparUsuarioLocal(mostrarMensagem = true) {
-      $('nome').value = ''
+      $('nome').value = 'NÃO IDENTIFICADO'
       $('matricula').value = ''
       atualizarEstadoFormulario()
       clearForm()
@@ -1306,7 +1328,10 @@
     }
 
     function carregarUsuarioLocal() {
-      $('nome').value = localStorage.getItem('helpdesk_nome') || ''
+      const nomeSalvo = localStorage.getItem('helpdesk_nome') || 'NÃO IDENTIFICADO'
+      const selectNome = $('nome')
+      const opcoesValidas = Array.from(selectNome.options).map(option => option.value)
+      selectNome.value = opcoesValidas.includes(nomeSalvo) ? nomeSalvo : 'NÃO IDENTIFICADO'
       $('matricula').value = localStorage.getItem('helpdesk_matricula') || ''
       atualizarEstadoFormulario()
     }
@@ -1314,6 +1339,20 @@
     function validarIdFuncSolicitante() {
       atualizarEstadoFormulario()
       showMessage('Abertura liberada para qualquer pessoa com o link.', 'ok')
+    }
+
+    function populateMilitarOptions() {
+      const select = $('nome')
+      if (!select) return
+
+      const nomes = ['NÃO IDENTIFICADO', ...RESPONSAVEIS]
+      select.innerHTML = nomes
+        .map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`)
+        .join('')
+    }
+
+    function forceUppercaseField(event) {
+      event.target.value = String(event.target.value || '').toUpperCase()
     }
 
     function salvarIdentificacaoLocal() {
@@ -1336,7 +1375,7 @@
     }
 
     async function createTicket() {
-      const nome = String($('nome').value || '').trim().toUpperCase()
+      const nome = String($('nome').value || 'NÃO IDENTIFICADO').trim().toUpperCase()
       const matricula = normalizarIdFunc($('matricula').value)
       const titulo = String($('titulo').value || '').trim().toUpperCase()
       const descricao = $('descricao').value.trim()
@@ -1346,8 +1385,6 @@
         showMessage('Preencha o título do chamado.', 'erro')
         return
       }
-
-      
 
       salvarIdentificacaoLocal()
 
@@ -1432,6 +1469,19 @@
       return first + others
     }
 
+    function purchaseFieldsHTML(c) {
+      const hiddenClass = shouldShowPurchaseFields(c.status) ? '' : 'hidden'
+      return `
+        <div class="admin-compra-fields ${hiddenClass}" data-compra-fields="${escapeHtml(c.id)}">
+          <label for="valor-compra-${escapeHtml(c.id)}">Valor da compra</label>
+          <input id="valor-compra-${escapeHtml(c.id)}" type="text" inputmode="decimal" value="${escapeHtml(c.valor_compra ?? '')}" onblur="alterarValorCompra('${c.id}', this.value)" placeholder="Ex: 150,00" />
+
+          <label for="data-compra-${escapeHtml(c.id)}">Data da compra</label>
+          <input id="data-compra-${escapeHtml(c.id)}" type="date" value="${escapeHtml(formatDateForInput(c.data_compra))}" onblur="alterarDataCompra('${c.id}', this.value)" />
+        </div>
+      `
+    }
+
     function buildTimerHTML(c) {
       const tempo = getTempoChamado(c)
       return `
@@ -1443,6 +1493,8 @@
     }
 
     function buildTicketHTML(c) {
+      const exibirCompraNaLista = shouldShowPurchaseFields(c.status) && (c.valor_compra !== null && c.valor_compra !== undefined && c.valor_compra !== '' || c.data_compra)
+
       return `
         <div class="ticket ${ticketClass(c.prioridade, c.status)}">
           ${isResolved(c.status) ? `<div class="resolved-seal">✅ Resolvido</div>` : ''}
@@ -1471,6 +1523,8 @@
 
   <div><strong>Responsável:</strong> ${escapeHtml(c.responsavel_designado || 'Não definido')}</div>
   <div><strong>Abertura:</strong> ${escapeHtml(formatDate(c.created_at))}</div>
+  ${exibirCompraNaLista ? `<div><strong>Valor da compra:</strong> ${escapeHtml(formatCurrency(c.valor_compra))}</div>` : ''}
+  ${exibirCompraNaLista ? `<div><strong>Data da compra:</strong> ${escapeHtml(formatDateOnly(c.data_compra))}</div>` : ''}
 </div>
 
           ${c.observacao_admin ? `<div class="obs-box"><strong>Observação da triagem:</strong><br>${escapeHtml(c.observacao_admin)}</div>` : ''}
@@ -1480,13 +1534,15 @@
             <div class="admin-area">
               <div class="chip">🏢 Setor fixo: B4</div>
 
-              <select onchange="alterarStatus('${c.id}', this.value)">
+              <select data-status-select="${escapeHtml(c.id)}" onchange="handleStatusChange('${c.id}', this)">
                 <option value="Aguardando triagem" ${c.status === 'Aguardando triagem' ? 'selected' : ''}>Aguardando triagem</option>
                 <option value="Encaminhado" ${c.status === 'Encaminhado' ? 'selected' : ''}>Encaminhado</option>
                 <option value="Em andamento" ${c.status === 'Em andamento' ? 'selected' : ''}>Em andamento</option>
                 <option value="Finalizado" ${c.status === 'Finalizado' ? 'selected' : ''}>Finalizado</option>
                 <option value="Negado" ${c.status === 'Negado' ? 'selected' : ''}>Negado</option>
               </select>
+
+              ${purchaseFieldsHTML(c)}
 
               <select onchange="alterarPrioridade('${c.id}', this.value)">
                 <option value="Baixa" ${c.prioridade === 'Baixa' ? 'selected' : ''}>Prioridade: Baixa</option>
@@ -1641,7 +1697,8 @@
         const haystack = [
           c.titulo, c.descricao, c.nome_solicitante, c.matricula_solicitante,
           c.local, c.setor_responsavel, c.status, c.prioridade,
-          c.observacao_admin, c.responsavel_designado, c.justificativa_negativa
+          c.observacao_admin, c.responsavel_designado, c.justificativa_negativa,
+          c.valor_compra, c.data_compra
         ].join(' ').toLowerCase()
 
         return (
@@ -1718,6 +1775,18 @@
       }, 60000)
     }
 
+    function togglePurchaseFields(id, status) {
+      const container = document.querySelector(`[data-compra-fields="${CSS.escape(String(id))}"]`)
+      if (!container) return
+      container.classList.toggle('hidden', !shouldShowPurchaseFields(status))
+    }
+
+    async function handleStatusChange(id, element) {
+      const status = element.value
+      togglePurchaseFields(id, status)
+      await alterarStatus(id, status)
+    }
+
     async function alterarStatus(id, status) {
       if (!adminMode) return
 
@@ -1768,6 +1837,21 @@
       if (!adminMode) return
       const { error } = await supabase.from('chamados').update({ justificativa_negativa: justificativa.trim() || null }).eq('id', id)
       if (error) return showMessage('Erro ao atualizar justificativa: ' + error.message, 'erro')
+      await loadTickets(false)
+    }
+
+    async function alterarValorCompra(id, valor) {
+      if (!adminMode) return
+      const valorNumerico = parseCurrencyInput(valor)
+      const { error } = await supabase.from('chamados').update({ valor_compra: valorNumerico }).eq('id', id)
+      if (error) return showMessage('Erro ao atualizar valor da compra: ' + error.message, 'erro')
+      await loadTickets(false)
+    }
+
+    async function alterarDataCompra(id, dataCompra) {
+      if (!adminMode) return
+      const { error } = await supabase.from('chamados').update({ data_compra: dataCompra || null }).eq('id', id)
+      if (error) return showMessage('Erro ao atualizar data da compra: ' + error.message, 'erro')
       await loadTickets(false)
     }
 
@@ -1837,7 +1921,7 @@
 
     $('btnLimparIdentificacao').addEventListener('click', () => limparUsuarioLocal(true))
     $('btnRevalidarSolicitante').addEventListener('click', () => trocarTela('novo'))
-    $('nome').addEventListener('input', () => {
+    $('nome').addEventListener('change', () => {
       localStorage.setItem('helpdesk_nome', $('nome').value.trim())
       atualizarEstadoFormulario()
     })
@@ -1848,13 +1932,19 @@
       atualizarEstadoFormulario()
     })
 
+    $('titulo').addEventListener('input', forceUppercaseField)
+    $('local').addEventListener('input', forceUppercaseField)
+
     $('btnLimparIdentificacao').addEventListener('click', () => limparUsuarioLocal(true))
 
     window.alterarStatus = alterarStatus
+    window.handleStatusChange = handleStatusChange
     window.alterarPrioridade = alterarPrioridade
     window.alterarResponsavel = alterarResponsavel
     window.alterarObservacao = alterarObservacao
     window.alterarJustificativaNegativa = alterarJustificativaNegativa
+    window.alterarValorCompra = alterarValorCompra
+    window.alterarDataCompra = alterarDataCompra
     window.negarChamado = negarChamado
     window.toggleHomeDetails = toggleHomeDetails
 
@@ -1877,6 +1967,7 @@
       })
     }
 
+    populateMilitarOptions()
     updateAdminUI()
     carregarUsuarioLocal()
     limparFiltros()
