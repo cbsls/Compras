@@ -1,4 +1,4 @@
-const CACHE_NAME = 'helpdesk-v1.6'
+const CACHE_NAME = 'helpdesk-v1.7'
 
 const FILES_TO_CACHE = [
   './',
