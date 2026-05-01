@@ -918,12 +918,13 @@
         </div>
 
         <div class="card">
-        <h2>📋 Chamados abertos</h2>
-        <div class="sub">Resumo rápido dos chamados que ainda não foram finalizados.</div>
-        <div class="home-actions">
-          <button id="btnToggleAllHome" type="button" class="home-toggle-all-btn">Expandir todos</button>
+          <h2>📋 Chamados abertos</h2>
+          <div class="sub">Resumo rápido dos chamados que ainda não foram finalizados.</div>
+          <div class="home-actions">
+            <button id="btnToggleAllHome" type="button" class="home-toggle-all-btn">Expandir todos</button>
+          </div>
+          <div id="homeListaAbertos" class="home-lista"></div>
         </div>
-        <div id="homeListaAbertos" class="home-lista"></div>
       </div>
 
       <button id="btnInstalarApp" type="button" class="btn-install hidden">📲 Instalar app</button>
@@ -974,7 +975,6 @@
 
       <div class="card">
         <h2>📋 Filtros</h2>
-
         <div class="toolbar">
           <select id="filtroStatus">
             <option value="">Todos os status</option>
@@ -984,20 +984,17 @@
             <option value="Finalizado">Finalizado</option>
             <option value="Negado">Negado</option>
           </select>
-
           <select id="filtroSetor">
             <option value="">Todos os setores</option>
             <option value="B4">B4</option>
           </select>
-
           <select id="filtroResponsavel">
             <option value="">Todos os responsáveis</option>
           </select>
         </div>
 
         <label class="check-box" style="margin-top:10px;">
-          <input type="checkbox" id="somenteNegados" />
-          Somente negados
+          <input type="checkbox" id="somenteNegados" /> Somente negados
         </label>
 
         <div class="actions">
@@ -1048,28 +1045,12 @@
     const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co'
     const SUPABASE_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO'
     const ADMIN_PASSWORD = '123456'
-
     const RESPONSAVEIS = [
-      '1º TEN MARCELO',
-      '1º SGT VICENTE',
-      '1º SGT DIEFERSON',
-      '1º SGT BATISTA',
-      '2º SGT ANDERSON',
-      '2º SGT VINICIUS',
-      '2º SGT LISCANO',
-      'SD TOMASCHEWSKI',
-      'SD CAMACHO',
-      'SD ISQUIERDO',
-      'SD BORGES',
-      'SD BATISTA',
-      'SD MAX',
-      'SD WILLIAM',
-      'SD MOTTA',
-      'SD SOARES',
-      'SD PEGLOW',
-      'SD LARSSON'
+      '1º TEN MARCELO', '1º SGT VICENTE', '1º SGT DIEFERSON', '1º SGT BATISTA',
+      '2º SGT ANDERSON', '2º SGT VINICIUS', '2º SGT LISCANO', 'SD TOMASCHEWSKI',
+      'SD CAMACHO', 'SD ISQUIERDO', 'SD BORGES', 'SD BATISTA', 'SD MAX',
+      'SD WILLIAM', 'SD MOTTA', 'SD SOARES', 'SD PEGLOW', 'SD LARSSON'
     ]
-
     const SETOR_FIXO = 'B4'
     const PRIORIDADE_PADRAO = 'Média'
     const MOSTRAR_IDENTIDADE_SOLICITANTE = false;
@@ -1124,7 +1105,7 @@
     }
 
     function formatCurrency(value) {
-      const numeric = Number(value)
+      const numeric = Number(value || 0)
       if (!Number.isFinite(numeric)) return '-'
       return numeric.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
     }
@@ -1187,12 +1168,10 @@
       const dias = Math.floor(totalSeconds / 86400)
       const horas = Math.floor((totalSeconds % 86400) / 3600)
       const minutos = Math.floor((totalSeconds % 3600) / 60)
-
       const partes = []
       if (dias > 0) partes.push(`${dias}d`)
       if (horas > 0 || dias > 0) partes.push(`${horas}h`)
       partes.push(`${minutos}min`)
-
       return partes.join(' ')
     }
 
@@ -1211,14 +1190,8 @@
         label = '⛔ Tempo até negativa'
         classe = 'denied'
       }
-
-      return {
-        label,
-        classe,
-        valor: formatDuration(fim - inicio)
-      }
+      return { label, classe, valor: formatDuration(fim - inicio) }
     }
-
 
     function atualizarBotaoInstalarApp() {
       const btn = $('btnInstalarApp')
@@ -1231,12 +1204,10 @@
         showMessage('A opção de instalar ainda não está disponível neste navegador.', 'erro')
         return
       }
-
       deferredPrompt.prompt()
       const escolha = await deferredPrompt.userChoice
       deferredPrompt = null
       atualizarBotaoInstalarApp()
-
       if (escolha && escolha.outcome === 'accepted') {
         showMessage('Instalação iniciada.', 'ok')
       }
@@ -1246,7 +1217,6 @@
       const status = $('adminStatus')
       const enterBtn = $('btnEntrarAdmin')
       const exitBtn = $('btnSairAdmin')
-
       if (adminMode) {
         status.textContent = '🛡️'
         status.classList.add('on')
@@ -1258,7 +1228,6 @@
         enterBtn.classList.remove('hidden')
         exitBtn.classList.add('hidden')
       }
-
       renderTickets()
     }
 
@@ -1272,7 +1241,7 @@
       adminMode = true
       localStorage.setItem('helpdesk_admin_mode', 'true')
       updateAdminUI()
-    atualizarBotaoInstalarApp()
+      atualizarBotaoInstalarApp()
       showMessage('Modo administrador ativado.', 'ok')
     }
 
@@ -1313,7 +1282,6 @@
       $('local').disabled = false
       $('btnAbrir').disabled = false
       $('btnLimpar').disabled = false
-
       atualizarPerfilSolicitante()
     }
 
@@ -1336,544 +1304,356 @@
       atualizarEstadoFormulario()
     }
 
-    function validarIdFuncSolicitante() {
-      atualizarEstadoFormulario()
-      showMessage('Abertura liberada para qualquer pessoa com o link.', 'ok')
-    }
-
     function populateMilitarOptions() {
+      const militares = [
+        'NÃO IDENTIFICADO', '1º TEN MARCELO', '1º SGT VICENTE', '1º SGT DIEFERSON',
+        '1º SGT BATISTA', '2º SGT ANDERSON', '2º SGT VINICIUS', '2º SGT LISCANO',
+        'SD TOMASCHEWSKI', 'SD CAMACHO', 'SD ISQUIERDO', 'SD BORGES', 'SD BATISTA',
+        'SD MAX', 'SD WILLIAM', 'SD MOTTA', 'SD SOARES', 'SD PEGLOW', 'SD LARSSON'
+      ]
       const select = $('nome')
-      if (!select) return
-
-      const nomes = ['NÃO IDENTIFICADO', ...RESPONSAVEIS]
-      select.innerHTML = nomes
-        .map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`)
-        .join('')
+      select.innerHTML = militares.map(m => `<option value="${m}">${m}</option>`).join('')
+      carregarUsuarioLocal()
     }
 
-    function forceUppercaseField(event) {
-      event.target.value = String(event.target.value || '').toUpperCase()
+    function forceUppercaseField(e) {
+      const start = e.target.selectionStart
+      const end = e.target.selectionEnd
+      e.target.value = e.target.value.toUpperCase()
+      e.target.setSelectionRange(start, end)
     }
 
-    function salvarIdentificacaoLocal() {
-      localStorage.setItem('helpdesk_nome', $('nome').value.trim())
-      localStorage.setItem('helpdesk_matricula', normalizarIdFunc($('matricula').value))
-      $('matricula').value = normalizarIdFunc($('matricula').value)
-      atualizarEstadoFormulario()
-    }
-
-    function populateResponsavelFilter() {
-      const filtro = $('filtroResponsavel')
-      const atual = filtro.value
-      const nomesUsados = [...new Set(chamados.map(c => c.responsavel_designado).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b, 'pt-BR'))
-
-      filtro.innerHTML = `<option value="">Todos os responsáveis</option>` +
-        nomesUsados.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join('')
-
-      if (nomesUsados.includes(atual)) filtro.value = atual
-    }
-
-    async function createTicket() {
-      const nome = String($('nome').value || 'NÃO IDENTIFICADO').trim().toUpperCase()
-      const matricula = normalizarIdFunc($('matricula').value)
-      const titulo = String($('titulo').value || '').trim().toUpperCase()
-      const descricao = $('descricao').value.trim()
-      const local = String($('local').value || '').trim().toUpperCase()
-
-      if (!titulo) {
-        showMessage('Preencha o título do chamado.', 'erro')
-        return
-      }
-
-      salvarIdentificacaoLocal()
-
-      try {
-        const { error } = await supabase
-          .from('chamados')
-          .insert([{
-            nome_solicitante: nome || 'NÃO IDENTIFICADO',
-            matricula_solicitante: matricula || null,
-            titulo,
-            descricao,
-            local,
-            prioridade: PRIORIDADE_PADRAO,
-            status: 'Aguardando triagem',
-            setor_responsavel: SETOR_FIXO,
-            observacao_admin: null,
-            responsavel_designado: null,
-            justificativa_negativa: null
-          }])
-
-        if (error) {
-          console.error(error)
-          showMessage('Erro ao registrar chamado: ' + error.message, 'erro')
-          return
-        }
-
-        clearForm()
-        atualizarEstadoFormulario()
-        await loadTickets(false)
-        showMessage('Chamado registrado com sucesso.', 'ok')
-        trocarTela('chamados')
-      } catch (e) {
-        console.error(e)
-        showMessage('Erro de conexão ao registrar chamado.', 'erro')
-      }
-    }
-
-    async function loadTickets(showToast = true) {
+    async function fetchTickets() {
       try {
         const { data, error } = await supabase
           .from('chamados')
           .select('*')
           .order('created_at', { ascending: false })
-
-        if (error) {
-          console.error(error)
-          $('lista').innerHTML = `<div class="card">Erro ao carregar chamados: ${escapeHtml(error.message)}</div>`
-          $('homeListaAbertos').innerHTML = `<div class="home-vazio">Erro ao carregar resumo inicial.</div>`
-          return
-        }
-
-        chamados = Array.isArray(data) ? data : []
-        populateResponsavelFilter()
-        updateStats()
-        renderHomeOpenList()
+        if (error) throw error
+        chamados = data || []
         renderTickets()
-
-        if (showToast) {
-          showMessage(`${chamados.length} chamado(s) carregado(s).`, 'ok')
-        }
-      } catch (e) {
-        console.error(e)
-        $('lista').innerHTML = `<div class="card">Erro de conexão ao carregar chamados.</div>`
-        $('homeListaAbertos').innerHTML = `<div class="home-vazio">Erro de conexão ao carregar resumo inicial.</div>`
+        updateStats()
+      } catch (err) {
+        showMessage('Erro ao buscar chamados.', 'erro')
       }
     }
 
     function updateStats() {
-      $('stTotal').textContent = chamados.length
-      $('stAguardando').textContent = chamados.filter(c => c.status === 'Aguardando triagem').length
-      $('stEncaminhado').textContent = chamados.filter(c => c.status === 'Encaminhado').length
-      $('stAndamento').textContent = chamados.filter(c => c.status === 'Em andamento').length
-      $('stFinalizado').textContent = chamados.filter(c => c.status === 'Finalizado').length
-      $('stNegado').textContent = chamados.filter(c => c.status === 'Negado').length
+      const total = chamados.length
+      const aguardando = chamados.filter(c => c.status === 'Aguardando triagem').length
+      const encaminhado = chamados.filter(c => c.status === 'Encaminhado').length
+      const andamento = chamados.filter(c => c.status === 'Em andamento').length
+      const finalizado = chamados.filter(c => c.status === 'Finalizado').length
+      const negado = chamados.filter(c => c.status === 'Negado').length
+
+      if ($('stTotal')) $('stTotal').textContent = total
+      if ($('stAguardando')) $('stAguardando').textContent = aguardando
+      if ($('stEncaminhado')) $('stEncaminhado').textContent = encaminhado
+      if ($('stAndamento')) $('stAndamento').textContent = andamento
+      if ($('stFinalizado')) $('stFinalizado').textContent = finalizado
+      if ($('stNegado')) $('stNegado').textContent = negado
     }
 
-    function responsavelOptions(selectedValue = '') {
-      const first = `<option value="" ${!selectedValue ? 'selected' : ''}>Responsável: Não definido</option>`
-      const others = RESPONSAVEIS.map(nome => `
-        <option value="${escapeHtml(nome)}" ${selectedValue === nome ? 'selected' : ''}>${escapeHtml(nome)}</option>
-      `).join('')
-      return first + others
+    function renderTickets() {
+      const lista = $('lista')
+      const homeLista = $('homeListaAbertos')
+      if (!lista || !homeLista) return
+
+      const busca = $('busca').value.toLowerCase()
+      const filtroStatus = $('filtroStatus').value
+      const filtroSetor = $('filtroSetor').value
+      const filtroResponsavel = $('filtroResponsavel').value
+      const somenteNegados = $('somenteNegados').checked
+
+      const filtrados = chamados.filter(c => {
+        const matchesBusca = [c.titulo, c.nome_solicitante, c.id_func, c.local, c.responsavel]
+          .some(v => String(v || '').toLowerCase().includes(busca))
+        const matchesStatus = filtroStatus ? c.status === filtroStatus : true
+        const matchesSetor = filtroSetor ? c.setor === filtroSetor : true
+        const matchesResponsavel = filtroResponsavel ? c.responsavel === filtroResponsavel : true
+        const matchesNegados = somenteNegados ? c.status === 'Negado' : true
+        return matchesBusca && matchesStatus && matchesSetor && matchesResponsavel && matchesNegados
+      })
+
+      lista.innerHTML = filtrados.length ? filtrados.map(renderTicketCard).join('') : '<div class="home-vazio">Nenhum chamado encontrado.</div>'
+
+      const abertos = chamados
+        .filter(c => c.status !== 'Finalizado' && c.status !== 'Negado')
+        .sort((a, b) => priorityWeight(b.prioridade) - priorityWeight(a.prioridade))
+        .slice(0, 15)
+
+      homeLista.innerHTML = abertos.length ? abertos.map(renderHomeCard).join('') : '<div class="home-vazio">Todos os chamados foram concluídos! ✨</div>'
+
+      const rSelect = $('filtroResponsavel')
+      const currentR = rSelect.value
+      const distinctR = [...new Set(chamados.map(c => c.responsavel).filter(Boolean))].sort()
+      rSelect.innerHTML = '<option value="">Todos os responsáveis</option>' + distinctR.map(r => `<option value="${r}">${r}</option>`).join('')
+      rSelect.value = currentR
     }
 
-    function purchaseFieldsHTML(c) {
-      const hiddenClass = shouldShowPurchaseFields(c.status) ? '' : 'hidden'
-      return `
-        <div class="admin-compra-fields ${hiddenClass}" data-compra-fields="${escapeHtml(c.id)}">
-          <label for="valor-compra-${escapeHtml(c.id)}">Valor da compra</label>
-          <input id="valor-compra-${escapeHtml(c.id)}" type="text" inputmode="decimal" value="${escapeHtml(c.valor_compra ?? '')}" onblur="alterarValorCompra('${c.id}', this.value)" placeholder="Ex: 150,00" />
-
-          <label for="data-compra-${escapeHtml(c.id)}">Data da compra</label>
-          <input id="data-compra-${escapeHtml(c.id)}" type="date" value="${escapeHtml(formatDateForInput(c.data_compra))}" onblur="alterarDataCompra('${c.id}', this.value)" />
-        </div>
-      `
-    }
-
-    function buildTimerHTML(c) {
+    function renderTicketCard(c) {
+      const resolved = isResolved(c.status)
+      const tClass = ticketClass(c.prioridade, c.status)
+      const sClass = statusClass(c.status)
+      const pClass = priorityClass(c.prioridade)
       const tempo = getTempoChamado(c)
-      return `
-        <div class="timer-box ${tempo.classe}">
-          <div class="timer-label">${tempo.label}</div>
-          <div class="timer-value" data-timer-card="${escapeHtml(c.id)}">${tempo.valor}</div>
-        </div>
-      `
-    }
-
-    function buildTicketHTML(c) {
-      const exibirCompraNaLista = shouldShowPurchaseFields(c.status) && (c.valor_compra !== null && c.valor_compra !== undefined && c.valor_compra !== '' || c.data_compra)
 
       return `
-        <div class="ticket ${ticketClass(c.prioridade, c.status)}">
-          ${isResolved(c.status) ? `<div class="resolved-seal">✅ Resolvido</div>` : ''}
-
+        <div class="ticket ${tClass}">
+          ${resolved ? '<div class="resolved-seal">✅ FINALIZADO</div>' : ''}
           <div class="ticket-head">
-            <div>
-              <div class="ticket-title">${escapeHtml(c.titulo || '-')}</div>
-              <div class="ticket-sub">${escapeHtml(c.descricao || '')}</div>
+            <div class="ticket-title">${escapeHtml(c.titulo)}</div>
+            <div class="mini-badges">
+              <span class="badge ${sClass}">${c.status}</span>
+              <span class="badge ${pClass}">${c.prioridade}</span>
             </div>
           </div>
-
-          <div class="mini-badges">
-            <span class="badge ${statusClass(c.status)}">${escapeHtml(c.status || '-')}</span>
-            <span class="badge ${priorityClass(c.prioridade)}">${escapeHtml(c.prioridade || '-')}</span>
-            <span class="badge">📍 ${escapeHtml(c.local || '-')}</span>
-            <span class="badge">🏢 ${escapeHtml(c.setor_responsavel || 'Não definido')}</span>
+          <div class="ticket-sub">${escapeHtml(c.descricao || '(Sem descrição)')}</div>
+          <div class="meta">
+            <div>📍 <b>Local:</b> ${escapeHtml(c.local)}</div>
+            <div>👤 <b>Solicitante:</b> ${escapeHtml(c.nome_solicitante)} (${escapeHtml(c.id_func || 'N/I')})</div>
+            <div>🏢 <b>Setor:</b> ${c.setor}</div>
+            <div>🛠️ <b>Responsável:</b> ${escapeHtml(c.responsavel || 'A definir')}</div>
           </div>
+          <div class="timer-box ${tempo.classe}">
+            <div class="timer-label">${tempo.label}</div>
+            <div class="timer-value">${tempo.valor}</div>
+          </div>
+          ${c.observacao_admin ? `<div class="obs-box">📝 <b>Obs Admin:</b>\n${escapeHtml(c.observacao_admin)}</div>` : ''}
+          ${c.justificativa_negativa ? `<div class="neg-box">🚫 <b>Negado:</b>\n${escapeHtml(c.justificativa_negativa)}</div>` : ''}
+          ${adminMode ? renderAdminArea(c) : ''}
+          <div class="meta" style="margin-top:12px; opacity:0.7; font-style:italic;">
+            Criado em: ${formatDate(c.created_at)}
+          </div>
+        </div>
+      `
+    }
 
-          ${buildTimerHTML(c)}
+    function renderHomeCard(c) {
+      const isExpanded = homeExpandedState[c.id] === true
+      const sClass = statusClass(c.status)
+      const pClass = priorityClass(c.prioridade)
+      const tempo = getTempoChamado(c)
 
-         <div class="meta">
-  ${MOSTRAR_IDENTIDADE_SOLICITANTE ? `
-    <div><strong>Solicitante:</strong> ${escapeHtml(c.nome_solicitante || '-')}</div>
-    <div><strong>Matrícula:</strong> ${escapeHtml(c.matricula_solicitante || '-')}</div>
-  ` : ''}
+      return `
+        <div class="home-item">
+          <div class="home-item-top">
+            <div class="home-item-top-left">
+              <div class="home-item-titulo">${escapeHtml(c.titulo)}</div>
+              <div class="mini-badges">
+                <span class="badge ${sClass}">${c.status}</span>
+                <span class="badge ${pClass}">${c.prioridade}</span>
+              </div>
+            </div>
+            <div class="home-item-top-right">
+              <button class="home-toggle-btn" onclick="toggleHomeDetails('${c.id}')">
+                ${isExpanded ? 'Recolher' : 'Ver mais'}
+              </button>
+            </div>
+          </div>
+          <div id="details-${c.id}" class="home-item-details ${isExpanded ? '' : 'hidden'}">
+            <div class="home-item-meta">
+              <div>📍 <b>Local:</b> ${escapeHtml(c.local)}</div>
+              <div>🛠️ <b>Responsável:</b> ${escapeHtml(c.responsavel || 'A definir')}</div>
+              <div>⏱ <b>Há:</b> ${tempo.valor}</div>
+            </div>
+          </div>
+        </div>
+      `
+    }
 
-  <div><strong>Responsável:</strong> ${escapeHtml(c.responsavel_designado || 'Não definido')}</div>
-  <div><strong>Abertura:</strong> ${escapeHtml(formatDate(c.created_at))}</div>
-  ${exibirCompraNaLista ? `<div><strong>Valor da compra:</strong> ${escapeHtml(formatCurrency(c.valor_compra))}</div>` : ''}
-  ${exibirCompraNaLista ? `<div><strong>Data da compra:</strong> ${escapeHtml(formatDateOnly(c.data_compra))}</div>` : ''}
-</div>
-
-          ${c.observacao_admin ? `<div class="obs-box"><strong>Observação da triagem:</strong><br>${escapeHtml(c.observacao_admin)}</div>` : ''}
-          ${c.justificativa_negativa ? `<div class="neg-box"><strong>Justificativa da negativa:</strong><br>${escapeHtml(c.justificativa_negativa)}</div>` : ''}
-
-          ${adminMode ? `
-            <div class="admin-area">
-              <div class="chip">🏢 Setor fixo: B4</div>
-
-              <select data-status-select="${escapeHtml(c.id)}" onchange="handleStatusChange('${c.id}', this)">
+    function renderAdminArea(c) {
+      const showCompra = shouldShowPurchaseFields(c.status)
+      return `
+        <div class="admin-area">
+          <div class="grid-2">
+            <div>
+              <label>Status</label>
+              <select onchange="handleStatusChange('${c.id}', this.value)">
                 <option value="Aguardando triagem" ${c.status === 'Aguardando triagem' ? 'selected' : ''}>Aguardando triagem</option>
                 <option value="Encaminhado" ${c.status === 'Encaminhado' ? 'selected' : ''}>Encaminhado</option>
                 <option value="Em andamento" ${c.status === 'Em andamento' ? 'selected' : ''}>Em andamento</option>
                 <option value="Finalizado" ${c.status === 'Finalizado' ? 'selected' : ''}>Finalizado</option>
                 <option value="Negado" ${c.status === 'Negado' ? 'selected' : ''}>Negado</option>
               </select>
-
-              ${purchaseFieldsHTML(c)}
-
+            </div>
+            <div>
+              <label>Prioridade</label>
               <select onchange="alterarPrioridade('${c.id}', this.value)">
-                <option value="Baixa" ${c.prioridade === 'Baixa' ? 'selected' : ''}>Prioridade: Baixa</option>
-                <option value="Média" ${c.prioridade === 'Média' ? 'selected' : ''}>Prioridade: Média</option>
-                <option value="Alta" ${c.prioridade === 'Alta' ? 'selected' : ''}>Prioridade: Alta</option>
+                <option value="Baixa" ${c.prioridade === 'Baixa' ? 'selected' : ''}>Baixa</option>
+                <option value="Média" ${c.prioridade === 'Média' ? 'selected' : ''}>Média</option>
+                <option value="Alta" ${c.prioridade === 'Alta' ? 'selected' : ''}>Alta</option>
               </select>
-
-              <select onchange="alterarResponsavel('${c.id}', this.value)">
-                ${responsavelOptions(c.responsavel_designado || '')}
-              </select>
-
-              <textarea onblur="alterarObservacao('${c.id}', this.value)" placeholder="Observações da triagem">${escapeHtml(c.observacao_admin || '')}</textarea>
-              <textarea onblur="alterarJustificativaNegativa('${c.id}', this.value)" placeholder="Justificativa da negativa">${escapeHtml(c.justificativa_negativa || '')}</textarea>
-              <button type="button" class="btn-danger" onclick="negarChamado('${c.id}')">Negar chamado</button>
             </div>
+          </div>
+          <label>Responsável</label>
+          <select onchange="alterarResponsavel('${c.id}', this.value)">
+            <option value="">Selecione...</option>
+            ${RESPONSAVEIS.map(r => `<option value="${r}" ${c.responsavel === r ? 'selected' : ''}>${r}</option>`).join('')}
+          </select>
+          <div id="compra-fields-${c.id}" class="admin-compra-fields ${showCompra ? '' : 'hidden'}">
+            <div class="grid-2">
+              <div>
+                <label>Valor Compra (R$)</label>
+                <input type="text" value="${c.valor_compra ? formatCurrency(c.valor_compra) : ''}" 
+                  onblur="alterarValorCompra('${c.id}', this.value)" placeholder="R$ 0,00" />
+              </div>
+              <div>
+                <label>Data Compra</label>
+                <input type="date" value="${formatDateForInput(c.data_compra)}" 
+                  onchange="alterarDataCompra('${c.id}', this.value)" />
+              </div>
+            </div>
+          </div>
+          <label>Observação Admin</label>
+          <textarea onblur="alterarObservacao('${c.id}', this.value)" placeholder="Notas internas...">${escapeHtml(c.observacao_admin)}</textarea>
+          ${c.status === 'Negado' ? `
+            <label>Justificativa Negativa</label>
+            <textarea onblur="alterarJustificativaNegativa('${c.id}', this.value)" placeholder="Por que foi negado?">${escapeHtml(c.justificativa_negativa)}</textarea>
           ` : ''}
+          <button class="btn-danger" style="margin-top:8px;" onclick="deletarChamado('${c.id}')">Excluir Chamado</button>
         </div>
       `
     }
 
-    function buildHomeItemHTML(c) {
-      const tempo = getTempoChamado(c)
-      const expanded = !!homeExpandedState[String(c.id)]
-
-      return `
-        <div class="home-item">
-          <div class="home-item-top">
-            <div class="home-item-top-left">
-              <div class="home-item-titulo">${escapeHtml(c.titulo || '-')}</div>
-              <span class="badge ${statusClass(c.status)}">${escapeHtml(c.status || '-')}</span>
-            </div>
-
-            <div class="home-item-top-right">
-              <button
-                type="button"
-                class="home-toggle-btn"
-                data-home-toggle-btn="${escapeHtml(c.id)}"
-                onclick="toggleHomeDetails('${escapeHtml(c.id)}')"
-              >
-                ${expanded ? '🔼 Recolher' : '🔽 Expandir'}
-              </button>
-            </div>
-          </div>
-
-          <div class="home-item-details ${expanded ? '' : 'hidden'}" data-home-details="${escapeHtml(c.id)}">
-            <div class="mini-badges">
-              <span class="badge ${priorityClass(c.prioridade)}">${escapeHtml(c.prioridade || '-')}</span>
-              <span class="badge">📍 ${escapeHtml(c.local || '-')}</span>
-              <span class="badge">🏢 ${escapeHtml(c.setor_responsavel || 'B4')}</span>
-            </div>
-
-            <div class="timer-box ${tempo.classe}" style="margin-top:10px;">
-              <div class="timer-label">${tempo.label}</div>
-              <div class="timer-value" data-home-timer="${escapeHtml(c.id)}">${tempo.valor}</div>
-            </div>
-
-            <div class="home-item-meta">
-              <div><strong>Abertura:</strong> ${escapeHtml(formatDate(c.created_at))}</div>
-            </div>
-          </div>
-        </div>
-      `
-    }
-
-    function updateHomeToggleAllButton() {
-      const btn = $('btnToggleAllHome')
-      if (!btn) return
-
-      const ids = Object.keys(homeExpandedState)
-      if (!ids.length) {
-        btn.textContent = 'Expandir todos'
-        return
+    async function handleStatusChange(id, novoStatus) {
+      const container = $(`compra-fields-${id}`)
+      if (container) {
+        shouldShowPurchaseFields(novoStatus) ? container.classList.remove('hidden') : container.classList.add('hidden')
       }
-
-      const todosExpandidos = ids.every(id => homeExpandedState[id] === true)
-      btn.textContent = todosExpandidos ? 'Recolher todos' : 'Expandir todos'
-    }
-
-    function setHomeItemExpanded(id, expanded) {
-      homeExpandedState[String(id)] = expanded
-
-      const details = document.querySelector(`[data-home-details="${CSS.escape(String(id))}"]`)
-      const btn = document.querySelector(`[data-home-toggle-btn="${CSS.escape(String(id))}"]`)
-
-      if (details) {
-        details.classList.toggle('hidden', !expanded)
-      }
-
-      if (btn) {
-        btn.textContent = expanded ? '🔼 Recolher' : '🔽 Expandir'
-      }
-
-      updateHomeToggleAllButton()
-    }
-
-    function toggleHomeDetails(id) {
-      const atual = !!homeExpandedState[String(id)]
-      setHomeItemExpanded(id, !atual)
-    }
-
-    function toggleAllHomeItems() {
-      const ids = Object.keys(homeExpandedState)
-      if (!ids.length) return
-
-      const todosExpandidos = ids.every(id => homeExpandedState[id] === true)
-      const novoEstado = !todosExpandidos
-
-      ids.forEach(id => {
-        setHomeItemExpanded(id, novoEstado)
-      })
-
-      updateHomeToggleAllButton()
-    }
-
-    function renderHomeOpenList() {
-      const container = $('homeListaAbertos')
-
-      const abertos = chamados
-        .filter(c => c.status !== 'Finalizado')
-        .sort((a, b) => {
-          const p = priorityWeight(b.prioridade) - priorityWeight(a.prioridade)
-          if (p !== 0) return p
-          return new Date(b.created_at) - new Date(a.created_at)
-        })
-        .slice(0, 8)
-
-      const novoEstado = {}
-      abertos.forEach(c => {
-        novoEstado[String(c.id)] = homeExpandedState[String(c.id)] || false
-      })
-      homeExpandedState = novoEstado
-
-      if (!abertos.length) {
-        container.innerHTML = `<div class="home-vazio">Nenhum chamado aberto no momento.</div>`
-        updateHomeToggleAllButton()
-        return
-      }
-
-      container.innerHTML = abertos.map(buildHomeItemHTML).join('')
-      updateHomeTimers()
-      updateHomeToggleAllButton()
-    }
-
-    function renderTickets() {
-      const search = $('busca').value.trim().toLowerCase()
-      const statusFilter = $('filtroStatus').value
-      const setorFilter = $('filtroSetor').value
-      const responsavelFilter = $('filtroResponsavel').value
-      const onlyDenied = $('somenteNegados').checked
-
-      let filtered = chamados.filter(c => {
-        const haystack = [
-          c.titulo, c.descricao, c.nome_solicitante, c.matricula_solicitante,
-          c.local, c.setor_responsavel, c.status, c.prioridade,
-          c.observacao_admin, c.responsavel_designado, c.justificativa_negativa,
-          c.valor_compra, c.data_compra
-        ].join(' ').toLowerCase()
-
-        return (
-          (!search || haystack.includes(search)) &&
-          (!statusFilter || c.status === statusFilter) &&
-          (!setorFilter || c.setor_responsavel === setorFilter) &&
-          (!responsavelFilter || c.responsavel_designado === responsavelFilter) &&
-          (!onlyDenied || c.status === 'Negado')
-        )
-      })
-
-      const ativos = filtered
-        .filter(c => !isResolved(c.status))
-        .sort((a, b) => {
-          const p = priorityWeight(b.prioridade) - priorityWeight(a.prioridade)
-          if (p !== 0) return p
-          return new Date(b.created_at) - new Date(a.created_at)
-        })
-
-      const resolvidos = filtered
-        .filter(c => isResolved(c.status))
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-
-      if (!filtered.length) {
-        $('lista').innerHTML = `<div class="card">Nenhum chamado encontrado com os filtros atuais.</div>`
-        return
-      }
-
-      let html = ''
-
-      if (ativos.length) {
-        html += ativos.map(buildTicketHTML).join('')
-      }
-
-      if (resolvidos.length) {
-        html += `<div class="section-label">✅ Resolvidos</div>`
-        html += resolvidos.map(buildTicketHTML).join('')
-      }
-
-      $('lista').innerHTML = html
-      updateTicketTimers()
-      startTimerUpdater()
-    }
-
-    function updateTicketTimers() {
-      const nodes = document.querySelectorAll('[data-timer-card]')
-      if (!nodes.length) return
-
-      nodes.forEach(node => {
-        const id = node.getAttribute('data-timer-card')
-        const chamado = chamados.find(c => String(c.id) === String(id))
-        if (!chamado) return
-        node.textContent = getTempoChamado(chamado).valor
-      })
-    }
-
-    function updateHomeTimers() {
-      const nodes = document.querySelectorAll('[data-home-timer]')
-      if (!nodes.length) return
-
-      nodes.forEach(node => {
-        const id = node.getAttribute('data-home-timer')
-        const chamado = chamados.find(c => String(c.id) === String(id))
-        if (!chamado) return
-        node.textContent = getTempoChamado(chamado).valor
-      })
-    }
-
-    function startTimerUpdater() {
-      if (timerUpdater) return
-      timerUpdater = setInterval(() => {
-        updateTicketTimers()
-        updateHomeTimers()
-      }, 60000)
-    }
-
-    function togglePurchaseFields(id, status) {
-      const container = document.querySelector(`[data-compra-fields="${CSS.escape(String(id))}"]`)
-      if (!container) return
-      container.classList.toggle('hidden', !shouldShowPurchaseFields(status))
-    }
-
-    async function handleStatusChange(id, element) {
-      const status = element.value
-      togglePurchaseFields(id, status)
-      await alterarStatus(id, status)
+      await alterarStatus(id, novoStatus)
     }
 
     async function alterarStatus(id, status) {
-      if (!adminMode) return
-
-      if (status === 'Negado') {
-        const chamado = chamados.find(c => c.id === id)
-        const justificativa = (chamado?.justificativa_negativa || '').trim()
-        if (!justificativa) {
-          showMessage('Para negar o chamado, preencha a justificativa da negativa.', 'erro')
-          await loadTickets(false)
-          return
-        }
+      try {
+        const updates = { status, updated_at: new Date().toISOString() }
+        const { error } = await supabase.from('chamados').update(updates).eq('id', id)
+        if (error) throw error
+        await fetchTickets()
+        showMessage('Status atualizado.')
+      } catch (err) {
+        showMessage('Erro ao atualizar status.', 'erro')
       }
-
-      const updateData = {
-        status,
-        setor_responsavel: SETOR_FIXO
-      }
-
-      if (status !== 'Negado') updateData.justificativa_negativa = null
-
-      const { error } = await supabase.from('chamados').update(updateData).eq('id', id)
-      if (error) return showMessage('Erro ao atualizar status: ' + error.message, 'erro')
-      await loadTickets(false)
     }
 
     async function alterarPrioridade(id, prioridade) {
-      if (!adminMode) return
-      const { error } = await supabase.from('chamados').update({ prioridade }).eq('id', id)
-      if (error) return showMessage('Erro ao atualizar prioridade: ' + error.message, 'erro')
-      await loadTickets(false)
+      try {
+        const { error } = await supabase.from('chamados').update({ prioridade }).eq('id', id)
+        if (error) throw error
+        await fetchTickets()
+        showMessage('Prioridade atualizada.')
+      } catch (err) {
+        showMessage('Erro ao atualizar prioridade.', 'erro')
+      }
     }
 
     async function alterarResponsavel(id, responsavel) {
-      if (!adminMode) return
-      const { error } = await supabase.from('chamados').update({ responsavel_designado: responsavel || null }).eq('id', id)
-      if (error) return showMessage('Erro ao atualizar responsável: ' + error.message, 'erro')
-      await loadTickets(false)
+      try {
+        const { error } = await supabase.from('chamados').update({ responsavel }).eq('id', id)
+        if (error) throw error
+        await fetchTickets()
+        showMessage('Responsável atualizado.')
+      } catch (err) {
+        showMessage('Erro ao atualizar responsável.', 'erro')
+      }
     }
 
-    async function alterarObservacao(id, observacao) {
-      if (!adminMode) return
-      const { error } = await supabase.from('chamados').update({ observacao_admin: observacao.trim() || null }).eq('id', id)
-      if (error) return showMessage('Erro ao atualizar observação: ' + error.message, 'erro')
-      await loadTickets(false)
+    async function alterarObservacao(id, observacao_admin) {
+      try {
+        const { error } = await supabase.from('chamados').update({ observacao_admin }).eq('id', id)
+        if (error) throw error
+        await fetchTickets()
+      } catch (err) {
+        showMessage('Erro ao salvar observação.', 'erro')
+      }
     }
 
-    async function alterarJustificativaNegativa(id, justificativa) {
-      if (!adminMode) return
-      const { error } = await supabase.from('chamados').update({ justificativa_negativa: justificativa.trim() || null }).eq('id', id)
-      if (error) return showMessage('Erro ao atualizar justificativa: ' + error.message, 'erro')
-      await loadTickets(false)
+    async function alterarJustificativaNegativa(id, justificativa_negativa) {
+      try {
+        const { error } = await supabase.from('chamados').update({ justificativa_negativa }).eq('id', id)
+        if (error) throw error
+        await fetchTickets()
+      } catch (err) {
+        showMessage('Erro ao salvar justificativa.', 'erro')
+      }
     }
 
-    async function alterarValorCompra(id, valor) {
-      if (!adminMode) return
-      const valorNumerico = parseCurrencyInput(valor)
-      const { error } = await supabase.from('chamados').update({ valor_compra: valorNumerico }).eq('id', id)
-      if (error) return showMessage('Erro ao atualizar valor da compra: ' + error.message, 'erro')
-      await loadTickets(false)
+    async function alterarValorCompra(id, valorTexto) {
+      try {
+        const valorNum = parseCurrencyInput(valorTexto)
+        const { error } = await supabase.from('chamados').update({ valor_compra: valorNum }).eq('id', id)
+        if (error) throw error
+        await fetchTickets()
+      } catch (err) {
+        showMessage('Erro ao salvar valor.', 'erro')
+      }
     }
 
-    async function alterarDataCompra(id, dataCompra) {
-      if (!adminMode) return
-      const { error } = await supabase.from('chamados').update({ data_compra: dataCompra || null }).eq('id', id)
-      if (error) return showMessage('Erro ao atualizar data da compra: ' + error.message, 'erro')
-      await loadTickets(false)
+    async function alterarDataCompra(id, data_compra) {
+      try {
+        const val = data_compra || null
+        const { error } = await supabase.from('chamados').update({ data_compra: val }).eq('id', id)
+        if (error) throw error
+        await fetchTickets()
+      } catch (err) {
+        showMessage('Erro ao salvar data.', 'erro')
+      }
     }
 
-    async function negarChamado(id) {
-      if (!adminMode) return
+    async function deletarChamado(id) {
+      if (!confirm('Tem certeza que deseja excluir este chamado permanentemente?')) return
+      try {
+        const { error } = await supabase.from('chamados').delete().eq('id', id)
+        if (error) throw error
+        showMessage('Chamado excluído.')
+        await fetchTickets()
+      } catch (err) {
+        showMessage('Erro ao excluir chamado.', 'erro')
+      }
+    }
 
-      const chamado = chamados.find(c => c.id === id)
-      const justificativa = (chamado?.justificativa_negativa || '').trim()
+    async function abrirChamado() {
+      const nome = $('nome').value.trim()
+      const matricula = $('matricula').value.trim()
+      const titulo = $('titulo').value.trim()
+      const descricao = $('descricao').value.trim()
+      const local = $('local').value.trim()
 
-      if (!justificativa) {
-        showMessage('Preencha a justificativa da negativa antes de negar o chamado.', 'erro')
+      if (!nome || !titulo || !local) {
+        showMessage('Preencha os campos obrigatórios (Nome, Título e Local).', 'erro')
         return
       }
 
-      const { error } = await supabase.from('chamados').update({
-        status: 'Negado',
-        setor_responsavel: SETOR_FIXO,
-        responsavel_designado: null
-      }).eq('id', id)
+      const btn = $('btnAbrir')
+      btn.disabled = true
+      btn.textContent = 'Enviando...'
 
-      if (error) return showMessage('Erro ao negar chamado: ' + error.message, 'erro')
-      await loadTickets(false)
+      try {
+        const { error } = await supabase.from('chamados').insert([{
+          nome_solicitante: nome,
+          id_func: matricula,
+          titulo,
+          descricao,
+          local,
+          setor: SETOR_FIXO,
+          prioridade: PRIORIDADE_PADRAO,
+          status: 'Aguardando triagem'
+        }])
+        if (error) throw error
+        
+        localStorage.setItem('helpdesk_nome', nome)
+        localStorage.setItem('helpdesk_matricula', matricula)
+        
+        showMessage('Chamado aberto com sucesso!')
+        clearForm()
+        fetchTickets()
+        trocarTela('home')
+      } catch (err) {
+        showMessage('Erro ao abrir chamado.', 'erro')
+      } finally {
+        btn.disabled = false
+        btn.textContent = 'Enviar chamado'
+      }
     }
 
     function clearForm() {
@@ -1882,52 +1662,60 @@
       $('local').value = ''
     }
 
-    function trocarTela(nome) {
+    function trocarTela(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
-      document.getElementById('screen-' + nome).classList.add('active')
       document.querySelectorAll('.tabbar button').forEach(b => b.classList.remove('active'))
-      document.querySelector(`.tabbar button[data-screen="${nome}"]`).classList.add('active')
-      if (nome === 'chamados') renderTickets()
-      if (nome === 'home') {
-        updateStats()
-        renderHomeOpenList()
-      }
+      $(`screen-${id}`).classList.add('active')
+      document.querySelector(`.tabbar button[data-screen="${id}"]`).classList.add('active')
+      window.scrollTo(0, 0)
     }
 
-    document.querySelectorAll('.tabbar button').forEach(btn => {
-      btn.addEventListener('click', () => trocarTela(btn.dataset.screen))
-    })
+    function toggleHomeDetails(id) {
+      const details = $(`details-${id}`)
+      if (!details) return
+      const isHidden = details.classList.toggle('hidden')
+      homeExpandedState[id] = !isHidden
+      const btn = details.parentElement.querySelector('.home-toggle-btn')
+      if (btn) btn.textContent = isHidden ? 'Ver mais' : 'Recolher'
+    }
 
-    document.querySelectorAll('.stat').forEach(stat => {
-      stat.addEventListener('click', () => {
-        abrirChamadosPorStatus(stat.dataset.status || '')
-      })
-    })
+    function toggleAllHome() {
+      const abertos = chamados.filter(c => c.status !== 'Finalizado' && c.status !== 'Negado')
+      const allExpanded = abertos.every(c => homeExpandedState[c.id] === true)
+      const newState = !allExpanded
+      abertos.forEach(c => { homeExpandedState[c.id] = newState })
+      $('btnToggleAllHome').textContent = newState ? 'Recolher todos' : 'Expandir todos'
+      renderTickets()
+    }
 
-    $('btnAbrir').addEventListener('click', createTicket)
+    $('btnAbrir').addEventListener('click', abrirChamado)
     $('btnLimpar').addEventListener('click', clearForm)
     $('btnEntrarAdmin').addEventListener('click', enterAdminMode)
-    $('btnInstalarApp').addEventListener('click', instalarApp)
     $('btnSairAdmin').addEventListener('click', exitAdminMode)
-    $('btnToggleAllHome').addEventListener('click', toggleAllHomeItems)
-
+    $('btnLimparFiltros').addEventListener('click', limparFiltros)
+    $('btnAtualizarLista').addEventListener('click', fetchTickets)
+    $('btnRevalidarSolicitante').addEventListener('click', () => trocarTela('novo'))
+    $('btnInstalarApp').addEventListener('click', instalarApp)
+    $('btnToggleAllHome').addEventListener('click', toggleAllHome)
     $('busca').addEventListener('input', renderTickets)
     $('filtroStatus').addEventListener('change', renderTickets)
     $('filtroSetor').addEventListener('change', renderTickets)
     $('filtroResponsavel').addEventListener('change', renderTickets)
     $('somenteNegados').addEventListener('change', renderTickets)
-    $('btnLimparFiltros').addEventListener('click', limparFiltros)
-    $('btnAtualizarLista').addEventListener('click', () => loadTickets(true))
 
-    $('btnLimparIdentificacao').addEventListener('click', () => limparUsuarioLocal(true))
-    $('btnRevalidarSolicitante').addEventListener('click', () => trocarTela('novo'))
-    $('nome').addEventListener('change', () => {
-      localStorage.setItem('helpdesk_nome', $('nome').value.trim())
-      atualizarEstadoFormulario()
+    document.querySelectorAll('.tabbar button').forEach(btn => {
+      btn.addEventListener('click', () => trocarTela(btn.dataset.screen))
     })
 
+    document.querySelectorAll('.stat').forEach(card => {
+      card.addEventListener('click', () => abrirChamadosPorStatus(card.dataset.status))
+    })
+
+    $('nome').addEventListener('change', () => {
+      localStorage.setItem('helpdesk_nome', $('nome').value)
+      atualizarEstadoFormulario()
+    })
     $('matricula').addEventListener('input', () => {
-      $('matricula').value = normalizarIdFunc($('matricula').value)
       localStorage.setItem('helpdesk_matricula', $('matricula').value)
       atualizarEstadoFormulario()
     })
@@ -1945,9 +1733,8 @@
     window.alterarJustificativaNegativa = alterarJustificativaNegativa
     window.alterarValorCompra = alterarValorCompra
     window.alterarDataCompra = alterarDataCompra
-    window.negarChamado = negarChamado
+    window.deletarChamado = deletarChamado
     window.toggleHomeDetails = toggleHomeDetails
-
 
     window.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault()
@@ -1969,9 +1756,13 @@
 
     populateMilitarOptions()
     updateAdminUI()
-    carregarUsuarioLocal()
-    limparFiltros()
-    loadTickets(false)
+    fetchTickets()
+
+    timerUpdater = setInterval(() => {
+      if ($('screen-home').classList.contains('active') || $('screen-chamados').classList.contains('active')) {
+        renderTickets()
+      }
+    }, 60000)
   </script>
 </body>
 </html>
