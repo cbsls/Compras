@@ -3,484 +3,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Central de Reclamações</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Central de Reclamações - Bombeiros RS</title>
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
-            color: #ffffff;
-            margin: 0;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
             min-height: 100vh;
+            padding: 20px;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
-        .tabs {
-            display: flex;
-            gap: 10px;
+        header h1 {
+            text-align: center;
+            color: white;
             margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
             flex-wrap: wrap;
         }
-        .tab-btn {
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.3s ease;
+        .card {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+        .card h2 {
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 1.5em;
+        }
+        label {
+            display: block;
+            margin-bottom: 15px;
             font-weight: 500;
         }
-        .tab-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .tab-btn.active {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-        }
-        h3 {
-            margin: 0 0 20px 0;
-            font-size: 1.5em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        input, textarea, select {
+        input, select, textarea {
             width: 100%;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-size: 1em;
-            transition: all 0.3s ease;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
-        input::placeholder, textarea::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        input:focus, textarea:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
-            background: rgba(255, 255, 255, 0.12);
-        }
-        textarea {
-            resize: vertical;
-            min-height: 120px;
+            border-color: #667eea;
         }
         button {
-            padding: 15px 30px;
-            background: linear-gradient(45deg, #007bff, #0056b3);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
             border: none;
-            color: #ffffff;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1em;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
             width: 100%;
+            margin-top: 10px;
         }
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .lista-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 25px;
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        .chamado-card {
-            position: relative;
+        .section h2 {
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 1.8em;
         }
-        .chamado-card h4 {
-            margin: 0 0 15px 0;
-            color: #007bff;
+        #listaChamados {
+            overflow-x: auto;
         }
-        .actions {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        .actions button {
-            width: auto;
-            padding: 10px 20px;
-        }
-        .btn-edit {
-            background: linear-gradient(45deg, #28a745, #20c997);
-        }
-        .btn-edit:hover {
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
-        }
-        .btn-delete {
-            background: linear-gradient(45deg, #dc3545, #c82333);
-        }
-        .btn-delete:hover {
-            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
-        }
-        .modal {
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
+        table {
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
+            border-collapse: collapse;
+            margin-top: 10px;
         }
-        .modal-content {
-            position: relative;
-            max-width: 600px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
         }
-        .close {
-            position: absolute;
-            right: 20px;
-            top: 15px;
-            font-size: 2.5em;
-            cursor: pointer;
-            color: #ffffff;
-            opacity: 0.7;
-            transition: opacity 0.3s;
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
         }
-        .close:hover {
-            opacity: 1;
+        .acao-btn {
+            background: #28a745;
+            padding: 6px 12px;
+            font-size: 14px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .acao-encaminhar {
+            background: #ffc107;
+            color: #000;
+        }
+        .acao-finalizar {
+            background: #dc3545;
         }
         @media (max-width: 768px) {
-            .tabs {
+            .cards {
                 flex-direction: column;
             }
-            .lista-grid {
-                grid-template-columns: 1fr;
+            header h1 {
+                font-size: 2em;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 style="text-align: center; margin-bottom: 40px; font-size: 2.5em;">🛠️ Central de Reclamações</h1>
-        <div class="tabs">
-            <button id="btn-novo" class="tab-btn active" onclick="showTab('novo')">📝 Novo Chamado</button>
-            <button id="btn-lista" class="tab-btn" onclick="showTab('lista')">📋 Lista de Chamados</button>
-            <button id="btn-admin" class="tab-btn" onclick="showTab('admin')">⚙️ Admin (Edição)</button>
-        </div>
-
-        <!-- Aba Novo -->
-        <div id="aba-novo" class="tab-content active">
-            <div class="card" id="dados-solicitante">
-                <h3>👤 Dados do solicitante</h3>
-                <select id="solicitante" required>
-                    <option value="">Selecione...</option>
-                </select>
+        <header>
+            <h1>🛠️ Central de Reclamações - Bombeiros RS</h1>
+        </header>
+        <div class="cards">
+            <div class="card">
+                <h2>👤 Dados do solicitante</h2>
+                <label>
+                    Nome:
+                    <input type="text" id="nome" placeholder="Digite o nome em MAIÚSCULAS" maxlength="100" oninput="handleUpper(this)">
+                </label>
+                <label>
+                    Militar:
+                    <select id="militar">
+                        <option value="">Não identificado</option>
+                        <option value="CB João da Silva">CB João da Silva</option>
+                        <option value="3º SGT Ana Costa">3º SGT Ana Costa</option>
+                        <option value="Asp Rubens Lima">Asp Rubens Lima</option>
+                        <option value="Cap Elaine Santos">Cap Elaine Santos</option>
+                        <option value="Maj Pedro Almeida">Maj Pedro Almeida</option>
+                        <option value="Ten Carla Mendes">Ten Carla Mendes</option>
+                        <option value="2º Ten Marcos Souza">2º Ten Marcos Souza</option>
+                    </select>
+                </label>
+                <button onclick="salvarSolicitante()">Salvar Dados</button>
             </div>
-            <div class="card" id="novo-chamado">
-                <h3>💬 Novo chamado</h3>
-                <input id="titulo" placeholder="TÍTULO (será enviado em maiúsculas)" required>
-                <input id="local" placeholder="LOCAL (será enviado em maiúsculas)" required>
-                <textarea id="descricao" placeholder="Descrição (opcional)"></textarea>
-                <button onclick="criarChamado()">📤 Enviar Chamado</button>
+            <div class="card">
+                <h2>💬 Novo chamado</h2>
+                <label>
+                    Título:
+                    <input type="text" id="titulo" placeholder="TÍTULO DO CHAMADO" maxlength="200" required oninput="handleUpper(this)">
+                </label>
+                <label>
+                    Local:
+                    <input type="text" id="local" placeholder="LOCAL DO OCORRIDO" maxlength="200" required oninput="handleUpper(this)">
+                </label>
+                <label>
+                    Descrição:
+                    <textarea id="descricao" placeholder="Descreva o problema (opcional)" rows="4"></textarea>
+                </label>
+                <button onclick="criarChamado()">Criar Chamado</button>
             </div>
         </div>
-
-        <!-- Aba Lista -->
-        <div id="aba-lista" class="tab-content">
-            <div id="lista-chamados" class="lista-grid"></div>
-        </div>
-
-        <!-- Aba Admin -->
-        <div id="aba-admin" class="tab-content">
-            <div id="lista-admin" class="lista-grid"></div>
+        <div class="section">
+            <h2>📋 Chamados</h2>
+            <div id="listaChamados">Carregando...</div>
         </div>
     </div>
-
-    <!-- Modal Edição -->
-    <div id="edit-modal" class="modal">
-        <div class="modal-content card">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h3>✏️ Editar Chamado</h3>
-            <div id="edit-form">
-                <input id="edit-id" type="hidden">
-                <input id="edit-solicitante" required>
-                <input id="edit-titulo" placeholder="TÍTULO" required>
-                <input id="edit-local" placeholder="LOCAL" required>
-                <textarea id="edit-descricao" placeholder="Descrição"></textarea>
-                <select id="edit-status" onchange="toggleCompraFields()" required>
-                    <option value="">Selecione status...</option>
-                    <option>Novo</option>
-                    <option>Em andamento</option>
-                    <option>Encaminhado</option>
-                    <option>Finalizado</option>
-                </select>
-                <input id="edit-valor" type="number" step="0.01" min="0" placeholder="Valor da Compra (R$)">
-                <input id="edit-data" type="date" placeholder="Data da Compra">
-                <button type="button" onclick="salvarEdicao()">💾 Salvar Alterações</button>
-                <button type="button" onclick="closeModal()" style="background: #6c757d; margin-top: 10px;">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Configuração Supabase - SUBSTITUA pelas suas credenciais
-        const supabaseUrl = 'https://SEU-PROJETO.supabase.co';
-        const supabaseAnonKey = 'SUA-ANON-KEY';
+        let chamados = [];
+        let solicitante = { nome: '', militar: '' };
 
-        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
-
-        // Opções de solicitante
-        const solicitantesOptions = ['MILITAR 1', 'MILITAR 2', 'MILITAR 3', 'MILITAR 4', 'MILITAR 5', 'NÃO IDENTIFICADO'];
-
-        // Popular selects de solicitante
-        function populateSolicitantes(selectId) {
-            const select = document.getElementById(selectId);
-            select.innerHTML = '<option value="">Selecione...</option>';
-            solicitantesOptions.forEach(opt => {
-                const option = document.createElement('option');
-                option.value = opt;
-                option.textContent = opt;
-                select.appendChild(option);
-            });
+        function handleUpper(el) {
+            el.value = el.value.toUpperCase();
         }
 
-        // Forçar uppercase
-        function forceUppercase(inputId) {
-            const input = document.getElementById(inputId);
-            input.addEventListener('input', function() {
-                this.value = this.value.toUpperCase();
-            });
+        function init() {
+            loadData();
+            loadSolicitante();
+            renderLista();
         }
 
-        // Mostrar/esconder campos de compra
-        function toggleCompraFields() {
-            const status = document.getElementById('edit-status').value;
-            const show = ['Finalizado', 'Encaminhado', 'Em andamento'].includes(status);
-            const valorField = document.getElementById('edit-valor');
-            const dataField = document.getElementById('edit-data');
-            if (show) {
-                valorField.style.display = 'block';
-                dataField.style.display = 'block';
-            } else {
-                valorField.style.display = 'none';
-                dataField.style.display = 'none';
-                valorField.value = '';
-                dataField.value = '';
+        function loadSolicitante() {
+            const saved = localStorage.getItem('solicitante');
+            if (saved) {
+                solicitante = JSON.parse(saved);
+                document.getElementById('nome').value = solicitante.nome;
+                document.getElementById('militar').value = solicitante.militar;
             }
         }
 
-        // Criar chamado
-        async function criarChamado() {
-            const solicitante = document.getElementById('solicitante').value;
-            const titulo = document.getElementById('titulo').value.toUpperCase();
-            const local = document.getElementById('local').value.toUpperCase();
-            const descricao = document.getElementById('descricao').value;
+        function salvarSolicitante() {
+            solicitante.nome = document.getElementById('nome').value.trim();
+            solicitante.militar = document.getElementById('militar').value;
+            localStorage.setItem('solicitante', JSON.stringify(solicitante));
+            alert('Dados do solicitante salvos!');
+        }
 
-            if (!solicitante || !titulo || !local) {
-                alert('Preencha os campos obrigatórios!');
+        function criarChamado() {
+            const titulo = document.getElementById('titulo').value.trim();
+            const local = document.getElementById('local').value.trim();
+            const descricao = document.getElementById('descricao').value.trim();
+
+            if (!titulo || !local) {
+                alert('Título e Local são obrigatórios!');
                 return;
             }
 
-            const { error } = await supabase
-                .from('chamados')
-                .insert([{ solicitante, titulo, local, descricao, status: 'Novo' }]);
+            const chamado = {
+                id: Date.now(),
+                nome: solicitante.nome || 'NÃO IDENTIFICADO',
+                militar: solicitante.militar || 'Não identificado',
+                titulo,
+                local,
+                descricao,
+                valorCompra: '',
+                dataCompra: '',
+                status: 'Novo',
+                dataCriacao: new Date().toLocaleString('pt-BR')
+            };
 
-            if (error) {
-                alert('Erro ao criar chamado: ' + error.message);
-            } else {
-                document.getElementById('solicitante').value = '';
-                document.getElementById('titulo').value = '';
-                document.getElementById('local').value = '';
-                document.getElementById('descricao').value = '';
-                listarChamados();
-                listarAdmin();
+            chamados.unshift(chamado); // Add to top
+            saveChamados();
+            renderLista();
+
+            // Clear form
+            document.getElementById('titulo').value = '';
+            document.getElementById('local').value = '';
+            document.getElementById('descricao').value = '';
+
+            alert('Chamado criado com sucesso!');
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('chamados');
+            if (saved) {
+                chamados = JSON.parse(saved);
             }
         }
 
-        // Renderizar lista
-        async function renderList(containerId, showActions = false) {
-            const container = document.getElementById(containerId);
-            const { data, error } = await supabase
-                .from('chamados')
-                .select('*')
-                .order('created_at', { ascending: false });
+        function saveChamados() {
+            localStorage.setItem('chamados', JSON.stringify(chamados));
+        }
 
-            if (error) {
-                console.error('Erro ao listar:', error);
+        function renderLista() {
+            const lista = document.getElementById('listaChamados');
+            if (chamados.length === 0) {
+                lista.innerHTML = '<p style="text-align: center; padding: 40px; font-size: 1.2em; color: #888;">Nenhum chamado cadastrado.</p>';
                 return;
             }
 
-            container.innerHTML = '';
-            data.forEach(row => {
-                const card = document.createElement('div');
-                card.className = 'chamado-card card';
-                let actions = '';
-                if (showActions) {
-                    actions = `
-                        <div class="actions">
-                            <button class="btn-edit" onclick="editarChamado(${row.id})">Editar</button>
-                            <button class="btn-delete" onclick="deletarChamado(${row.id})">Deletar</button>
-                        </div>
-                    `;
-                }
-                const valorHtml = row.valor_compra ? `<p><strong>Valor da Compra:</strong> R$ ${parseFloat(row.valor_compra).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>` : '';
-                const dataHtml = row.data_compra ? `<p><strong>Data da Compra:</strong> ${new Date(row.data_compra).toLocaleDateString('pt-BR')}</p>` : '';
-                card.innerHTML = `
-                    <h4>${row.titulo}</h4>
-                    <p><strong>Solicitante:</strong> ${row.solicitante}</p>
-                    <p><strong>Local:</strong> ${row.local}</p>
-                    ${row.descricao ? `<p><strong>Descrição:</strong> ${row.descricao}</p>` : ''}
-                    <p><strong>Status:</strong> <span style="color: #007bff;">${row.status}</span></p>
-                    ${valorHtml}
-                    ${dataHtml}
-                    ${actions}
-                `;
-                container.appendChild(card);
+            let html = '<table><thead><tr>' +
+                '<th>ID</th>' +
+                '<th>Nome</th>' +
+                '<th>Militar</th>' +
+                '<th>Título</th>' +
+                '<th>Local</th>' +
+                '<th>Valor da Compra</th>' +
+                '<th>Data da Compra</th>' +
+                '<th>Status</th>' +
+                '<th>Data Criação</th>' +
+                '<th>Ações</th>' +
+                '</tr></thead><tbody>';
+
+            chamados.forEach(c => {
+                html += `<tr>
+                    <td>${c.id}</td>
+                    <td>${c.nome}</td>
+                    <td>${c.militar}</td>
+                    <td>${c.titulo}</td>
+                    <td>${c.local}</td>
+                    <td>${c.valorCompra || ''}</td>
+                    <td>${c.dataCompra || ''}</td>
+                    <td style="font-weight: bold;">${c.status}</td>
+                    <td>${c.dataCriacao}</td>
+                    <td>
+                        <button class="acao-btn" onclick="atualizarStatus(${c.id}, 'Em Andamento')">Em Andamento</button>
+                        <br>
+                        <button class="acao-btn acao-encaminhar" onclick="atualizarStatus(${c.id}, 'Encaminhado')">Encaminhar</button>
+                        <br>
+                        <button class="acao-btn acao-finalizar" onclick="atualizarStatus(${c.id}, 'Finalizado')">Finalizar</button>
+                    </td>
+                </tr>`;
             });
+
+            html += '</tbody></table>';
+            lista.innerHTML = html;
         }
 
-        // Listas
-        const listarChamados = () => renderList('lista-chamados', false);
-        const listarAdmin = () => renderList('lista-admin', true);
+        function atualizarStatus(id, novoStatus) {
+            const chamado = chamados.find(c => c.id == id);
+            if (!chamado) return;
 
-        // Editar
-        async function editarChamado(id) {
-            const { data, error } = await supabase.from('chamados').select('*').eq('id', id).single();
-            if (error) {
-                alert('Erro ao carregar: ' + error.message);
-                return;
-            }
-            document.getElementById('edit-id').value = data.id;
-            document.getElementById('edit-solicitante').value = data.solicitante;
-            document.getElementById('edit-titulo').value = data.titulo;
-            document.getElementById('edit-local').value = data.local;
-            document.getElementById('edit-descricao').value = data.descricao || '';
-            document.getElementById('edit-status').value = data.status;
-            document.getElementById('edit-valor').value = data.valor_compra || '';
-            document.getElementById('edit-data').value = data.data_compra || '';
-            toggleCompraFields();
-            document.getElementById('edit-modal').style.display = 'flex';
+            const valor = prompt('Valor da Compra (ex: R$ 100,00, opcional):');
+            const dataC = prompt('Data da Compra (ex: 01/01/2024, opcional):');
+
+            chamado.valorCompra = valor ? valor.trim() : '';
+            chamado.dataCompra = dataC ? dataC.trim() : '';
+            chamado.status = novoStatus;
+            chamado.dataAtualizacao = new Date().toLocaleString('pt-BR');
+
+            saveChamados();
+            renderLista();
+            alert(`Status atualizado para ${novoStatus}!`);
         }
 
-        // Salvar edição
-        async function salvarEdicao() {
-            const id = document.getElementById('edit-id').value;
-            const solicitante = document.getElementById('edit-solicitante').value.toUpperCase();
-            const titulo = document.getElementById('edit-titulo').value.toUpperCase();
-            const local = document.getElementById('edit-local').value.toUpperCase();
-            const descricao = document.getElementById('edit-descricao').value;
-            const status = document.getElementById('edit-status').value;
-            const valor_compra = document.getElementById('edit-valor').value ? parseFloat(document.getElementById('edit-valor').value) : null;
-            const data_compra = document.getElementById('edit-data').value || null;
-
-            if (!solicitante || !titulo || !local || !status) {
-                alert('Preencha os campos obrigatórios!');
-                return;
-            }
-
-            const { error } = await supabase
-                .from('chamados')
-                .update({
-                    solicitante,
-                    titulo,
-                    local,
-                    descricao,
-                    status,
-                    valor_compra,
-                    data_compra
-                })
-                .eq('id', id);
-
-            if (error) {
-                alert('Erro ao salvar: ' + error.message);
-            } else {
-                closeModal();
-                listarChamados();
-                listarAdmin();
-            }
+        // PWA basic setup
+        if ('serviceWorker' in navigator) {
+            // Simple inline SW for cache (optional, basic)
+            navigator.serviceWorker.register(URL.createObjectURL(new Blob([`
+                self.addEventListener('install', e => {
+                    self.skipWaiting();
+                });
+                self.addEventListener('fetch', e => {
+                    e.respondWith(fetch(e.request));
+                });
+            `], {type: 'application/javascript'})));
         }
 
-        // Deletar
-        async function deletarChamado(id) {
-            if (!confirm('Confirma a exclusão deste chamado?')) return;
-            const { error } = await supabase.from('chamados').delete().eq('id', id);
-            if (error) {
-                alert('Erro ao deletar: ' + error.message);
-            } else {
-                listarChamados();
-                listarAdmin();
-            }
-        }
-
-        // Fechar modal
-        function closeModal() {
-            document.getElementById('edit-modal').style.display = 'none';
-        }
-
-        // Tabs
-        function showTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById('aba-' + tab).classList.add('active');
-            document.getElementById('btn-' + tab).classList.add('active');
-            if (tab === 'lista') listarChamados();
-            if (tab === 'admin') listarAdmin();
-        }
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            populateSolicitantes('solicitante');
-            populateSolicitantes('edit-solicitante');
-            forceUppercase('titulo');
-            forceUppercase('local');
-            forceUppercase('edit-titulo');
-            forceUppercase('edit-local');
-            document.getElementById('edit-valor').closest('input').style.display = 'none'; // Inicial hide
-            document.getElementById('edit-data').closest('input').style.display = 'none';
-            listarChamados();
-
-            // Realtime
-            supabase
-                .channel('chamados')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'chamados' }, () => {
-                    listarChamados();
-                    listarAdmin();
-                })
-                .subscribe();
-
-            // Fechar modal clicando fora
-            document.getElementById('edit-modal').addEventListener('click', (e) => {
-                if (e.target.id === 'edit-modal') closeModal();
-            });
-        });
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
