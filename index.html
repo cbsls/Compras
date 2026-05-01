@@ -236,12 +236,6 @@
       outline: none;
     }
 
-    .admin-inline .wa-mini-btn,
-    .admin-inline .pill {
-      width: auto;
-      flex: 0 0 auto;
-    }
-
     textarea {
       min-height: 90px;
       resize: vertical;
@@ -566,11 +560,6 @@
       border-top: 1px solid #e6eaed;
     }
 
-    .uppercase-field,
-    #nome {
-      text-transform: uppercase;
-    }
-
     .admin-compra-fields {
       display: grid;
       gap: 8px;
@@ -592,29 +581,6 @@
       color: #245644;
       font-size: 13px;
       line-height: 1.45;
-    }
-
-    .login-status {
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 13px;
-      line-height: 1.4;
-      border: 1px solid var(--wa-border);
-      background: #f8fafb;
-      color: #334155;
-    }
-
-    .login-status.ok {
-      background: #eefaf5;
-      border-color: #cce9db;
-      color: #245644;
-    }
-
-    .login-status.warn {
-      background: #fff8e8;
-      border-color: #f3d58a;
-      color: #7c5800;
     }
 
     .home-lista {
@@ -776,18 +742,6 @@
       box-shadow: none;
     }
 
-    .section-label {
-      margin: 10px 0 12px;
-      padding: 10px 14px;
-      border-radius: 14px;
-      background: #ecfdf3;
-      color: #166534;
-      font-weight: bold;
-      font-size: 14px;
-      border: 1px solid #bbf7d0;
-      box-shadow: var(--wa-shadow);
-    }
-
     .resolved-seal {
       position: absolute;
       top: 10px;
@@ -806,56 +760,20 @@
     }
 
     @media (max-width: 720px) {
-      .wa-head {
-        align-items: flex-start;
-        gap: 8px;
-      }
-
-      .wa-profile {
-        align-items: flex-start;
-      }
-
-      .wa-title {
-        font-size: 0.93rem;
-        white-space: normal;
-        line-height: 1.15;
-      }
-
-      .wa-subtitle {
-        font-size: 10.5px;
-        line-height: 1.2;
-        white-space: normal;
-      }
-
-      .admin-inline {
-        gap: 4px;
-      }
-
-      .pill.small,
-      .wa-mini-btn.compact {
-        padding: 5px 7px;
-        min-width: 26px;
-        min-height: 26px;
-        font-size: 9.5px;
-      }
-
-      .home-item-top {
-        gap: 10px;
-      }
-
-      .home-item-top-right {
-        align-items: flex-end;
-      }
+      .wa-head { align-items: flex-start; gap: 8px; }
+      .wa-profile { align-items: flex-start; }
+      .wa-title { font-size: 0.93rem; white-space: normal; line-height: 1.15; }
+      .wa-subtitle { font-size: 10.5px; line-height: 1.2; white-space: normal; }
+      .admin-inline { gap: 4px; }
+      .pill.small, .wa-mini-btn.compact { padding: 5px 7px; min-width: 26px; min-height: 26px; font-size: 9.5px; }
+      .home-item-top { gap: 10px; }
+      .home-item-top-right { align-items: flex-end; }
     }
 
     @media (min-width: 721px) {
       .app { max-width: 950px; }
       .screen { padding: 14px; }
-      .top-grid {
-        display: grid;
-        grid-template-columns: 1.1fr .9fr;
-        gap: 12px;
-      }
+      .top-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 12px; }
       .stats { grid-template-columns: repeat(3, 1fr); }
       .toolbar { grid-template-columns: repeat(2, 1fr); }
       .tabbar { width: min(700px, calc(100% - 40px)); }
@@ -873,11 +791,10 @@
             <div class="wa-subtitle">🚒 CB São Lourenço do Sul • Setor B4</div>
           </div>
         </div>
-
         <div class="admin-inline">
           <div id="adminStatus" class="pill small">👤</div>
-          <button id="btnEntrarAdmin" type="button" class="wa-mini-btn compact" title="Entrar admin" aria-label="Entrar admin">🔐</button>
-          <button id="btnSairAdmin" type="button" class="wa-mini-btn sec compact hidden" title="Sair admin" aria-label="Sair admin">🚪</button>
+          <button id="btnEntrarAdmin" type="button" class="wa-mini-btn compact">🔐</button>
+          <button id="btnSairAdmin" type="button" class="wa-mini-btn sec compact hidden">🚪</button>
         </div>
       </div>
     </div>
@@ -887,8 +804,7 @@
     <section id="screen-home" class="screen active">
       <div class="top-grid">
         <div class="card">
-          <h2>📊 Resumo dos chamados</h2>
-          <div class="sub">Toque em uma caixa para abrir a lista completa na aba Chamados.</div>
+          <h2>📊 Resumo</h2>
           <div class="stats">
             <div class="stat" data-status="">
               <div class="num" id="stTotal">0</div>
@@ -898,43 +814,30 @@
               <div class="num" id="stAguardando">0</div>
               <div class="lab">Aguardando</div>
             </div>
-            <div class="stat" data-status="Encaminhado">
-              <div class="num" id="stEncaminhado">0</div>
-              <div class="lab">Encaminhado</div>
-            </div>
             <div class="stat" data-status="Em andamento">
               <div class="num" id="stAndamento">0</div>
-              <div class="lab">Em andamento</div>
+              <div class="lab">Em curso</div>
             </div>
             <div class="stat" data-status="Finalizado">
               <div class="num" id="stFinalizado">0</div>
-              <div class="lab">Finalizado</div>
-            </div>
-            <div class="stat" data-status="Negado">
-              <div class="num" id="stNegado">0</div>
-              <div class="lab">Negado</div>
+              <div class="lab">Concluídos</div>
             </div>
           </div>
         </div>
-
         <div class="card">
           <h2>📋 Chamados abertos</h2>
-          <div class="sub">Resumo rápido dos chamados que ainda não foram finalizados.</div>
           <div class="home-actions">
             <button id="btnToggleAllHome" type="button" class="home-toggle-all-btn">Expandir todos</button>
           </div>
           <div id="homeListaAbertos" class="home-lista"></div>
         </div>
       </div>
-
       <button id="btnInstalarApp" type="button" class="btn-install hidden">📲 Instalar app</button>
     </section>
 
     <section id="screen-novo" class="screen">
       <div class="card">
-        <h2>👤 Dados do solicitante</h2>
-        <div class="sub">Selecione o militar cadastrado. Caso necessário, mantenha a opção “NÃO IDENTIFICADO”.</div>
-
+        <h2>👤 Solicitante</h2>
         <div class="grid-2">
           <div>
             <label for="nome">Nome</label>
@@ -942,27 +845,21 @@
           </div>
           <div>
             <label for="matricula">Id Func.</label>
-            <input id="matricula" inputmode="numeric" maxlength="20" placeholder="Digite Id Func. (Opcional)" />
+            <input id="matricula" inputmode="numeric" placeholder="Id Func. (Opcional)" />
           </div>
         </div>
       </div>
-
       <div class="card">
-        <h2>💬 Novo chamado</h2>
-        <div class="sub">O setor será definido automaticamente como <strong>B4</strong> e a prioridade inicial será <strong>Média</strong>.</div>
-
+        <h2>💬 Novo Chamado</h2>
         <label for="titulo">Título</label>
-        <input id="titulo" class="uppercase-field" placeholder="Ex: TORNEIRA DA COZINHA NÃO FECHA" />
-
+        <input id="titulo" style="text-transform: uppercase;" placeholder="EX: TORNEIRA VAZANDO" />
         <label for="descricao">Descrição</label>
-        <textarea id="descricao" placeholder="Descreva o problema com detalhes (Opcional)"></textarea>
-
+        <textarea id="descricao" placeholder="Descreva o problema..."></textarea>
         <label for="local">Local</label>
-        <input id="local" class="uppercase-field" placeholder="Ex: COZINHA, SALA 2, CORREDOR" />
-
+        <input id="local" style="text-transform: uppercase;" placeholder="EX: COZINHA" />
         <div class="actions">
-          <button id="btnAbrir" class="btn-primary">Enviar chamado</button>
-          <button id="btnLimpar" type="button" class="btn-ghost">Limpar</button>
+          <button id="btnAbrir" class="btn-primary">Enviar</button>
+          <button id="btnLimpar" class="btn-ghost">Limpar</button>
         </div>
       </div>
     </section>
@@ -970,63 +867,41 @@
     <section id="screen-chamados" class="screen">
       <div class="search-pill">
         <span>🔎</span>
-        <input id="busca" placeholder="Buscar por título, nome, matrícula, local..." />
+        <input id="busca" placeholder="Pesquisar..." />
       </div>
-
       <div class="card">
-        <h2>📋 Filtros</h2>
         <div class="toolbar">
           <select id="filtroStatus">
-            <option value="">Todos os status</option>
+            <option value="">Status...</option>
             <option value="Aguardando triagem">Aguardando triagem</option>
             <option value="Encaminhado">Encaminhado</option>
             <option value="Em andamento">Em andamento</option>
             <option value="Finalizado">Finalizado</option>
             <option value="Negado">Negado</option>
           </select>
-          <select id="filtroSetor">
-            <option value="">Todos os setores</option>
-            <option value="B4">B4</option>
-          </select>
-          <select id="filtroResponsavel">
-            <option value="">Todos os responsáveis</option>
-          </select>
+          <select id="filtroResponsavel"><option value="">Responsável...</option></select>
         </div>
-
         <label class="check-box" style="margin-top:10px;">
           <input type="checkbox" id="somenteNegados" /> Somente negados
         </label>
-
         <div class="actions">
-          <button type="button" class="btn-ghost" id="btnLimparFiltros">Limpar filtros</button>
-          <button type="button" class="btn-sec" id="btnAtualizarLista">Atualizar lista</button>
+          <button class="btn-ghost" id="btnLimparFiltros">Limpar</button>
+          <button class="btn-sec" id="btnAtualizarLista">Atualizar</button>
         </div>
       </div>
-
       <div id="lista"></div>
     </section>
 
     <section id="screen-perfil" class="screen">
       <div class="card">
-        <h2>👤 Perfil do solicitante</h2>
-        <div class="sub">Preencha livremente no formulário de novo chamado. Esta aba passa a ser apenas informativa.</div>
-
-        <label>Nome digitado no formulário</label>
+        <h2>👤 Perfil</h2>
+        <label>Nome</label>
         <input id="perfilNome" readonly />
-
-        <label>Matrícula / Id Func. digitada</label>
+        <label>Matrícula</label>
         <input id="perfilMatricula" readonly />
-
         <div class="actions">
-          <button id="btnRevalidarSolicitante" class="btn-success" type="button">Ir para novo chamado</button>
-          <button id="btnLimparIdentificacao" class="btn-danger" type="button">Limpar campos</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>🧩 Estrutura mantida</h2>
-        <div class="install-tip">
-          Este layout mantém o Supabase, triagem, responsável, prioridade e negativa, com setor único B4.
+          <button id="btnRevalidarSolicitante" class="btn-success">Ir para Novo</button>
+          <button id="btnLimparIdentificacao" class="btn-danger">Sair / Limpar</button>
         </div>
       </div>
     </section>
@@ -1035,7 +910,7 @@
   <nav class="tabbar">
     <button data-screen="home" class="active">🏠<br>Início</button>
     <button data-screen="novo">➕<br>Novo</button>
-    <button data-screen="chamados">📋<br>Chamados</button>
+    <button data-screen="chamados">📋<br>Lista</button>
     <button data-screen="perfil">👤<br>Perfil</button>
   </nav>
 
@@ -1045,29 +920,18 @@
     const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co'
     const SUPABASE_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO'
     const ADMIN_PASSWORD = '123456'
-    const RESPONSAVEIS = [
-      '1º TEN MARCELO', '1º SGT VICENTE', '1º SGT DIEFERSON', '1º SGT BATISTA',
-      '2º SGT ANDERSON', '2º SGT VINICIUS', '2º SGT LISCANO', 'SD TOMASCHEWSKI',
-      'SD CAMACHO', 'SD ISQUIERDO', 'SD BORGES', 'SD BATISTA', 'SD MAX',
-      'SD WILLIAM', 'SD MOTTA', 'SD SOARES', 'SD PEGLOW', 'SD LARSSON'
-    ]
-    const SETOR_FIXO = 'B4'
-    const PRIORIDADE_PADRAO = 'Média'
-    const STATUS_COM_COMPRA = ['Encaminhado', 'Em andamento', 'Finalizado']
-
+    const RESPONSAVEIS = ['1º TEN MARCELO', '1º SGT VICENTE', '1º SGT DIEFERSON', 'SD TOMASCHEWSKI', 'SD CAMACHO', 'SD ISQUIERDO', 'SD BORGES', 'SD BATISTA']
+    
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
     const $ = (id) => document.getElementById(id)
 
     let chamados = []
     let adminMode = localStorage.getItem('helpdesk_admin_mode') === 'true'
-    let timerUpdater = null
     let homeExpandedState = {}
     let deferredPrompt = null
 
-    // CORREÇÃO: Função definida no topo para evitar erro de referência
-    function normalizarIdFunc(valor) {
-      return String(valor || '').replace(/\D/g, '')
-    }
+    // CORREÇÃO DOS ERROS DE "NOT DEFINED" E "NULL"
+    const normalizarIdFunc = (v) => String(v || '').replace(/\D/g, '')
 
     function showMessage(text, type = 'ok') {
       const box = $('mensagem')
@@ -1075,290 +939,56 @@
       box.className = `msg ${type}`
       box.textContent = text
       box.style.display = 'block'
-      clearTimeout(window.__helpdeskMsgTimer)
-      window.__helpdeskMsgTimer = setTimeout(() => {
-        box.style.display = 'none'
-        box.className = 'msg'
-        box.textContent = ''
-      }, 3500)
+      setTimeout(() => box.style.display = 'none', 3500)
     }
 
     function escapeHtml(text) {
-      return String(text ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;')
+      return String(text ?? '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     }
 
-    function formatDate(value) {
-      if (!value) return '-'
-      return new Date(value).toLocaleString('pt-BR')
-    }
-
-    function formatDateForInput(value) {
-      if (!value) return ''
-      return String(value).slice(0, 10)
-    }
-
-    function formatCurrency(value) {
-      const numeric = Number(value || 0)
-      if (!Number.isFinite(numeric)) return '-'
-      return numeric.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-    }
-
-    function parseCurrencyInput(value) {
-      const cleaned = String(value || '')
-        .replace(/\s/g, '')
-        .replace(/R\$/gi, '')
-        .replace(/\./g, '')
-        .replace(',', '.')
-        .replace(/[^\d.-]/g, '')
-      const numeric = Number(cleaned)
-      return Number.isFinite(numeric) ? numeric : null
-    }
-
-    function shouldShowPurchaseFields(status) {
-      return STATUS_COM_COMPRA.includes(status)
-    }
-
-    function statusClass(status) {
-      if (status === 'Aguardando triagem') return 'st-aguardando'
-      if (status === 'Encaminhado') return 'st-encaminhado'
-      if (status === 'Em andamento') return 'st-andamento'
-      if (status === 'Finalizado') return 'st-finalizado'
-      if (status === 'Negado') return 'st-negado'
-      return ''
-    }
-
-    function priorityClass(priority) {
-      if (priority === 'Baixa') return 'pr-baixa'
-      if (priority === 'Média') return 'pr-media'
-      if (priority === 'Alta') return 'pr-alta'
-      return ''
-    }
-
-    function ticketClass(priority, status) {
-      if (status === 'Finalizado') return 'resolvido'
-      if (status === 'Negado') return 'negado'
-      if (priority === 'Alta') return 'alta'
-      if (priority === 'Média') return 'media'
-      return 'baixa'
-    }
-
-    function priorityWeight(priority) {
-      if (priority === 'Alta') return 3
-      if (priority === 'Média') return 2
-      return 1
-    }
-
-    function isResolved(status) {
-      return status === 'Finalizado'
-    }
+    function formatDate(v) { return v ? new Date(v).toLocaleString('pt-BR') : '-' }
 
     function formatDuration(ms) {
-      const totalSeconds = Math.max(0, Math.floor(ms / 1000))
-      const dias = Math.floor(totalSeconds / 86400)
-      const horas = Math.floor((totalSeconds % 86400) / 3600)
-      const minutos = Math.floor((totalSeconds % 3600) / 60)
-      const partes = []
-      if (dias > 0) partes.push(`${dias}d`)
-      if (horas > 0 || dias > 0) partes.push(`${horas}h`)
-      partes.push(`${minutos}min`)
-      return partes.join(' ')
+      const s = Math.floor(ms / 1000)
+      const d = Math.floor(s / 86400)
+      const h = Math.floor((s % 86400) / 3600)
+      const m = Math.floor((s % 3600) / 60)
+      return d > 0 ? `${d}d ${h}h` : `${h}h ${m}min`
     }
 
     function getTempoChamado(c) {
-      const inicio = c.created_at ? new Date(c.created_at).getTime() : Date.now()
-      let fim = Date.now()
-      let label = '⏱ Em aberto há'
-      let classe = 'running'
-
-      if (c.status === 'Finalizado') {
-        fim = c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
-        label = '✅ Tempo até finalização'
-        classe = 'done'
-      } else if (c.status === 'Negado') {
-        fim = c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
-        label = '⛔ Tempo até negativa'
-        classe = 'denied'
-      }
-      return { label, classe, valor: formatDuration(fim - inicio) }
-    }
-
-    function atualizarBotaoInstalarApp() {
-      const btn = $('btnInstalarApp')
-      if (!btn) return
-      btn.classList.toggle('hidden', !deferredPrompt)
-    }
-
-    async function instalarApp() {
-      if (!deferredPrompt) {
-        showMessage('A opção de instalar ainda não está disponível neste navegador.', 'erro')
-        return
-      }
-      deferredPrompt.prompt()
-      const escolha = await deferredPrompt.userChoice
-      deferredPrompt = null
-      atualizarBotaoInstalarApp()
-      if (escolha && escolha.outcome === 'accepted') {
-        showMessage('Instalação iniciada.', 'ok')
-      }
+      const inicio = new Date(c.created_at).getTime()
+      const fim = (c.status === 'Finalizado' || c.status === 'Negado') ? new Date(c.updated_at).getTime() : Date.now()
+      const label = c.status === 'Finalizado' ? '✅ Concluído em' : (c.status === 'Negado' ? '⛔ Negado em' : '⏱ Aberto há')
+      return { label, valor: formatDuration(fim - inicio), classe: c.status === 'Finalizado' ? 'done' : (c.status === 'Negado' ? 'denied' : 'running') }
     }
 
     function updateAdminUI() {
       const status = $('adminStatus')
-      const enterBtn = $('btnEntrarAdmin')
-      const exitBtn = $('btnSairAdmin')
       if (adminMode) {
-        status.textContent = '🛡️'
-        status.classList.add('on')
-        enterBtn.classList.add('hidden')
-        exitBtn.classList.remove('hidden')
+        status.textContent = '🛡️'; status.classList.add('on')
+        $('btnEntrarAdmin').classList.add('hidden'); $('btnSairAdmin').classList.remove('hidden')
       } else {
-        status.textContent = '👤'
-        status.classList.remove('on')
-        enterBtn.classList.remove('hidden')
-        exitBtn.classList.add('hidden')
+        status.textContent = '👤'; status.classList.remove('on')
+        $('btnEntrarAdmin').classList.remove('hidden'); $('btnSairAdmin').classList.add('hidden')
       }
       renderTickets()
-    }
-
-    function enterAdminMode() {
-      const password = prompt('Digite a senha do administrador:')
-      if (password === null) return
-      if (password !== ADMIN_PASSWORD) {
-        showMessage('Senha de administrador incorreta.', 'erro')
-        return
-      }
-      adminMode = true
-      localStorage.setItem('helpdesk_admin_mode', 'true')
-      updateAdminUI()
-      atualizarBotaoInstalarApp()
-      showMessage('Modo administrador ativado.', 'ok')
-    }
-
-    function exitAdminMode() {
-      adminMode = false
-      localStorage.removeItem('helpdesk_admin_mode')
-      updateAdminUI()
-      showMessage('Modo administrador encerrado.', 'ok')
-    }
-
-    function limparFiltros() {
-      $('busca').value = ''
-      $('filtroStatus').value = ''
-      $('filtroSetor').value = ''
-      $('filtroResponsavel').value = ''
-      $('somenteNegados').checked = false
-      renderTickets()
-    }
-
-    function abrirChamadosPorStatus(status = '') {
-      $('busca').value = ''
-      $('filtroStatus').value = status
-      $('filtroSetor').value = ''
-      $('filtroResponsavel').value = ''
-      $('somenteNegados').checked = false
-      trocarTela('chamados')
-      renderTickets()
-    }
-
-    function atualizarPerfilSolicitante() {
-      const pNome = $('perfilNome')
-      const pMatricula = $('perfilMatricula')
-      if (pNome) pNome.value = $('nome').value.trim()
-      if (pMatricula) pMatricula.value = $('matricula').value.trim()
-    }
-
-    function atualizarEstadoFormulario() {
-      atualizarPerfilSolicitante()
-    }
-
-    // CORREÇÃO: Verificação de elementos nulos
-    function limparUsuarioLocal(mostrarMensagem = true) {
-      const elNome = $('nome');
-      const elMat = $('matricula');
-      if (elNome) elNome.value = 'NÃO IDENTIFICADO';
-      if (elMat) elMat.value = '';
-      
-      localStorage.removeItem('helpdesk_nome');
-      localStorage.removeItem('helpdesk_matricula');
-      
-      atualizarEstadoFormulario()
-      clearForm()
-      if (mostrarMensagem) {
-        showMessage('Identificação do solicitante limpa.', 'ok')
-      }
-    }
-
-    function carregarUsuarioLocal() {
-      const nomeSalvo = localStorage.getItem('helpdesk_nome') || 'NÃO IDENTIFICADO'
-      const matSalva = localStorage.getItem('helpdesk_matricula') || ''
-      const selectNome = $('nome')
-      const inputMat = $('matricula')
-      
-      if (selectNome) {
-        const opcoesValidas = Array.from(selectNome.options).map(option => option.value)
-        selectNome.value = opcoesValidas.includes(nomeSalvo) ? nomeSalvo : 'NÃO IDENTIFICADO'
-      }
-      if (inputMat) {
-        inputMat.value = matSalva
-      }
-      atualizarEstadoFormulario()
-    }
-
-    function populateMilitarOptions() {
-      const militares = [
-        'NÃO IDENTIFICADO', '1º TEN MARCELO', '1º SGT VICENTE', '1º SGT DIEFERSON',
-        '1º SGT BATISTA', '2º SGT ANDERSON', '2º SGT VINICIUS', '2º SGT LISCANO',
-        'SD TOMASCHEWSKI', 'SD CAMACHO', 'SD ISQUIERDO', 'SD BORGES', 'SD BATISTA',
-        'SD MAX', 'SD WILLIAM', 'SD MOTTA', 'SD SOARES', 'SD PEGLOW', 'SD LARSSON'
-      ]
-      const select = $('nome')
-      if (select) {
-          select.innerHTML = militares.map(m => `<option value="${m}">${m}</option>`).join('')
-      }
-      carregarUsuarioLocal()
-    }
-
-    function forceUppercaseField(e) {
-      const start = e.target.selectionStart
-      const end = e.target.selectionEnd
-      e.target.value = e.target.value.toUpperCase()
-      e.target.setSelectionRange(start, end)
     }
 
     async function fetchTickets() {
-      try {
-        const { data, error } = await supabase
-          .from('chamados')
-          .select('*')
-          .order('created_at', { ascending: false })
-        if (error) throw error
+      const { data, error } = await supabase.from('chamados').select('*').order('created_at', { ascending: false })
+      if (!error) {
         chamados = data || []
         renderTickets()
         updateStats()
-      } catch (err) {
-        showMessage('Erro ao buscar chamados.', 'erro')
       }
     }
 
     function updateStats() {
-      const total = chamados.length
-      const aguardando = chamados.filter(c => c.status === 'Aguardando triagem').length
-      const encaminhado = chamados.filter(c => c.status === 'Encaminhado').length
-      const andamento = chamados.filter(c => c.status === 'Em andamento').length
-      const finalizado = chamados.filter(c => c.status === 'Finalizado').length
-      const negado = chamados.filter(c => c.status === 'Negado').length
-
-      if ($('stTotal')) $('stTotal').textContent = total
-      if ($('stAguardando')) $('stAguardando').textContent = aguardando
-      if ($('stEncaminhado')) $('stEncaminhado').textContent = encaminhado
-      if ($('stAndamento')) $('stAndamento').textContent = andamento
-      if ($('stFinalizado')) $('stFinalizado').textContent = finalizado
-      if ($('stNegado')) $('stNegado').textContent = negado
+      if ($('stTotal')) $('stTotal').textContent = chamados.length
+      if ($('stAguardando')) $('stAguardando').textContent = chamados.filter(c => c.status === 'Aguardando triagem').length
+      if ($('stAndamento')) $('stAndamento').textContent = chamados.filter(c => c.status === 'Em andamento' || c.status === 'Encaminhado').length
+      if ($('stFinalizado')) $('stFinalizado').textContent = chamados.filter(c => c.status === 'Finalizado').length
     }
 
     function renderTickets() {
@@ -1367,424 +997,154 @@
       if (!lista || !homeLista) return
 
       const busca = $('busca').value.toLowerCase()
-      const filtroStatus = $('filtroStatus').value
-      const filtroSetor = $('filtroSetor').value
-      const filtroResponsavel = $('filtroResponsavel').value
-      const somenteNegados = $('somenteNegados').checked
+      const fStatus = $('filtroStatus').value
+      const fNegados = $('somenteNegados').checked
 
       const filtrados = chamados.filter(c => {
-        const matchesBusca = [c.titulo, c.nome_solicitante, c.id_func, c.local, c.responsavel]
-          .some(v => String(v || '').toLowerCase().includes(busca))
-        const matchesStatus = filtroStatus ? c.status === filtroStatus : true
-        const matchesSetor = filtroSetor ? c.setor === filtroSetor : true
-        const matchesResponsavel = filtroResponsavel ? c.responsavel === filtroResponsavel : true
-        const matchesNegados = somenteNegados ? c.status === 'Negado' : true
-        return matchesBusca && matchesStatus && matchesSetor && matchesResponsavel && matchesNegados
+        const matchBusca = (c.titulo + c.nome_solicitante + c.local).toLowerCase().includes(busca)
+        const matchStatus = fStatus ? c.status === fStatus : true
+        const matchNegado = fNegados ? c.status === 'Negado' : true
+        return matchBusca && matchStatus && matchNegado
       })
 
-      lista.innerHTML = filtrados.length ? filtrados.map(renderTicketCard).join('') : '<div class="home-vazio">Nenhum chamado encontrado.</div>'
-
-      const abertos = chamados
-        .filter(c => c.status !== 'Finalizado' && c.status !== 'Negado')
-        .sort((a, b) => priorityWeight(b.prioridade) - priorityWeight(a.prioridade))
-        .slice(0, 15)
-
-      homeLista.innerHTML = abertos.length ? abertos.map(renderHomeCard).join('') : '<div class="home-vazio">Todos os chamados foram concluídos! ✨</div>'
-
-      const rSelect = $('filtroResponsavel')
-      if (rSelect) {
-        const currentR = rSelect.value
-        const distinctR = [...new Set(chamados.map(c => c.responsavel).filter(Boolean))].sort()
-        rSelect.innerHTML = '<option value="">Todos os responsáveis</option>' + distinctR.map(r => `<option value="${r}">${r}</option>`).join('')
-        rSelect.value = currentR
-      }
-    }
-
-    function renderTicketCard(c) {
-      const resolved = isResolved(c.status)
-      const tClass = ticketClass(c.prioridade, c.status)
-      const sClass = statusClass(c.status)
-      const pClass = priorityClass(c.prioridade)
-      const tempo = getTempoChamado(c)
-
-      return `
-        <div class="ticket ${tClass}">
-          ${resolved ? '<div class="resolved-seal">✅ FINALIZADO</div>' : ''}
-          <div class="ticket-head">
-            <div class="ticket-title">${escapeHtml(c.titulo)}</div>
-            <div class="mini-badges">
-              <span class="badge ${sClass}">${c.status}</span>
-              <span class="badge ${pClass}">${c.prioridade}</span>
-            </div>
-          </div>
-          <div class="ticket-sub">${escapeHtml(c.descricao || '(Sem descrição)')}</div>
-          <div class="meta">
-            <div>📍 <b>Local:</b> ${escapeHtml(c.local)}</div>
-            <div>👤 <b>Solicitante:</b> ${escapeHtml(c.nome_solicitante)} (${escapeHtml(c.id_func || 'N/I')})</div>
-            <div>🏢 <b>Setor:</b> ${c.setor}</div>
-            <div>🛠️ <b>Responsável:</b> ${escapeHtml(c.responsavel || 'A definir')}</div>
-          </div>
-          <div class="timer-box ${tempo.classe}">
-            <div class="timer-label">${tempo.label}</div>
-            <div class="timer-value">${tempo.valor}</div>
-          </div>
-          ${c.observacao_admin ? `<div class="obs-box">📝 <b>Obs Admin:</b>\n${escapeHtml(c.observacao_admin)}</div>` : ''}
-          ${c.justificativa_negativa ? `<div class="neg-box">🚫 <b>Negado:</b>\n${escapeHtml(c.justificativa_negativa)}</div>` : ''}
-          ${adminMode ? renderAdminArea(c) : ''}
-          <div class="meta" style="margin-top:12px; opacity:0.7; font-style:italic;">
-            Criado em: ${formatDate(c.created_at)}
-          </div>
-        </div>
-      `
-    }
-
-    function renderHomeCard(c) {
-      const isExpanded = homeExpandedState[c.id] === true
-      const sClass = statusClass(c.status)
-      const pClass = priorityClass(c.prioridade)
-      const tempo = getTempoChamado(c)
-
-      return `
-        <div class="home-item">
-          <div class="home-item-top">
-            <div class="home-item-top-left">
-              <div class="home-item-titulo">${escapeHtml(c.titulo)}</div>
+      lista.innerHTML = filtrados.map(c => {
+        const tempo = getTempoChamado(c)
+        return `
+          <div class="ticket ${c.status === 'Finalizado' ? 'resolvido' : (c.status === 'Negado' ? 'negado' : '')}">
+            <div class="ticket-head">
+              <div class="ticket-title">${escapeHtml(c.titulo)}</div>
               <div class="mini-badges">
-                <span class="badge ${sClass}">${c.status}</span>
-                <span class="badge ${pClass}">${c.prioridade}</span>
+                <span class="badge st-${c.status.toLowerCase().replace(' ', '-')}">${c.status}</span>
+                <span class="badge pr-${c.prioridade.toLowerCase()}">${c.prioridade}</span>
               </div>
             </div>
-            <div class="home-item-top-right">
-              <button class="home-toggle-btn" onclick="toggleHomeDetails('${c.id}')">
-                ${isExpanded ? 'Recolher' : 'Ver mais'}
-              </button>
+            <div class="ticket-sub">${escapeHtml(c.descricao || '(Sem descrição)')}</div>
+            <div class="meta">
+              📍 <b>Local:</b> ${escapeHtml(c.local)}<br>
+              👤 <b>Solicitante:</b> ${escapeHtml(c.nome_solicitante)}<br>
+              🛠️ <b>Responsável:</b> ${escapeHtml(c.responsavel || 'A definir')}
             </div>
+            <div class="timer-box ${tempo.classe}">
+              ${tempo.label}: ${tempo.valor}
+            </div>
+            ${c.justificativa_negativa ? `<div class="neg-box">🚫 <b>Motivo:</b> ${escapeHtml(c.justificativa_negativa)}</div>` : ''}
+            ${adminMode ? renderAdminArea(c) : ''}
           </div>
-          <div id="details-${c.id}" class="home-item-details ${isExpanded ? '' : 'hidden'}">
-            <div class="home-item-meta">
-              <div>📍 <b>Local:</b> ${escapeHtml(c.local)}</div>
-              <div>🛠️ <b>Responsável:</b> ${escapeHtml(c.responsavel || 'A definir')}</div>
-              <div>⏱ <b>Há:</b> ${tempo.valor}</div>
-            </div>
+        `
+      }).join('')
+
+      const abertos = chamados.filter(c => c.status !== 'Finalizado' && c.status !== 'Negado').slice(0, 10)
+      homeLista.innerHTML = abertos.map(c => `
+        <div class="home-item">
+          <div class="home-item-top">
+            <div class="home-item-titulo">${escapeHtml(c.titulo)}</div>
+            <button class="home-toggle-btn" onclick="window.toggleHomeDetails('${c.id}')">Ver</button>
+          </div>
+          <div id="details-${c.id}" class="home-item-details hidden">
+             <div class="home-item-meta">📍 ${escapeHtml(c.local)} | 🛠️ ${escapeHtml(c.responsavel || 'A definir')}</div>
           </div>
         </div>
-      `
+      `).join('')
     }
 
     function renderAdminArea(c) {
-      const showCompra = shouldShowPurchaseFields(c.status)
       return `
         <div class="admin-area">
           <div class="grid-2">
-            <div>
-              <label>Status</label>
-              <select onchange="handleStatusChange('${c.id}', this.value)">
-                <option value="Aguardando triagem" ${c.status === 'Aguardando triagem' ? 'selected' : ''}>Aguardando triagem</option>
-                <option value="Encaminhado" ${c.status === 'Encaminhado' ? 'selected' : ''}>Encaminhado</option>
-                <option value="Em andamento" ${c.status === 'Em andamento' ? 'selected' : ''}>Em andamento</option>
-                <option value="Finalizado" ${c.status === 'Finalizado' ? 'selected' : ''}>Finalizado</option>
-                <option value="Negado" ${c.status === 'Negado' ? 'selected' : ''}>Negado</option>
-              </select>
-            </div>
-            <div>
-              <label>Prioridade</label>
-              <select onchange="alterarPrioridade('${c.id}', this.value)">
-                <option value="Baixa" ${c.prioridade === 'Baixa' ? 'selected' : ''}>Baixa</option>
-                <option value="Média" ${c.prioridade === 'Média' ? 'selected' : ''}>Média</option>
-                <option value="Alta" ${c.prioridade === 'Alta' ? 'selected' : ''}>Alta</option>
-              </select>
-            </div>
+            <select onchange="window.alterarStatus('${c.id}', this.value)">
+              <option value="Aguardando triagem" ${c.status==='Aguardando triagem'?'selected':''}>Triagem</option>
+              <option value="Encaminhado" ${c.status==='Encaminhado'?'selected':''}>Encaminhado</option>
+              <option value="Em andamento" ${c.status==='Em andamento'?'selected':''}>Em curso</option>
+              <option value="Finalizado" ${c.status==='Finalizado'?'selected':''}>Concluir</option>
+              <option value="Negado" ${c.status==='Negado'?'selected':''}>Negar</option>
+            </select>
+            <select onchange="window.alterarResponsavel('${c.id}', this.value)">
+              <option value="">Responsável...</option>
+              ${RESPONSAVEIS.map(r => `<option value="${r}" ${c.responsavel === r ? 'selected' : ''}>${r}</option>`).join('')}
+            </select>
           </div>
-          <label>Responsável</label>
-          <select onchange="alterarResponsavel('${c.id}', this.value)">
-            <option value="">Selecione...</option>
-            ${RESPONSAVEIS.map(r => `<option value="${r}" ${c.responsavel === r ? 'selected' : ''}>${r}</option>`).join('')}
-          </select>
-          <div id="compra-fields-${c.id}" class="admin-compra-fields ${showCompra ? '' : 'hidden'}">
-            <div class="grid-2">
-              <div>
-                <label>Valor Compra (R$)</label>
-                <input type="text" value="${c.valor_compra ? formatCurrency(c.valor_compra) : ''}" 
-                  onblur="alterarValorCompra('${c.id}', this.value)" placeholder="R$ 0,00" />
-              </div>
-              <div>
-                <label>Data Compra</label>
-                <input type="date" value="${formatDateForInput(c.data_compra)}" 
-                  onchange="alterarDataCompra('${c.id}', this.value)" />
-              </div>
-            </div>
-          </div>
-          <label>Observação Admin</label>
-          <textarea onblur="alterarObservacao('${c.id}', this.value)" placeholder="Notas internas...">${escapeHtml(c.observacao_admin)}</textarea>
-          ${c.status === 'Negado' ? `
-            <label>Justificativa Negativa</label>
-            <textarea onblur="alterarJustificativaNegativa('${c.id}', this.value)" placeholder="Por que foi negado?">${escapeHtml(c.justificativa_negativa)}</textarea>
-          ` : ''}
-          <button class="btn-danger" style="margin-top:8px;" onclick="deletarChamado('${c.id}')">Excluir Chamado</button>
+          ${c.status === 'Negado' ? `<input placeholder="Justificativa..." onblur="window.alterarJustificativaNegativa('${c.id}', this.value)" value="${c.justificativa_negativa || ''}" style="margin-top:5px">` : ''}
+          <button class="btn-danger" style="margin-top:8px; padding:5px" onclick="window.deletarChamado('${c.id}')">Excluir</button>
         </div>
       `
     }
 
-    async function handleStatusChange(id, novoStatus) {
-      const container = $(`compra-fields-${id}`)
-      if (container) {
-        shouldShowPurchaseFields(novoStatus) ? container.classList.remove('hidden') : container.classList.add('hidden')
-      }
-      await alterarStatus(id, novoStatus)
+    // --- FUNÇÕES DE JANELA (WINDOW) ---
+    window.alterarStatus = async (id, status) => {
+      await supabase.from('chamados').update({ status, updated_at: new Date().toISOString() }).eq('id', id)
+      fetchTickets()
     }
-
-    async function alterarStatus(id, status) {
-      try {
-        const updates = { status, updated_at: new Date().toISOString() }
-        const { error } = await supabase.from('chamados').update(updates).eq('id', id)
-        if (error) throw error
-        await fetchTickets()
-        showMessage('Status atualizado.')
-      } catch (err) {
-        showMessage('Erro ao atualizar status.', 'erro')
-      }
+    window.alterarResponsavel = async (id, responsavel) => {
+      await supabase.from('chamados').update({ responsavel }).eq('id', id)
+      fetchTickets()
     }
-
-    async function alterarPrioridade(id, prioridade) {
-      try {
-        const { error } = await supabase.from('chamados').update({ prioridade }).eq('id', id)
-        if (error) throw error
-        await fetchTickets()
-        showMessage('Prioridade atualizada.')
-      } catch (err) {
-        showMessage('Erro ao atualizar prioridade.', 'erro')
-      }
+    window.alterarJustificativaNegativa = async (id, justificativa_negativa) => {
+      await supabase.from('chamados').update({ justificativa_negativa }).eq('id', id)
+      fetchTickets()
     }
+    window.deletarChamado = async (id) => {
+      if (confirm('Excluir?')) { await supabase.from('chamados').delete().eq('id', id); fetchTickets() }
+    }
+    window.toggleHomeDetails = (id) => { $(`details-${id}`).classList.toggle('hidden') }
 
-    async function alterarResponsavel(id, responsavel) {
-      try {
-        const { error } = await supabase.from('chamados').update({ responsavel }).eq('id', id)
-        if (error) throw error
-        await fetchTickets()
-        showMessage('Responsável atualizado.')
-      } catch (err) {
-        showMessage('Erro ao atualizar responsável.', 'erro')
+    // --- EVENTOS ---
+    $('btnAbrir').onclick = async () => {
+      const payload = {
+        nome_solicitante: $('nome').value,
+        id_func: $('matricula').value,
+        titulo: $('titulo').value.toUpperCase(),
+        descricao: $('descricao').value,
+        local: $('local').value.toUpperCase(),
+        setor: 'B4', prioridade: 'Média', status: 'Aguardando triagem'
+      }
+      if (!payload.titulo || !payload.local) return showMessage('Preencha os campos!', 'erro')
+      const { error } = await supabase.from('chamados').insert([payload])
+      if (!error) {
+        localStorage.setItem('helpdesk_nome', payload.nome_solicitante)
+        localStorage.setItem('helpdesk_matricula', payload.id_func)
+        showMessage('Chamado enviado!')
+        $('titulo').value = ''; $('descricao').value = ''; $('local').value = ''
+        fetchTickets(); trocarTela('home')
       }
     }
 
-    async function alterarObservacao(id, observacao_admin) {
-      try {
-        const { error } = await supabase.from('chamados').update({ observacao_admin }).eq('id', id)
-        if (error) throw error
-        await fetchTickets()
-      } catch (err) {
-        showMessage('Erro ao salvar observação.', 'erro')
+    $('btnEntrarAdmin').onclick = () => {
+      if (prompt('Senha:') === ADMIN_PASSWORD) {
+        adminMode = true; localStorage.setItem('helpdesk_admin_mode', 'true'); updateAdminUI()
       }
     }
-
-    async function alterarJustificativaNegativa(id, justificativa_negativa) {
-      try {
-        const { error } = await supabase.from('chamados').update({ justificativa_negativa }).eq('id', id)
-        if (error) throw error
-        await fetchTickets()
-      } catch (err) {
-        showMessage('Erro ao salvar justificativa.', 'erro')
-      }
+    $('btnSairAdmin').onclick = () => {
+      adminMode = false; localStorage.removeItem('helpdesk_admin_mode'); updateAdminUI()
     }
 
-    async function alterarValorCompra(id, valorTexto) {
-      try {
-        const valorNum = parseCurrencyInput(valorTexto)
-        const { error } = await supabase.from('chamados').update({ valor_compra: valorNum }).eq('id', id)
-        if (error) throw error
-        await fetchTickets()
-      } catch (err) {
-        showMessage('Erro ao salvar valor.', 'erro')
-      }
-    }
-
-    async function alterarDataCompra(id, data_compra) {
-      try {
-        const val = data_compra || null
-        const { error } = await supabase.from('chamados').update({ data_compra: val }).eq('id', id)
-        if (error) throw error
-        await fetchTickets()
-      } catch (err) {
-        showMessage('Erro ao salvar data.', 'erro')
-      }
-    }
-
-    async function deletarChamado(id) {
-      if (!confirm('Tem certeza que deseja excluir este chamado permanentemente?')) return
-      try {
-        const { error } = await supabase.from('chamados').delete().eq('id', id)
-        if (error) throw error
-        showMessage('Chamado excluído.')
-        await fetchTickets()
-      } catch (err) {
-        showMessage('Erro ao excluir chamado.', 'erro')
-      }
-    }
-
-    async function abrirChamado() {
-      const nome = $('nome').value.trim()
-      const matricula = $('matricula').value.trim()
-      const titulo = $('titulo').value.trim()
-      const descricao = $('descricao').value.trim()
-      const local = $('local').value.trim()
-
-      if (!nome || !titulo || !local) {
-        showMessage('Preencha os campos obrigatórios (Nome, Título e Local).', 'erro')
-        return
-      }
-
-      const btn = $('btnAbrir')
-      btn.disabled = true
-      btn.textContent = 'Enviando...'
-
-      try {
-        const { error } = await supabase.from('chamados').insert([{
-          nome_solicitante: nome,
-          id_func: matricula,
-          titulo,
-          descricao,
-          local,
-          setor: SETOR_FIXO,
-          prioridade: PRIORIDADE_PADRAO,
-          status: 'Aguardando triagem'
-        }])
-        if (error) throw error
-        
-        localStorage.setItem('helpdesk_nome', nome)
-        localStorage.setItem('helpdesk_matricula', matricula)
-        
-        showMessage('Chamado aberto com sucesso!')
-        clearForm()
-        fetchTickets()
-        trocarTela('home')
-      } catch (err) {
-        showMessage('Erro ao abrir chamado.', 'erro')
-      } finally {
-        btn.disabled = false
-        btn.textContent = 'Enviar chamado'
-      }
-    }
-
-    function clearForm() {
-      const elTit = $('titulo')
-      const elDesc = $('descricao')
-      const elLoc = $('local')
-      if (elTit) elTit.value = ''
-      if (elDesc) elDesc.value = ''
-      if (elLoc) elLoc.value = ''
+    $('btnLimparIdentificacao').onclick = () => {
+      localStorage.clear(); location.reload()
     }
 
     function trocarTela(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
       document.querySelectorAll('.tabbar button').forEach(b => b.classList.remove('active'))
-      const elScreen = $(`screen-${id}`)
-      const elTab = document.querySelector(`.tabbar button[data-screen="${id}"]`)
-      if (elScreen) elScreen.classList.add('active')
-      if (elTab) elTab.classList.add('active')
-      window.scrollTo(0, 0)
+      $(`screen-${id}`).classList.add('active')
+      document.querySelector(`[data-screen="${id}"]`).classList.add('active')
     }
 
-    function toggleHomeDetails(id) {
-      const details = $(`details-${id}`)
-      if (!details) return
-      const isHidden = details.classList.toggle('hidden')
-      homeExpandedState[id] = !isHidden
-      const btn = details.parentElement.querySelector('.home-toggle-btn')
-      if (btn) btn.textContent = isHidden ? 'Ver mais' : 'Recolher'
-    }
+    document.querySelectorAll('.tabbar button').forEach(b => b.onclick = () => trocarTela(b.dataset.screen))
+    $('busca').oninput = renderTickets
+    $('filtroStatus').onchange = renderTickets
+    $('somenteNegados').onchange = renderTickets
+    $('btnLimparFiltros').onclick = () => { $('busca').value = ''; $('filtroStatus').value = ''; renderTickets() }
 
-    function toggleAllHome() {
-      const abertos = chamados.filter(c => c.status !== 'Finalizado' && c.status !== 'Negado')
-      const allExpanded = abertos.every(c => homeExpandedState[c.id] === true)
-      const newState = !allExpanded
-      abertos.forEach(c => { homeExpandedState[c.id] = newState })
-      $('btnToggleAllHome').textContent = newState ? 'Recolher todos' : 'Expandir todos'
-      renderTickets()
-    }
+    // --- INIT ---
+    const mil = ['NÃO IDENTIFICADO', ...RESPONSAVEIS]
+    $('nome').innerHTML = mil.map(m => `<option value="${m}">${m}</option>`).join('')
+    $('nome').value = localStorage.getItem('helpdesk_nome') || 'NÃO IDENTIFICADO'
+    $('matricula').value = localStorage.getItem('helpdesk_matricula') || ''
+    
+    if ($('perfilNome')) $('perfilNome').value = $('nome').value
+    if ($('perfilMatricula')) $('perfilMatricula').value = $('matricula').value
 
-    // LISTENER CONFIGURADO COM VERIFICAÇÃO DE ELEMENTOS (CORREÇÃO DE ERRO)
-    $('btnAbrir').addEventListener('click', abrirChamado)
-    $('btnLimpar').addEventListener('click', clearForm)
-    $('btnEntrarAdmin').addEventListener('click', enterAdminMode)
-    $('btnSairAdmin').addEventListener('click', exitAdminMode)
-    $('btnLimparFiltros').addEventListener('click', limparFiltros)
-    $('btnAtualizarLista').addEventListener('click', fetchTickets)
-    $('btnRevalidarSolicitante').addEventListener('click', () => trocarTela('novo'))
-    $('btnInstalarApp').addEventListener('click', instalarApp)
-    $('btnToggleAllHome').addEventListener('click', toggleAllHome)
-    $('busca').addEventListener('input', renderTickets)
-    $('filtroStatus').addEventListener('change', renderTickets)
-    $('filtroSetor').addEventListener('change', renderTickets)
-    $('filtroResponsavel').addEventListener('change', renderTickets)
-    $('somenteNegados').addEventListener('change', renderTickets)
-
-    document.querySelectorAll('.tabbar button').forEach(btn => {
-      btn.addEventListener('click', () => trocarTela(btn.dataset.screen))
-    })
-
-    document.querySelectorAll('.stat').forEach(card => {
-      card.addEventListener('click', () => abrirChamadosPorStatus(card.dataset.status))
-    })
-
-    const elNome = $('nome');
-    if(elNome) {
-        elNome.addEventListener('change', () => {
-          localStorage.setItem('helpdesk_nome', elNome.value)
-          atualizarEstadoFormulario()
-        })
-    }
-
-    const elMatricula = $('matricula');
-    if(elMatricula) {
-        elMatricula.addEventListener('input', () => {
-          elMatricula.value = normalizarIdFunc(elMatricula.value)
-          localStorage.setItem('helpdesk_matricula', elMatricula.value)
-          atualizarEstadoFormulario()
-        })
-    }
-
-    $('titulo').addEventListener('input', forceUppercaseField)
-    $('local').addEventListener('input', forceUppercaseField)
-    $('btnLimparIdentificacao').addEventListener('click', () => limparUsuarioLocal(true))
-
-    window.alterarStatus = alterarStatus
-    window.handleStatusChange = handleStatusChange
-    window.alterarPrioridade = alterarPrioridade
-    window.alterarResponsavel = alterarResponsavel
-    window.alterarObservacao = alterarObservacao
-    window.alterarJustificativaNegativa = alterarJustificativaNegativa
-    window.alterarValorCompra = alterarValorCompra
-    window.alterarDataCompra = alterarDataCompra
-    window.deletarChamado = deletarChamado
-    window.toggleHomeDetails = toggleHomeDetails
-
-    window.addEventListener('beforeinstallprompt', (event) => {
-      event.preventDefault()
-      deferredPrompt = event
-      atualizarBotaoInstalarApp()
-    })
-
-    window.addEventListener('appinstalled', () => {
-      deferredPrompt = null
-      atualizarBotaoInstalarApp()
-      showMessage('App instalado com sucesso.', 'ok')
-    })
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {})
-      })
-    }
-
-    populateMilitarOptions()
-    updateAdminUI()
     fetchTickets()
-
-    timerUpdater = setInterval(() => {
-      if ($('screen-home').classList.contains('active') || $('screen-chamados').classList.contains('active')) {
-        renderTickets()
-      }
-    }, 60000)
+    updateAdminUI()
   </script>
 </body>
 </html>
