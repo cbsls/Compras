@@ -1663,6 +1663,59 @@ function toggleAllHomeItems() {
 
 
 // 🔥 FUNÇÃO PRINCIPAL DE LISTAGEM
+    
+    function renderHomeOpenList() {
+  const container = document.getElementById('homeListaAbertos')
+
+  if (!container) return
+
+  const abertos = chamados
+    .filter(c => c.status !== 'Finalizado')
+    .sort((a, b) => {
+      const p = priorityWeight(b.prioridade) - priorityWeight(a.prioridade)
+      if (p !== 0) return p
+      return new Date(b.created_at) - new Date(a.created_at)
+    })
+    .slice(0, 8)
+
+  if (!abertos.length) {
+    container.innerHTML = `<div class="home-vazio">Nenhum chamado aberto no momento.</div>`
+    return
+  }
+
+  container.innerHTML = abertos.map(c => {
+    const tempo = getTempoChamado(c)
+    const expanded = !!homeExpandedState[String(c.id)]
+
+    return `
+      <div class="home-item">
+        <div class="home-item-top">
+          <div class="home-item-top-left">
+            <div class="home-item-titulo">${escapeHtml(c.titulo || '-')}</div>
+            <span class="badge ${statusClass(c.status)}">${escapeHtml(c.status)}</span>
+          </div>
+
+          <button class="home-toggle-btn" onclick="toggleHomeDetails('${c.id}')">
+            ${expanded ? '🔼 Recolher' : '🔽 Expandir'}
+          </button>
+        </div>
+
+        <div class="home-item-details ${expanded ? '' : 'hidden'}">
+          <div class="mini-badges">
+            <span class="badge ${priorityClass(c.prioridade)}">${escapeHtml(c.prioridade || '-')}</span>
+            <span class="badge">📍 ${escapeHtml(c.local || '-')}</span>
+          </div>
+
+          <div class="timer-box ${tempo.classe}">
+            <div class="timer-label">${tempo.label}</div>
+            <div class="timer-value">${tempo.valor}</div>
+          </div>
+        </div>
+      </div>
+    `
+  }).join('')
+}
+    
 function renderTickets() {
   if (!Array.isArray(chamados)) return
 
