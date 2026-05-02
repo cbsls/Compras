@@ -1132,21 +1132,42 @@
 const $ = (id) => document.getElementById(id)
 
 let chamados = []
-let abaAtual = 'manutencao' // 🔥 ADICIONE ISSO
+let abaAtual = 'manutencao' // 🔥 CONTROLE DAS ABAS
 
 let adminMode = localStorage.getItem('helpdesk_admin_mode') === 'true'
 let timerUpdater = null
 let homeExpandedState = {}
 let deferredPrompt = null
-// 🔥 CORREÇÃO: variável global do usuário logado
+
+// 🔥 USUÁRIO LOGADO
 let usuarioLogado = null
 
+// 🔥 FUNÇÃO DE TROCA DE ABA
+function trocarAba(tipo) {
+  abaAtual = String(tipo).toLowerCase()
+
+  // Atualiza visual dos botões (se existir)
+  document.querySelectorAll('.aba-btn').forEach(btn => {
+    btn.classList.remove('active')
+  })
+
+  const btnAtiva = document.querySelector(`[data-aba="${abaAtual}"]`)
+  if (btnAtiva) btnAtiva.classList.add('active')
+
+  renderTickets()
+}
+
+// 🔥 MENSAGENS DO SISTEMA
 function showMessage(text, type = 'ok') {
   const box = $('mensagem')
+  if (!box) return
+
   box.className = `msg ${type}`
   box.textContent = text
   box.style.display = 'block'
+
   clearTimeout(window.__helpdeskMsgTimer)
+
   window.__helpdeskMsgTimer = setTimeout(() => {
     box.style.display = 'none'
     box.className = 'msg'
@@ -1154,6 +1175,7 @@ function showMessage(text, type = 'ok') {
   }, 3500)
 }
 
+// 🔒 SEGURANÇA HTML
 function escapeHtml(text) {
   return String(text ?? '')
     .replaceAll('&', '&amp;')
@@ -1163,27 +1185,33 @@ function escapeHtml(text) {
     .replaceAll("'", '&#039;')
 }
 
+// 📅 FORMATADORES DE DATA
 function formatDate(value) {
   if (!value) return '-'
-  return new Date(value).toLocaleString('pt-BR')
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString('pt-BR')
 }
 
 function formatDateOnly(value) {
   if (!value) return '-'
   const date = new Date(`${value}T00:00:00`)
-  if (Number.isNaN(date.getTime())) return '-'
-  return date.toLocaleDateString('pt-BR')
+  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('pt-BR')
 }
 
 function formatDateForInput(value) {
   if (!value) return ''
   return String(value).slice(0, 10)
 }
-    function formatCurrency(value) {
-      const numeric = Number(value)
-      if (!Number.isFinite(numeric)) return '-'
-      return numeric.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-    }
+
+// 💰 FORMATADOR DE MOEDA
+function formatCurrency(value) {
+  const numeric = Number(value)
+  if (!Number.isFinite(numeric)) return '-'
+  return numeric.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  })
+}
 
     function parseCurrencyInput(value) {
       const cleaned = String(value || '')
