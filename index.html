@@ -2182,8 +2182,8 @@ async function loginPorIdFunc() {
   const { data, error } = await supabase
     .from('usuarios')
     .select('*')
-    .eq('id_func', Number(idFunc)) // 🔥 CORREÇÃO AQUI
-    .single()
+    .eq('id_func', idFunc) // 🔥 STRING
+    .maybeSingle()         // 🔥 NÃO QUEBRA SE NÃO ACHAR
 
   if (error || !data) {
     alert('Usuário não encontrado')
