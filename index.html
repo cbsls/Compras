@@ -1893,34 +1893,38 @@ function renderCompras() {
       })
     })
 
-    $('btnAbrir').addEventListener('click', createTicket)
-    $('btnLimpar').addEventListener('click', clearForm)
-    $('btnEntrarAdmin').addEventListener('click', enterAdminMode)
-    $('btnInstalarApp').addEventListener('click', instalarApp)
-    $('btnSairAdmin').addEventListener('click', exitAdminMode)
-    $('btnToggleAllHome').addEventListener('click', toggleAllHomeItems)
+ if ($('btnAbrir')) $('btnAbrir').addEventListener('click', createTicket)
+if ($('btnLimpar')) $('btnLimpar').addEventListener('click', clearForm)
+if ($('btnEntrarAdmin')) $('btnEntrarAdmin').addEventListener('click', enterAdminMode)
+if ($('btnInstalarApp')) $('btnInstalarApp').addEventListener('click', instalarApp)
+if ($('btnSairAdmin')) $('btnSairAdmin').addEventListener('click', exitAdminMode)
+if ($('btnToggleAllHome')) $('btnToggleAllHome').addEventListener('click', toggleAllHomeItems)
 
-    $('busca').addEventListener('input', renderTickets)
-    $('filtroStatus').addEventListener('change', renderTickets)
-    $('filtroSetor').addEventListener('change', renderTickets)
-    $('filtroResponsavel').addEventListener('change', renderTickets)
-    $('somenteNegados').addEventListener('change', renderTickets)
-    $('btnLimparFiltros').addEventListener('click', limparFiltros)
-    $('btnAtualizarLista').addEventListener('click', () => loadTickets(true))
+if ($('busca')) $('busca').addEventListener('input', renderTickets)
+if ($('filtroStatus')) $('filtroStatus').addEventListener('change', renderTickets)
+if ($('filtroSetor')) $('filtroSetor').addEventListener('change', renderTickets)
+if ($('filtroResponsavel')) $('filtroResponsavel').addEventListener('change', renderTickets)
+if ($('somenteNegados')) $('somenteNegados').addEventListener('change', renderTickets)
+if ($('btnLimparFiltros')) $('btnLimparFiltros').addEventListener('click', limparFiltros)
+if ($('btnAtualizarLista')) $('btnAtualizarLista').addEventListener('click', () => loadTickets(true))
  
-    $('nome').addEventListener('change', () => {
-      localStorage.setItem('helpdesk_nome', $('nome').value.trim())
-      atualizarEstadoFormulario()
-    })
+    if ($('nome')) {
+  $('nome').addEventListener('change', () => {
+    localStorage.setItem('helpdesk_nome', $('nome').value.trim())
+    atualizarEstadoFormulario()
+  })
+}
 
-    $('matricula').addEventListener('input', () => {
-      $('matricula').value = normalizarIdFunc($('matricula').value)
-      localStorage.setItem('helpdesk_matricula', $('matricula').value)
-      atualizarEstadoFormulario()
-    })
+if ($('matricula')) {
+  $('matricula').addEventListener('input', () => {
+    $('matricula').value = normalizarIdFunc($('matricula').value)
+    localStorage.setItem('helpdesk_matricula', $('matricula').value)
+    atualizarEstadoFormulario()
+  })
+}
 
-    $('titulo').addEventListener('input', forceUppercaseField)
-    $('local').addEventListener('input', forceUppercaseField)
+if ($('titulo')) $('titulo').addEventListener('input', forceUppercaseField)
+if ($('local')) $('local').addEventListener('input', forceUppercaseField)
 
    
     window.alterarStatus = alterarStatus
@@ -1933,6 +1937,7 @@ function renderCompras() {
     window.alterarDataCompra = alterarDataCompra
     window.negarChamado = negarChamado
     window.toggleHomeDetails = toggleHomeDetails
+    window.toggleAllHomeItems = toggleAllHomeItems
 
 
     window.addEventListener('beforeinstallprompt', (event) => {
