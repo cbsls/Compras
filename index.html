@@ -2182,38 +2182,24 @@ async function loginPorIdFunc() {
   const { data, error } = await supabase
     .from('usuarios')
     .select('*')
-    .eq('id_func', idFunc)
-    .maybeSingle() // 🔥 CORREÇÃO PRINCIPAL
+    .eq('id_func', Number(idFunc)) // 🔥 CORREÇÃO AQUI
+    .single()
 
-  if (error) {
-    console.error('Erro Supabase:', error)
-    alert('Erro ao consultar usuário')
-    return
-  }
-
-  if (!data) {
+  if (error || !data) {
     alert('Usuário não encontrado')
     return
   }
 
-  // 🔥 SALVA USUÁRIO
   usuarioLogado = data
+
   localStorage.setItem('usuarioLogado', JSON.stringify(data))
 
-  // 🔥 TROCA DE TELA
   document.getElementById('tela-login').classList.add('hidden')
   document.getElementById('app').classList.remove('hidden')
-
-  // 🔥 OPCIONAL: MOSTRAR NOME NO TOPO
-  const elNome = document.getElementById('nomeUsuarioTopo')
-  if (elNome) elNome.innerText = data.nome
-
-  console.log('Login OK:', data)
 
   loadTickets()
 }
 
-// 🔥 TORNA GLOBAL (UMA VEZ SÓ)
 window.loginPorIdFunc = loginPorIdFunc
 
 // 🔄 INICIALIZAÇÃO
