@@ -1080,7 +1080,7 @@
     <button data-screen="chamados">📋<br>Chamados</button>
     <button data-screen="compras">🛒<br>Compras</button>
     <button data-screen="perfil">👤<br>Perfil</button>
- </nav>
+</nav>
 
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -1089,43 +1089,42 @@
   const SUPABASE_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO'
   const ADMIN_PASSWORD = '123456'
 
-  // 🔥 ESSA LINHA RESOLVE SEU PROBLEMA
+  // ✅ APENAS UMA INSTÂNCIA
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-    const RESPONSAVEIS = [
-      '1º TEN MARCELO',
-      '1º SGT VICENTE',
-      '1º SGT DIEFERSON',
-      '1º SGT BATISTA',
-      '2º SGT ANDERSON',
-      '2º SGT VINICIUS',
-      '2º SGT LISCANO',
-      'SD TOMASCHEWSKI',
-      'SD CAMACHO',
-      'SD ISQUIERDO',
-      'SD BORGES',
-      'SD BATISTA',
-      'SD MAX',
-      'SD WILLIAM',
-      'SD MOTTA',
-      'SD SOARES',
-      'SD PEGLOW',
-      'SD LARSSON'
-    ]
+  const RESPONSAVEIS = [
+    '1º TEN MARCELO',
+    '1º SGT VICENTE',
+    '1º SGT DIEFERSON',
+    '1º SGT BATISTA',
+    '2º SGT ANDERSON',
+    '2º SGT VINICIUS',
+    '2º SGT LISCANO',
+    'SD TOMASCHEWSKI',
+    'SD CAMACHO',
+    'SD ISQUIERDO',
+    'SD BORGES',
+    'SD BATISTA',
+    'SD MAX',
+    'SD WILLIAM',
+    'SD MOTTA',
+    'SD SOARES',
+    'SD PEGLOW',
+    'SD LARSSON'
+  ]
 
-    const SETOR_FIXO = 'B4'
-    const PRIORIDADE_PADRAO = 'Média'
-    const MOSTRAR_IDENTIDADE_SOLICITANTE = false;
-    const STATUS_COM_COMPRA = ['Encaminhado', 'Em andamento', 'Finalizado']
+  const SETOR_FIXO = 'B4'
+  const PRIORIDADE_PADRAO = 'Média'
+  const MOSTRAR_IDENTIDADE_SOLICITANTE = false;
+  const STATUS_COM_COMPRA = ['Encaminhado', 'Em andamento', 'Finalizado']
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-    const $ = (id) => document.getElementById(id)
+  const $ = (id) => document.getElementById(id)
 
-    let chamados = []
-    let adminMode = localStorage.getItem('helpdesk_admin_mode') === 'true'
-    let timerUpdater = null
-    let homeExpandedState = {}
-    let deferredPrompt = null
+  let chamados = []
+  let adminMode = localStorage.getItem('helpdesk_admin_mode') === 'true'
+  let timerUpdater = null
+  let homeExpandedState = {}
+  let deferredPrompt = null
 
     function showMessage(text, type = 'ok') {
       const box = $('mensagem')
