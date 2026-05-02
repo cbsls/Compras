@@ -1638,22 +1638,58 @@ if (elQtd) elQtd.textContent = compras.length
     </div>
   `
 } // 🔥 FECHAMENTO CORRETO AQUI
+    
+// 🔥 FUNÇÃO GLOBAL (NÃO MEXER NA POSIÇÃO)
+   
+  function toggleHomeDetails(id) {
+  const key = String(id)
+
+  homeExpandedState[key] = !homeExpandedState[key]
+
+  renderHomeOpenList()
+}
+function toggleAllHomeItems() {
+  if (!Array.isArray(chamados) || !chamados.length) return
+
+  const ids = chamados.map(c => String(c.id))
+  const allExpanded = ids.every(id => homeExpandedState[id] === true)
+
+  ids.forEach(id => {
+    homeExpandedState[id] = !allExpanded
+  })
+
+  renderHomeOpenList()
+}
 
 
+// 🔥 FUNÇÃO PRINCIPAL DE LISTAGEM
 function renderTickets() {
-  const search = $('busca').value.trim().toLowerCase()
-  const statusFilter = $('filtroStatus').value
-  const setorFilter = $('filtroSetor').value
-  const responsavelFilter = $('filtroResponsavel').value
-  const onlyDenied = $('somenteNegados').checked
+  if (!Array.isArray(chamados)) return
+
+  const search = $('busca')?.value?.trim().toLowerCase() || ''
+  const statusFilter = $('filtroStatus')?.value || ''
+  const setorFilter = $('filtroSetor')?.value || ''
+  const responsavelFilter = $('filtroResponsavel')?.value || ''
+  const onlyDenied = $('somenteNegados')?.checked || false
 
   let filtered = chamados.filter(c => {
     const haystack = [
-      c.titulo, c.descricao, c.nome_solicitante, c.matricula_solicitante,
-      c.local, c.setor_responsavel, c.status, c.prioridade,
-      c.observacao_admin, c.responsavel_designado, c.justificativa_negativa,
-      c.valor_compra, c.data_compra
-    ].join(' ').toLowerCase()
+      c.titulo,
+      c.descricao,
+      c.nome_solicitante,
+      c.matricula_solicitante,
+      c.local,
+      c.setor_responsavel,
+      c.status,
+      c.prioridade,
+      c.observacao_admin,
+      c.responsavel_designado,
+      c.justificativa_negativa,
+      c.valor_compra,
+      c.data_compra
+    ]
+      .join(' ')
+      .toLowerCase()
 
     return (
       (!search || haystack.includes(search)) &&
