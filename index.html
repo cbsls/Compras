@@ -1428,98 +1428,78 @@ function formatDateForInput(value) {
       atualizarEstadoFormulario()
     }
 
-    function populateResponsavelFilter() {
-      const filtro = $('filtroResponsavel')
-      const atual = filtro.value
-      const nomesUsados = [...new Set(chamados.map(c => c.responsavel_designado).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b, 'pt-BR'))
+   function populateResponsavelFilter() {
+  const filtro = $('filtroResponsavel')
+  const atual = filtro.value
 
-      filtro.innerHTML = `<option value="">Todos os responsáveis</option>` +
-        nomesUsados.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join('')
+  const nomesUsados = [...new Set(
+    chamados.map(c => c.responsavel_designado).filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b, 'pt-BR'))
 
-      if (nomesUsados.includes(atual)) filtro.value = atual
+  filtro.innerHTML = `<option value="">Todos os responsáveis</option>` +
+    nomesUsados.map(nome =>
+      `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`
+    ).join('')
+
+  if (nomesUsados.includes(atual)) filtro.value = atual
+}
+
+async function createTicket() {
+
+  // 🔒 OBRIGA LOGIN
+  if (!usuarioLogado) {
+    showMessage('Faça login para abrir um chamado.', 'erro')
+    return
+  }
+
+  // 🔥 USA DADOS DO USUÁRIO LOGADO
+  const nome = usuarioLogado.nome.toUpperCase()
+  const matricula = usuarioLogado.id_func
+
+  const titulo = String($('titulo').value || '').trim().toUpperCase()
+  const descricao = $('descricao').value.trim()
+  const local = String($('local').value || '').trim().toUpperCase()
+  const tipo = String(document.getElementById('tipo').value).toLowerCase()
+
+  if (!titulo) {
+    showMessage('Preencha o título do chamado.', 'erro')
+    return
+  }
+
+  try {
+    const { error } = await supabase
+      .from('chamados')
+      .insert([{
+        nome_solicitante: nome,
+        matricula_solicitante: matricula,
+        titulo,
+        descricao,
+        local,
+        tipo: tipo,
+        prioridade: PRIORIDADE_PADRAO,
+        status: 'Aguardando triagem',
+        setor_responsavel: SETOR_FIXO,
+        observacao_admin: null,
+        responsavel_designado: null,
+        justificativa_negativa: null
+      }])
+
+    if (error) {
+      console.error(error)
+      showMessage('Erro ao registrar chamado: ' + error.message, 'erro')
+      return
     }
 
-    async function createTicket() {
-      const nome = String($('nome').value || 'NÃO IDENTIFICADO').trim().toUpperCase()
-      const tipo = document.getElementById('tipo').value
-      const matricula = normalizarIdFunc($('matricula').value)
-      const titulo = String($('titulo').value || '').trim().toUpperCase()
-      const descricao = $('descricao').value.trim()
-      const local = String($('local').value || '').trim().toUpperCase()
+    clearForm()
+    await loadTickets(false)
+    showMessage('Chamado registrado com sucesso.', 'ok')
+    trocarTela('chamados')
 
-      if (!titulo) {
-        showMessage('Preencha o título do chamado.', 'erro')
-        return
-      }
-
-      salvarIdentificacaoLocal()
-
-      try {
-        const { error } = await supabase
-          .from('chamados')
-         .insert([{
-  nome_solicitante: nome || 'NÃO IDENTIFICADO',
-  matricula_solicitante: matricula || null,
-  titulo,
-  descricao,
-  local,
-  tipo: tipo, // 🔥 ADICIONE ESTA LINHA
-  prioridade: PRIORIDADE_PADRAO,
-            status: 'Aguardando triagem',
-            setor_responsavel: SETOR_FIXO,
-            observacao_admin: null,
-            responsavel_designado: null,
-            justificativa_negativa: null
-          }])
-
-        if (error) {
-          console.error(error)
-          showMessage('Erro ao registrar chamado: ' + error.message, 'erro')
-          return
-        }
-
-        clearForm()
-        atualizarEstadoFormulario()
-        await loadTickets(false)
-        showMessage('Chamado registrado com sucesso.', 'ok')
-        trocarTela('chamados')
-      } catch (e) {
-        console.error(e)
-        showMessage('Erro de conexão ao registrar chamado.', 'erro')
-      }
-    }
-
-    async function loadTickets(showToast = true) {
-      try {
-        const { data, error } = await supabase
-          .from('chamados')
-          .select('*')
-          .order('created_at', { ascending: false })
-
-        if (error) {
-          console.error(error)
-          $('lista').innerHTML = `<div class="card">Erro ao carregar chamados: ${escapeHtml(error.message)}</div>`
-          $('homeListaAbertos').innerHTML = `<div class="home-vazio">Erro ao carregar resumo inicial.</div>`
-          return
-        }
-
-        chamados = Array.isArray(data) ? data : []
-        populateResponsavelFilter()
-        updateStats()
-        renderHomeOpenList()
-        renderTickets()
-        renderCompras()
-
-        if (showToast) {
-          showMessage(`${chamados.length} chamado(s) carregado(s).`, 'ok')
-        }
-      } catch (e) {
-        console.error(e)
-        $('lista').innerHTML = `<div class="card">Erro de conexão ao carregar chamados.</div>`
-        $('homeListaAbertos').innerHTML = `<div class="home-vazio">Erro de conexão ao carregar resumo inicial.</div>`
-      }
-    }
+  } catch (e) {
+    console.error(e)
+    showMessage('Erro de conexão ao registrar chamado.', 'erro')
+  }
+}
 
     function updateStats() {
       $('stTotal').textContent = chamados.length
