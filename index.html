@@ -1659,35 +1659,16 @@ function buildHomeItemHTML(c) {
   `
 }
 
-      <div class="home-item-details ${expanded ? '' : 'hidden'}" data-home-details="${escapeHtml(c.id)}">
-        <div class="mini-badges">
-          <span class="badge ${priorityClass(c.prioridade)}">${escapeHtml(c.prioridade || '-')}</span>
-          <span class="badge">📍 ${escapeHtml(c.local || '-')}</span>
-          <span class="badge">🏢 ${escapeHtml(c.setor_responsavel || 'B4')}</span>
-        </div>
-
-        <div class="timer-box ${tempo.classe}" style="margin-top:10px;">
-          <div class="timer-label">${tempo.label}</div>
-          <div class="timer-value" data-home-timer="${escapeHtml(c.id)}">${tempo.valor}</div>
-        </div>
-
-        <div class="home-item-meta">
-          <div><strong>Abertura:</strong> ${escapeHtml(formatDate(c.created_at))}</div>
-        </div>
-      </div>
-    </div>
-  `
-} // 🔥 FECHAMENTO CORRETO AQUI
-    
 // 🔥 FUNÇÃO GLOBAL (NÃO MEXER NA POSIÇÃO)
-   
-  function toggleHomeDetails(id) {
+
+function toggleHomeDetails(id) {
   const key = String(id)
 
   homeExpandedState[key] = !homeExpandedState[key]
 
   renderHomeOpenList()
 }
+
 function toggleAllHomeItems() {
   if (!Array.isArray(chamados) || !chamados.length) return
 
@@ -1700,8 +1681,6 @@ function toggleAllHomeItems() {
 
   renderHomeOpenList()
 }
-
-
 // 🔥 FUNÇÃO PRINCIPAL DE LISTAGEM
     
     function renderHomeOpenList() {
