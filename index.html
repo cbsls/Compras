@@ -1503,7 +1503,7 @@ if (elTotal) elTotal.textContent = formatCurrency(totalCompras)
 if (elQtd) elQtd.textContent = compras.length
     }
 
-  function purchaseFieldsHTML(c) {
+ function purchaseFieldsHTML(c) {
   const status = String(c.status || '').trim()
 
   const hiddenClass = shouldShowPurchaseFields(status) ? '' : 'hidden'
@@ -1532,8 +1532,24 @@ if (elQtd) elQtd.textContent = compras.length
     </div>
   `
 }
-    function buildTicketHTML(c) {
-      const exibirCompraNaLista = shouldShowPurchaseFields(c.status) && (c.valor_compra !== null && c.valor_compra !== undefined && c.valor_compra !== '' || c.data_compra)
+
+function responsavelOptions(selectedValue = '') {
+  const first = `<option value="" ${!selectedValue ? 'selected' : ''}>Responsável: Não definido</option>`
+
+  const others = RESPONSAVEIS.map(nome => `
+    <option value="${escapeHtml(nome)}" ${selectedValue === nome ? 'selected' : ''}>${escapeHtml(nome)}</option>
+  `).join('')
+
+  return first + others
+}
+
+// 🔥 GARANTE ACESSO GLOBAL
+window.responsavelOptions = responsavelOptions
+
+function buildTicketHTML(c) {
+  const exibirCompraNaLista = shouldShowPurchaseFields(c.status) && (
+    (c.valor_compra !== null && c.valor_compra !== undefined && c.valor_compra !== '') || c.data_compra
+  )
 
       return `
         <div class="ticket ${ticketClass(c.prioridade, c.status)}">
