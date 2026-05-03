@@ -1525,23 +1525,22 @@ async function loadTickets(showToast = true) {
 }
 
 
-// 🔥 CRIAR CHAMADO
+// 🔥 CRIAR CHAMADO (VERSÃO FINAL - SEM DUPLICAÇÃO)
 async function createTicket() {
 
-  // 🔒 OBRIGA LOGIN
   if (!usuarioLogado) {
     showMessage('Faça login para abrir um chamado.', 'erro')
     return
   }
 
-  // 🔥 USA DADOS DO USUÁRIO LOGADO (COM SEGURANÇA)
   const nome = String(usuarioLogado.nome || '').toUpperCase()
   const matricula = usuarioLogado.id_func || null
 
   const titulo = String($('titulo').value || '').trim().toUpperCase()
   const descricao = $('descricao').value.trim()
   const local = String($('local').value || '').trim().toUpperCase()
-  const tipo = String(document.getElementById('tipo').value || 'manutencao').toLowerCase()
+  const tipoEl = document.getElementById('tipo')
+const tipo = String(tipoEl?.value || 'manutencao').toLowerCase()
 
   if (!titulo) {
     showMessage('Preencha o título do chamado.', 'erro')
@@ -1582,7 +1581,6 @@ async function createTicket() {
     showMessage('Erro de conexão ao registrar chamado.', 'erro')
   }
 }
-
 
 // 🔥 ATUALIZA ESTATÍSTICAS
 function updateStats() {
