@@ -866,7 +866,7 @@
 <div id="mensagem" class="msg" style="display:none;" role="status" aria-live="polite"></div>
 
 <!-- 🔐 LOGIN -->
-<div id="tela-login" style="padding:20px; max-width:400px; margin:40px auto; text-align:center;">
+<div id="tela-login" class="hidden" style="padding:20px; max-width:400px; margin:40px auto; text-align:center;">
   <h2>🔐 Acesso ao Sistema</h2>
 
   <input 
@@ -2319,7 +2319,7 @@ async function loginPorIdFunc() {
 
   const { data, error } = await supabase
     .from('usuarios')
-    .select('*')
+    .select('id_func, nome, setor')
     .eq('id_func', idFunc)
     .single()
 
@@ -2332,11 +2332,9 @@ async function loginPorIdFunc() {
   localStorage.setItem('usuarioLogado', JSON.stringify(data))
 
   atualizarUsuarioTopo()
+  mostrarApp()
 
-  document.getElementById('tela-login').classList.add('hidden')
-  document.getElementById('app').classList.remove('hidden')
-
-  showMessage('Login realizado com sucesso', 'ok')
+  showMessage(`Bem-vindo, ${data.nome}`, 'ok')
 }
 
 // 🔗 EXPÕE GLOBAL
