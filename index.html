@@ -892,15 +892,19 @@
           </div>
         </div>
 
-        <div class="admin-inline">
-          <div id="adminStatus" class="pill small">👤</div>
-          <button id="btnEntrarAdmin" type="button" class="wa-mini-btn compact" title="Entrar admin" aria-label="Entrar admin">🔐</button>
-          <button id="btnSairAdmin" type="button" class="wa-mini-btn sec compact hidden" title="Sair admin" aria-label="Sair admin">🚪</button>
-        </div>
-      </div>
-    </div>
+     <div class="admin-inline">
+  
+  <div id="usuarioTopo" class="pill small">👤 -</div>
 
-    <div id="mensagem" class="msg"></div>
+  <button id="btnEntrarAdmin" type="button" class="wa-mini-btn compact" title="Entrar admin" aria-label="Entrar admin">
+    🔐
+  </button>
+
+  <button onclick="logout()" class="wa-mini-btn sec compact" title="Sair">
+    🚪
+  </button>
+
+</div>
 
     <section id="screen-home" class="screen active">
       <div class="top-grid">
@@ -1175,6 +1179,23 @@ function showMessage(text, type = 'ok') {
   }, 3500)
 }
 
+// 🔥 MOSTRA USUÁRIO NO TOPO (VERSÃO SEGURA)
+function atualizarUsuarioTopo() {
+  const el = document.getElementById('usuarioTopo')
+  if (!el) return
+
+  if (usuarioLogado) {
+    const nome =
+      usuarioLogado.nome ||
+      usuarioLogado.nome_completo ||
+      usuarioLogado.usuario ||
+      'USUÁRIO'
+
+    el.textContent = `👤 ${String(nome).toUpperCase()}`
+  } else {
+    el.textContent = '👤 -'
+  }
+}
 // 🔒 SEGURANÇA HTML
 function escapeHtml(text) {
   return String(text ?? '')
@@ -2256,19 +2277,21 @@ async function loginPorIdFunc() {
     alert('Usuário não encontrado')
     return
   }
+const usuario = data[0]
 
-  const usuario = data[0]
+// 🔥 salva usuário
+usuarioLogado = usuario
+localStorage.setItem('usuarioLogado', JSON.stringify(usuario))
 
-  // 🔥 garante variável global
-  usuarioLogado = usuario
+// 🔥 atualiza topo
+atualizarUsuarioTopo()
 
-  localStorage.setItem('usuarioLogado', JSON.stringify(usuario))
+// 🔥 troca tela
+document.getElementById('tela-login').classList.add('hidden')
+document.getElementById('app').classList.remove('hidden')
 
-  document.getElementById('tela-login').classList.add('hidden')
-  document.getElementById('app').classList.remove('hidden')
-
-  loadTickets()
-}
+// 🔥 carrega chamados
+loadTickets()
 
 window.loginPorIdFunc = loginPorIdFunc
 
