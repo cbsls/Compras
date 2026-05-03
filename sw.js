@@ -1,4 +1,4 @@
-const CACHE_NAME = 'helpdesk-v44'
+const CACHE_NAME = 'helpdesk-v45'
 
 const FILES_TO_CACHE = [
   './',
@@ -8,13 +8,23 @@ const FILES_TO_CACHE = [
   './icon-512.png'
 ]
 
-// 🔹 INSTALAÇÃO
+// 🔹 INSTALAÇÃO (CORRIGIDO - NÃO QUEBRA SE FALTAR ARQUIVO)
 self.addEventListener('install', (event) => {
   self.skipWaiting()
 
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(FILES_TO_CACHE)
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const promises = FILES_TO_CACHE.map(url =>
+        fetch(url)
+          .then(response => {
+            if (response.ok) {
+              return cache.put(url, response)
+            }
+          })
+          .catch(() => {}) // ignora erro (ex: 404)
+      )
+
+      return Promise.all(promises)
     })
   )
 })
@@ -54,12 +64,10 @@ self.addEventListener('fetch', (event) => {
       return cached || fetch(event.request)
         .then(response => {
 
-          // só cachear resposta válida
           if (!response || response.status !== 200) return response
 
           const clone = response.clone()
 
-          // cache apenas arquivos do próprio site
           if (url.origin === location.origin) {
             caches.open(CACHE_NAME).then(cache => {
               cache.put(event.request, clone)
@@ -69,7 +77,6 @@ self.addEventListener('fetch', (event) => {
           return response
         })
         .catch(() => {
-          // 🔥 fallback offline
           if (event.request.mode === 'navigate') {
             return caches.match('./index.html')
           }
