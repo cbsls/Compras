@@ -863,6 +863,7 @@
  </style>
 </head>
 <body>
+<div id="mensagem" class="msg" style="display:none;" role="status" aria-live="polite"></div>
 
 <!-- 🔐 LOGIN -->
 <div id="tela-login" style="padding:20px; max-width:400px; margin:40px auto; text-align:center;">
@@ -893,14 +894,19 @@
         </div>
 
      <div class="admin-inline">
-  
+  <div id="adminStatus" class="pill small" title="Status do modo de acesso">👤</div>
+
   <div id="usuarioTopo" class="pill small">👤 -</div>
 
   <button id="btnEntrarAdmin" type="button" class="wa-mini-btn compact" title="Entrar admin" aria-label="Entrar admin">
     🔐
   </button>
 
-  <button onclick="logout()" class="wa-mini-btn sec compact" title="Sair">
+  <button id="btnSairAdmin" type="button" class="wa-mini-btn compact hidden" title="Sair do modo admin" aria-label="Sair do modo admin">
+    🛡️
+  </button>
+
+  <button type="button" onclick="logout()" class="wa-mini-btn sec compact" title="Sair">
     🚪
   </button>
 
@@ -1363,15 +1369,19 @@ function formatCurrency(value) {
       const exitBtn = $('btnSairAdmin')
 
       if (adminMode) {
-        status.textContent = '🛡️'
-        status.classList.add('on')
-        enterBtn.classList.add('hidden')
-        exitBtn.classList.remove('hidden')
+        if (status) {
+          status.textContent = '🛡️'
+          status.classList.add('on')
+        }
+        if (enterBtn) enterBtn.classList.add('hidden')
+        if (exitBtn) exitBtn.classList.remove('hidden')
       } else {
-        status.textContent = '👤'
-        status.classList.remove('on')
-        enterBtn.classList.remove('hidden')
-        exitBtn.classList.add('hidden')
+        if (status) {
+          status.textContent = '👤'
+          status.classList.remove('on')
+        }
+        if (enterBtn) enterBtn.classList.remove('hidden')
+        if (exitBtn) exitBtn.classList.add('hidden')
       }
 
       renderTickets()
@@ -1449,6 +1459,40 @@ function formatCurrency(value) {
       selectNome.value = opcoesValidas.includes(nomeSalvo) ? nomeSalvo : 'NÃO IDENTIFICADO'
       $('matricula').value = localStorage.getItem('helpdesk_matricula') || ''
       atualizarEstadoFormulario()
+    }
+
+    function restaurarSessaoUsuario() {
+      try {
+        const usuarioSalvo = localStorage.getItem('usuarioLogado')
+        if (!usuarioSalvo) return
+
+        const usuario = JSON.parse(usuarioSalvo)
+        if (!usuario || typeof usuario !== 'object') return
+
+        usuarioLogado = usuario
+        atualizarUsuarioTopo()
+        document.getElementById('tela-login')?.classList.add('hidden')
+        document.getElementById('app')?.classList.remove('hidden')
+      } catch (error) {
+        console.error('Falha ao restaurar sessão do usuário:', error)
+        localStorage.removeItem('usuarioLogado')
+      }
+    }
+
+    function logout() {
+      usuarioLogado = null
+      adminMode = false
+      localStorage.removeItem('usuarioLogado')
+      localStorage.removeItem('helpdesk_admin_mode')
+      atualizarUsuarioTopo()
+      updateAdminUI()
+      document.getElementById('app')?.classList.add('hidden')
+      document.getElementById('tela-login')?.classList.remove('hidden')
+
+      const loginInput = document.getElementById('login-id-func')
+      if (loginInput) loginInput.value = ''
+
+      showMessage('Sessão encerrada.', 'ok')
     }
 
     function validarIdFuncSolicitante() {
@@ -2248,6 +2292,8 @@ window.salvarAlteracoes = salvarAlteracoes
   w.print()
 }
 
+window.gerarPDFCompra = gerarPDFCompra
+
    window.addEventListener('appinstalled', () => {
   deferredPrompt = null
   atualizarBotaoInstalarApp()
@@ -2310,9 +2356,11 @@ window.loginPorIdFunc = loginPorIdFunc
 // 🔄 INICIALIZAÇÃO
 populateMilitarOptions()
 updateAdminUI()
+restaurarSessaoUsuario()
 carregarUsuarioLocal()
 limparFiltros()
 loadTickets(false)
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
