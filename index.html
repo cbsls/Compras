@@ -1190,18 +1190,19 @@ function atualizarUsuarioTopo() {
   const el = document.getElementById('usuarioTopo')
   if (!el) return
 
-  if (usuarioLogado) {
+  if (usuarioLogado && typeof usuarioLogado === 'object') {
     const nome =
       usuarioLogado.nome ||
       usuarioLogado.nome_completo ||
       usuarioLogado.usuario ||
       'USUÁRIO'
 
-    el.textContent = `👤 ${String(nome).toUpperCase()}`
+    el.textContent = `👤 ${escapeHtml(String(nome).toUpperCase())}`
   } else {
     el.textContent = '👤 -'
   }
 }
+
 // 🔒 SEGURANÇA HTML
 function escapeHtml(text) {
   return String(text ?? '')
@@ -1211,7 +1212,6 @@ function escapeHtml(text) {
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;')
 }
-
 // 📅 FORMATADORES DE DATA
 function formatDate(value) {
   if (!value) return '-'
@@ -1460,24 +1460,34 @@ function formatCurrency(value) {
       $('matricula').value = localStorage.getItem('helpdesk_matricula') || ''
       atualizarEstadoFormulario()
     }
+// 🔄 RESTAURA SESSÃO DO USUÁRIO (VERSÃO CORRIGIDA)
+function restaurarSessaoUsuario() {
+  try {
+    const usuarioSalvo = localStorage.getItem('usuarioLogado')
 
-    function restaurarSessaoUsuario() {
-      try {
-        const usuarioSalvo = localStorage.getItem('usuarioLogado')
-        if (!usuarioSalvo) return
-
-        const usuario = JSON.parse(usuarioSalvo)
-        if (!usuario || typeof usuario !== 'object') return
-
-        usuarioLogado = usuario
-        atualizarUsuarioTopo()
-        document.getElementById('tela-login')?.classList.add('hidden')
-        document.getElementById('app')?.classList.remove('hidden')
-      } catch (error) {
-        console.error('Falha ao restaurar sessão do usuário:', error)
-        localStorage.removeItem('usuarioLogado')
-      }
+    if (!usuarioSalvo) {
+      mostrarLogin()
+      return
     }
+
+    const usuario = JSON.parse(usuarioSalvo)
+
+    if (!usuario || typeof usuario !== 'object') {
+      mostrarLogin()
+      return
+    }
+
+    usuarioLogado = usuario
+
+    atualizarUsuarioTopo()
+    mostrarApp()
+
+  } catch (error) {
+    console.error('Falha ao restaurar sessão do usuário:', error)
+    localStorage.removeItem('usuarioLogado')
+    mostrarLogin()
+  }
+}
 
     function logout() {
       usuarioLogado = null
@@ -2319,8 +2329,8 @@ async function loginPorIdFunc() {
 
   const { data, error } = await supabase
     .from('usuarios')
-    .select('id_func, nome, setor')
-    .eq('id_func', idFunc.trim())
+    .select('id_func, nome')
+    .eq('id_func', idFunc)
     .maybeSingle()
 
   if (error) {
