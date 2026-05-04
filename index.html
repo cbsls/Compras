@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>📋 Chamados de Manutenção • CB SLS</title>
+  <title>📋 Sistema de Chamados • CB SLS</title>
   <meta name="theme-color" content="#075E54" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
- <link rel="manifest" href="manifest.json?v=2">
+  <link rel="manifest" href="manifest.json?v=2" />
   <link rel="icon" href="icon.png" />
   <link rel="apple-touch-icon" href="icon.png" />
+
   <style>
     * {
       box-sizing: border-box;
@@ -26,7 +27,6 @@
       --wa-bg: #efeae2;
       --wa-panel: #f0f2f5;
       --wa-card: #ffffff;
-      --wa-card-user: #dcf8c6;
       --wa-border: #d1d7db;
       --wa-text: #111b21;
       --wa-muted: #667781;
@@ -41,6 +41,8 @@
       --wa-success-bg: #dcfce7;
       --wa-shadow: 0 1px 3px rgba(0,0,0,0.08);
       --wa-radius: 18px;
+      --tipo-manutencao: #1f8f63;
+      --tipo-compra: #d97706;
     }
 
     html { scroll-behavior: smooth; }
@@ -309,11 +311,29 @@
       gap: 10px;
     }
 
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
     .actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-top: 14px;
+    }
+
+    .screen-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .screen-actions button {
+      width: auto;
+      padding: 9px 12px;
     }
 
     .msg {
@@ -413,7 +433,7 @@
       margin-top: 8px;
     }
 
-    .badge, .chip {
+    .badge, .chip, .tipo-chip {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -426,10 +446,24 @@
       color: #334155;
     }
 
+    .tipo-chip.manutencao {
+      background: #eefaf5;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .tipo-chip.compra {
+      background: #fff7ed;
+      color: #9a3412;
+      border: 1px solid #fed7aa;
+    }
+
     .st-aguardando { background: var(--wa-info-bg); color: #0369a1; }
     .st-encaminhado { background: var(--wa-warning-bg); color: var(--wa-warning); }
     .st-andamento { background: #ede9fe; color: #6d28d9; }
+    .st-orcamento { background: #fff7ed; color: #9a3412; }
     .st-finalizado { background: var(--wa-success-bg); color: var(--wa-success); }
+    .st-finalizado-compra { background: #dcfce7; color: #166534; }
     .st-negado { background: #fef2f2; color: #b91c1c; }
 
     .pr-baixa { background: #e9edef; color: #455a64; }
@@ -439,7 +473,7 @@
     .ticket {
       position: relative;
       border-radius: 14px;
-      padding: 12px 12px 12px;
+      padding: 12px;
       border: 1px solid #e5e7eb;
       box-shadow: var(--wa-shadow);
       margin-bottom: 12px;
@@ -481,9 +515,9 @@
 
     .ticket-sub {
       color: #24343d;
-      font-size: 15px;
+      font-size: 14px;
       white-space: pre-wrap;
-      line-height: 1.6;
+      line-height: 1.55;
     }
 
     .meta {
@@ -566,8 +600,7 @@
       border-top: 1px solid #e6eaed;
     }
 
-    .uppercase-field,
-    #nome {
+    .uppercase-field {
       text-transform: uppercase;
     }
 
@@ -592,6 +625,17 @@
       color: #245644;
       font-size: 13px;
       line-height: 1.45;
+    }
+
+    .login-box {
+      padding: 20px;
+      max-width: 420px;
+      margin: 40px auto;
+      text-align: center;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+      border: 1px solid #e5e7eb;
     }
 
     .login-status {
@@ -624,8 +668,11 @@
 
     .home-actions {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
       margin-bottom: 10px;
+      flex-wrap: wrap;
     }
 
     .home-toggle-all-btn {
@@ -640,12 +687,44 @@
       cursor: pointer;
     }
 
+    .home-filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .filter-chip {
+      width: auto;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--wa-border);
+      background: #fff;
+      color: #334155;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .filter-chip.active {
+      background: var(--wa-header);
+      color: #fff;
+      border-color: var(--wa-header);
+    }
+
     .home-item {
       border: 1px solid #e5e7eb;
       background: #fff;
       border-radius: 14px;
       padding: 12px;
       box-shadow: var(--wa-shadow);
+    }
+
+    .home-item.tipo-manutencao {
+      border-left: 4px solid var(--tipo-manutencao);
+    }
+
+    .home-item.tipo-compra {
+      border-left: 4px solid var(--tipo-compra);
     }
 
     .home-item-top {
@@ -716,6 +795,72 @@
       text-align: center;
     }
 
+    .finance-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .finance-box {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: var(--wa-shadow);
+    }
+
+    .finance-box .big {
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--wa-header);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .finance-box .small {
+      font-size: 12px;
+      color: var(--wa-muted);
+      font-weight: bold;
+    }
+
+    .finance-box.saldo {
+      background: linear-gradient(135deg, #075E54, #0b7064);
+      border-color: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+
+    .finance-box.saldo .big,
+    .finance-box.saldo .small {
+      color: #fff;
+    }
+
+    .readonly-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .readonly-box {
+      border: 1px solid #e5e7eb;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .readonly-box .rotulo {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: bold;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .readonly-box .valor {
+      font-size: 14px;
+      font-weight: bold;
+      color: #111b21;
+      word-break: break-word;
+    }
+
     .tabbar {
       position: fixed;
       left: 50%;
@@ -730,7 +875,7 @@
       box-shadow: 0 10px 24px rgba(0,0,0,0.14);
       padding: 8px;
       display: grid;
-     grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
     }
 
@@ -749,6 +894,29 @@
       background: #e7f3ff;
       color: var(--wa-header);
       font-weight: bold;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 10px 0 12px;
+    }
+
+    .tab-btn {
+      background: #eef2f5;
+      color: #233138;
+      border: 1px solid var(--wa-border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: bold;
+      box-shadow: var(--wa-shadow);
+    }
+
+    .tab-btn.active {
+      background: #e7f3ff;
+      color: var(--wa-header);
+      border-color: #c8daf8;
     }
 
     .hidden { display: none !important; }
@@ -846,6 +1014,12 @@
       .home-item-top-right {
         align-items: flex-end;
       }
+
+      .grid-2,
+      .grid-3,
+      .actions {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (min-width: 721px) {
@@ -856,383 +1030,412 @@
         grid-template-columns: 1.1fr .9fr;
         gap: 12px;
       }
-      .stats { grid-template-columns: repeat(3, 1fr); }
-      .toolbar { grid-template-columns: repeat(2, 1fr); }
+      .stats { grid-template-columns: repeat(4, 1fr); }
+      .toolbar { grid-template-columns: repeat(3, 1fr); }
+      .finance-grid { grid-template-columns: repeat(3, 1fr); }
       .tabbar { width: min(700px, calc(100% - 40px)); }
+      .readonly-grid.three { grid-template-columns: repeat(3, 1fr); }
     }
- </style>
+  </style>
 </head>
 <body>
-<div id="mensagem" class="msg" style="display:none;" role="status" aria-live="polite"></div>
+  <div id="mensagem" class="msg" style="display:none;" role="status" aria-live="polite"></div>
 
-<!-- 🔐 LOGIN -->
-<div id="tela-login" style="padding:20px; max-width:400px; margin:40px auto; text-align:center;">
-  <h2>🔐 Acesso ao Sistema</h2>
+  <div id="tela-login" class="login-box">
+    <h2>🔐 Acesso ao Sistema</h2>
+    <div class="sub">Informe o seu ID Funcional. O sistema localizará automaticamente nome e setor.</div>
 
-  <input 
-    type="text" 
-    id="login-id-func" 
-    placeholder="Digite seu ID Funcional"
-    style="width:100%; padding:12px; margin:15px 0;"
-  />
+    <input
+      type="text"
+      id="login-id-func"
+      placeholder="Digite seu ID Funcional"
+      autocomplete="off"
+    />
 
-  <button onclick="loginPorIdFunc()" style="width:100%; padding:12px;">
-    Entrar
-  </button>
-</div>
-
-<div id="app" class="hidden">
-  <div class="app">
-    <div class="topbar">
-      <div class="wa-head">
-        <div class="wa-profile">
-          <div class="wa-avatar">🛠️</div>
-          <div class="wa-title-wrap">
-            <div class="wa-title">📋 Chamados de Manutenção</div>
-            <div class="wa-subtitle">🚒 CB São Lourenço do Sul • Setor B4</div>
-          </div>
-        </div>
-
-     <div class="admin-inline">
-  <div id="adminStatus" class="pill small" title="Status do modo de acesso">👤</div>
-
-  <div id="usuarioTopo" class="pill small">👤 -</div>
-
-  <button id="btnEntrarAdmin" type="button" class="wa-mini-btn compact" title="Entrar admin" aria-label="Entrar admin">
-    🔐
-  </button>
-
-  <button id="btnSairAdmin" type="button" class="wa-mini-btn compact hidden" title="Sair do modo admin" aria-label="Sair do modo admin">
-    🛡️
-  </button>
-
-  <button type="button" onclick="logout()" class="wa-mini-btn sec compact" title="Sair">
-    🚪
-  </button>
-
-</div>
-
-    <section id="screen-home" class="screen active">
-      <div class="top-grid">
-        <div class="card">
-          <h2>📊 Resumo dos chamados</h2>
-          <div class="sub">Toque em uma caixa para abrir a lista completa na aba Chamados.</div>
-          <div class="stats">
-            <div class="stat" data-status="">
-              <div class="num" id="stTotal">0</div>
-              <div class="lab">Total</div>
-            </div>
-            <div class="stat" data-status="Aguardando triagem">
-              <div class="num" id="stAguardando">0</div>
-              <div class="lab">Aguardando</div>
-            </div>
-            <div class="stat" data-status="Encaminhado">
-              <div class="num" id="stEncaminhado">0</div>
-              <div class="lab">Encaminhado</div>
-            </div>
-            <div class="stat" data-status="Em andamento">
-              <div class="num" id="stAndamento">0</div>
-              <div class="lab">Em andamento</div>
-            </div>
-            <div class="stat" data-status="Finalizado">
-              <div class="num" id="stFinalizado">0</div>
-              <div class="lab">Finalizado</div>
-            </div>
-            <div class="stat" data-status="Negado">
-              <div class="num" id="stNegado">0</div>
-              <div class="lab">Negado</div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-  <h2>💰 Controle de Compras</h2>
-  <div class="stats">
-    <div class="stat">
-      <div class="num" id="totalCompras">R$ 0</div>
-      <div class="lab">Total em compras</div>
+    <div class="actions" style="grid-template-columns:1fr; margin-top:12px;">
+      <button type="button" onclick="loginPorIdFunc()" class="btn-primary">Entrar</button>
     </div>
 
-    <div class="stat">
-      <div class="num" id="qtdCompras">0</div>
-      <div class="lab">Qtd compras</div>
+    <div id="loginStatus" class="login-status warn">
+      Login automático por ID Funcional, sem senha de usuário.
     </div>
   </div>
-</div>
+
+  <div id="app" class="hidden">
+    <div class="app">
+      <div class="topbar">
+        <div class="wa-head">
+          <div class="wa-profile">
+            <div class="wa-avatar">📋</div>
+            <div class="wa-title-wrap">
+              <div class="wa-title">Sistema de Chamados</div>
+              <div class="wa-subtitle" id="topSubtitle">🚒 CB São Lourenço do Sul • Setor B4</div>
+            </div>
+          </div>
+
+          <div class="admin-inline">
+            <div id="adminStatus" class="pill small" title="Status do modo de acesso">👤</div>
+            <div id="usuarioTopo" class="pill small">👤 -</div>
+
+            <button id="btnSaldoAdmin" type="button" class="wa-mini-btn compact hidden" title="Definir saldo" aria-label="Definir saldo">
+              💳
+            </button>
+
+            <button id="btnEntrarAdmin" type="button" class="wa-mini-btn compact" title="Entrar admin" aria-label="Entrar admin">
+              🔐
+            </button>
+
+            <button id="btnSairAdmin" type="button" class="wa-mini-btn compact hidden" title="Sair do modo admin" aria-label="Sair do modo admin">
+              🛡️
+            </button>
+
+            <button type="button" onclick="logout()" class="wa-mini-btn sec compact" title="Sair">
+              🚪
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <section id="screen-home" class="screen active">
+        <div class="top-grid">
+          <div class="card">
+            <h2>📊 Resumo dos chamados</h2>
+            <div class="sub">Toque em uma caixa para abrir a lista filtrada na aba Chamados.</div>
+
+            <div class="stats">
+              <div class="stat" data-status="">
+                <div class="num" id="stTotal">0</div>
+                <div class="lab">Total</div>
+              </div>
+              <div class="stat" data-status="Aguardando triagem">
+                <div class="num" id="stAguardando">0</div>
+                <div class="lab">Aguardando</div>
+              </div>
+              <div class="stat" data-status="Encaminhado">
+                <div class="num" id="stEncaminhado">0</div>
+                <div class="lab">Encaminhado</div>
+              </div>
+              <div class="stat" data-status="Em andamento">
+                <div class="num" id="stAndamento">0</div>
+                <div class="lab">Em andamento</div>
+              </div>
+              <div class="stat" data-status="Em Orçamento">
+                <div class="num" id="stEmOrcamento">0</div>
+                <div class="lab">Em Orçamento</div>
+              </div>
+              <div class="stat" data-status="Finalizado Compra">
+                <div class="num" id="stFinalizadoCompra">0</div>
+                <div class="lab">Finalizado Compra</div>
+              </div>
+              <div class="stat" data-status="Finalizado">
+                <div class="num" id="stFinalizado">0</div>
+                <div class="lab">Finalizado</div>
+              </div>
+              <div class="stat" data-status="Negado">
+                <div class="num" id="stNegado">0</div>
+                <div class="lab">Negado</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>💰 Financeiro</h2>
+            <div class="sub">Valores aparecem apenas nos status Em Orçamento e Finalizado Compra.</div>
+
+            <div class="finance-grid">
+              <div class="finance-box saldo">
+                <div class="big" id="saldoContaValor">R$ 0,00</div>
+                <div class="small">Saldo em conta</div>
+              </div>
+
+              <div class="finance-box">
+                <div class="big" id="totalEmOrcamento">R$ 0,00</div>
+                <div class="small">Em Orçamento</div>
+              </div>
+
+              <div class="finance-box">
+                <div class="big" id="totalFinalizadoCompra">R$ 0,00</div>
+                <div class="small">Finalizado Compra</div>
+              </div>
+            </div>
+
+            <div class="screen-actions">
+              <button type="button" id="btnGerarPdfHome" class="btn-ghost">📄 Relatório PDF</button>
+            </div>
+          </div>
+        </div>
 
         <div class="card">
-        <h2>📋 Chamados abertos</h2>
-        <div class="sub">Resumo rápido dos chamados que ainda não foram finalizados.</div>
-        <div class="home-actions">
-          <button id="btnToggleAllHome" type="button" class="home-toggle-all-btn">Expandir todos</button>
-        </div>
-        <div id="homeListaAbertos" class="home-lista"></div>
-      </div>
+          <h2>🏠 Dashboard</h2>
+          <div class="sub">Lista geral dos chamados, com filtro por tipo e visual diferente para compras e manutenções.</div>
 
-      <button id="btnInstalarApp" type="button" class="btn-install hidden">📲 Instalar app</button>
-    </section>
-
-    <section id="screen-novo" class="screen">
-      <div class="card">
-        <h2>👤 Dados do solicitante</h2>
-        <div class="sub">Selecione o militar cadastrado. Caso necessário, mantenha a opção “NÃO IDENTIFICADO”.</div>
-
-        <div class="grid-2">
-          <div>
-            <label for="nome">Nome</label>
-            <select id="nome"></select>
+          <div class="home-filters">
+            <button type="button" class="filter-chip active" data-home-filter="todos">Todos</button>
+            <button type="button" class="filter-chip" data-home-filter="manutencao">🛠 Manutenções</button>
+            <button type="button" class="filter-chip" data-home-filter="compra">💰 Compras</button>
           </div>
+
+          <div class="home-actions">
+            <button id="btnToggleAllHome" type="button" class="home-toggle-all-btn">Expandir todos</button>
+            <button id="btnInstalarApp" type="button" class="btn-install hidden">📲 Instalar app</button>
           </div>
-      </div>
 
-     <div class="card">
-  <h2>💬 Novo chamado</h2>
+          <div id="homeListaAbertos" class="home-lista"></div>
+        </div>
+      </section>
 
-  <div class="sub">
-    O setor será definido automaticamente como <strong>B4</strong> e a prioridade inicial será <strong>Média</strong>.
-  </div>
+      <section id="screen-novo" class="screen">
+        <div class="card">
+          <h2>🔐 Identificação automática</h2>
+          <div class="sub">Nome, ID Funcional e setor vêm do banco após o login. Sem digitação manual.</div>
 
-  <div class="form-group">
-    <label for="tipo">Tipo do Chamado</label>
-    <select id="tipo" required>
-      <option value="">Selecione</option>
-      <option value="manutencao">🛠 Manutenção</option>
-      <option value="compra">💰 Compra</option>
-    </select>
-  </div>
-
-  <label for="titulo">Título</label>
-  <input id="titulo" class="uppercase-field" placeholder="Ex: TORNEIRA DA COZINHA NÃO FECHA" />
-
-  <label for="descricao">Descrição</label>
-  <textarea id="descricao" placeholder="Descreva o problema com detalhes (Opcional)"></textarea>
-
-  <label for="local">Local</label>
-  <input id="local" class="uppercase-field" placeholder="Ex: COZINHA, SALA 2, CORREDOR" />
-
-  <div class="actions">
-    <button id="btnAbrir" class="btn-primary">Enviar chamado</button>
-    <button id="btnLimpar" type="button" class="btn-ghost">Limpar</button>
-  </div>
-</div>
-
-<div class="card">
-  <h2>📋 Filtros</h2>
-        <div class="toolbar">
-          <select id="filtroStatus">
-            <option value="">Todos os status</option>
-            <option value="Aguardando triagem">Aguardando triagem</option>
-            <option value="Encaminhado">Encaminhado</option>
-            <option value="Em andamento">Em andamento</option>
-            <option value="Finalizado">Finalizado</option>
-            <option value="Negado">Negado</option>
-          </select>
-
-          <select id="filtroSetor">
-            <option value="">Todos os setores</option>
-            <option value="B4">B4</option>
-          </select>
-
-          <select id="filtroResponsavel">
-            <option value="">Todos os responsáveis</option>
-          </select>
+          <div class="readonly-grid three">
+            <div class="readonly-box">
+              <div class="rotulo">Nome</div>
+              <div class="valor" id="novoNome">-</div>
+            </div>
+            <div class="readonly-box">
+              <div class="rotulo">ID Funcional</div>
+              <div class="valor" id="novoMatricula">-</div>
+            </div>
+            <div class="readonly-box">
+              <div class="rotulo">Setor</div>
+              <div class="valor" id="novoSetor">-</div>
+            </div>
+          </div>
         </div>
 
-        <label class="check-box" style="margin-top:10px;">
-          <input type="checkbox" id="somenteNegados" />
-          Somente negados
-        </label>
+        <div class="card">
+          <h2>📝 Novo chamado</h2>
+          <div class="sub">Estrutura remodelada: Tipo, Título, Descrição, Local e Prioridade.</div>
 
-       <div class="actions">
-  <button type="button" class="btn-ghost" id="btnLimparFiltros">Limpar filtros</button>
-  <button type="button" class="btn-sec" id="btnAtualizarLista">Atualizar lista</button>
-</div>
-</div>
+          <div class="grid-2">
+            <div>
+              <label for="tipo">Tipo</label>
+              <select id="tipo" required>
+                <option value="">Selecione</option>
+                <option value="manutencao">🛠 Manutenção</option>
+                <option value="compra">💰 Compra</option>
+              </select>
+            </div>
 
-<!-- 🔥 ABAS -->
-<div class="tabs">
-  <button class="tab-btn active" onclick="trocarAba('manutencao')">🛠 Manutenção</button>
-  <button class="tab-btn" onclick="trocarAba('compra')">💰 Compras</button>
-</div>
+            <div>
+              <label for="prioridadeNovo">Prioridade</label>
+              <select id="prioridadeNovo">
+                <option value="Baixa">Baixa</option>
+                <option value="Média" selected>Média</option>
+                <option value="Alta">Alta</option>
+              </select>
+            </div>
+          </div>
 
-<div id="lista"></div>
-</section>
-    <section id="screen-perfil" class="screen">
-      <div class="card">
-        <h2>👤 Perfil do solicitante</h2>
-        <div class="sub">Preencha livremente no formulário de novo chamado. Esta aba passa a ser apenas informativa.</div>
+          <label for="titulo">Título</label>
+          <input id="titulo" class="uppercase-field" placeholder="Ex: TORNEIRA DA COZINHA NÃO FECHA" />
 
-        <label>Nome digitado no formulário</label>
-        <input id="perfilNome" readonly />
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" placeholder="Descreva o problema ou a necessidade com detalhes"></textarea>
 
-        <label>Matrícula / Id Func. digitada</label>
-        <input id="perfilMatricula" readonly />
+          <label for="local">Local</label>
+          <input id="local" class="uppercase-field" placeholder="Ex: COZINHA, SALA 2, CORREDOR" />
 
+          <div class="actions">
+            <button id="btnAbrir" class="btn-primary" type="button">Enviar chamado</button>
+            <button id="btnLimpar" type="button" class="btn-ghost">Limpar</button>
+          </div>
         </div>
-</div>
-</section>
+      </section>
 
-<section id="screen-compras" class="screen">
-  <div class="card">
-    <h2>🛒 Compras registradas</h2>
-    <div class="sub">Lista automática baseada nos chamados com valor informado.</div>
+      <section id="screen-chamados" class="screen">
+        <div class="card">
+          <h2>📋 Chamados</h2>
+          <div class="sub">Filtros da listagem e relatório em PDF.</div>
 
-    <div id="listaCompras"></div>
-  </div>
-</section>
+          <div class="search-pill">
+            <span>🔎</span>
+            <input id="busca" placeholder="Buscar por título, descrição, local, solicitante..." />
+          </div>
 
-      <div class="card">
-        <h2>🧩 Estrutura mantida</h2>
-        <div class="install-tip">
-          Este layout mantém o Supabase, triagem, responsável, prioridade e negativa, com setor único B4.
+          <div class="toolbar">
+            <select id="filtroStatus">
+              <option value="">Todos os status</option>
+              <option value="Aguardando triagem">Aguardando triagem</option>
+              <option value="Encaminhado">Encaminhado</option>
+              <option value="Em andamento">Em andamento</option>
+              <option value="Em Orçamento">Em Orçamento</option>
+              <option value="Finalizado Compra">Finalizado Compra</option>
+              <option value="Finalizado">Finalizado</option>
+              <option value="Negado">Negado</option>
+            </select>
+
+            <select id="filtroResponsavel">
+              <option value="">Todos os responsáveis</option>
+            </select>
+
+            <label class="check-box">
+              <input type="checkbox" id="somenteNegados" />
+              Somente negados
+            </label>
+          </div>
+
+          <div class="screen-actions">
+            <button type="button" class="btn-ghost" id="btnLimparFiltros">Limpar filtros</button>
+            <button type="button" class="btn-sec" id="btnAtualizarLista">Atualizar lista</button>
+            <button type="button" class="btn-success" id="btnGerarPdfChamados">📄 Relatório PDF</button>
+          </div>
         </div>
-      </div>
-    </section>
+
+        <div class="tabs">
+          <button class="tab-btn active" onclick="trocarAba('manutencao')">🛠 Manutenção</button>
+          <button class="tab-btn" onclick="trocarAba('compra')">💰 Compras</button>
+        </div>
+
+        <div id="lista"></div>
+      </section>
+
+      <section id="screen-compras" class="screen">
+        <div class="card">
+          <h2>🛒 Compras</h2>
+          <div class="sub">Fluxo das compras separado das manutenções. Os valores só aparecem em Em Orçamento e Finalizado Compra.</div>
+
+          <div class="screen-actions">
+            <button type="button" class="btn-success" id="btnGerarPdfCompras">📄 PDF Compras</button>
+          </div>
+
+          <div id="listaCompras"></div>
+        </div>
+      </section>
+
+      <section id="screen-perfil" class="screen">
+        <div class="card">
+          <h2>👤 Perfil do usuário logado</h2>
+          <div class="sub">Dados vindos do banco via login por ID Funcional.</div>
+
+          <label>Nome</label>
+          <input id="perfilNome" readonly />
+
+          <label>ID Funcional</label>
+          <input id="perfilMatricula" readonly />
+
+          <label>Setor</label>
+          <input id="perfilSetor" readonly />
+        </div>
+
+        <div class="card">
+          <h2>🧩 Estrutura corrigida</h2>
+          <div class="install-tip">
+            Esta versão corrige a navegação entre telas, separa Novo e Chamados, mantém Supabase, responsável, prioridade, negativa, dashboard filtrável, card financeiro e relatório PDF agrupado por prioridade.
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <nav class="tabbar">
+      <button data-screen="home" class="active">🏠<br>Início</button>
+      <button data-screen="novo">➕<br>Novo</button>
+      <button data-screen="chamados">📋<br>Chamados</button>
+      <button data-screen="compras">🛒<br>Compras</button>
+      <button data-screen="perfil">👤<br>Perfil</button>
+    </nav>
   </div>
 
-  <nav class="tabbar">
-    <button data-screen="home" class="active">🏠<br>Início</button>
-    <button data-screen="novo">➕<br>Novo</button>
-    <button data-screen="chamados">📋<br>Chamados</button>
-    <button data-screen="compras">🛒<br>Compras</button>
-    <button data-screen="perfil">👤<br>Perfil</button>
-</nav>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+    const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF6bHRscGp5eXFlY3VybWViZmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNTk1MjcsImV4cCI6MjA5MDYzNTUyN30._bmJBqjEZKWS18YwiKEjO_MP8WerOyBacuM7FaQRhV0'
+    const ADMIN_PASSWORD = '123456'
+    const SETOR_FIXO = 'B4'
+    const STATUS_COM_COMPRA = ['Em Orçamento', 'Finalizado Compra']
+    const STATUS_FINALIZADOS = ['Finalizado', 'Finalizado Compra']
+    const SALDO_STORAGE_KEY = 'helpdesk_saldo_conta'
 
-  const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co'
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF6bHRscGp5eXFlY3VybWViZmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNTk1MjcsImV4cCI6MjA5MDYzNTUyN30._bmJBqjEZKWS18YwiKEjO_MP8WerOyBacuM7FaQRhV0'
-  const ADMIN_PASSWORD = '123456'
+    const RESPONSAVEIS = [
+      '1º TEN MARCELO',
+      '1º SGT VICENTE',
+      '1º SGT DIEFERSON',
+      '1º SGT BATISTA',
+      '2º SGT ANDERSON',
+      '2º SGT VINICIUS',
+      '2º SGT LISCANO',
+      'SD TOMASCHEWSKI',
+      'SD CAMACHO',
+      'SD ISQUIERDO',
+      'SD BORGES',
+      'SD BATISTA',
+      'SD MAX',
+      'SD WILLIAM',
+      'SD MOTTA',
+      'SD SOARES',
+      'SD PEGLOW',
+      'SD LARSSON'
+    ]
 
-  // ✅ APENAS UMA INSTÂNCIA
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+    const $ = (id) => document.getElementById(id)
 
-  const RESPONSAVEIS = [
-    '1º TEN MARCELO',
-    '1º SGT VICENTE',
-    '1º SGT DIEFERSON',
-    '1º SGT BATISTA',
-    '2º SGT ANDERSON',
-    '2º SGT VINICIUS',
-    '2º SGT LISCANO',
-    'SD TOMASCHEWSKI',
-    'SD CAMACHO',
-    'SD ISQUIERDO',
-    'SD BORGES',
-    'SD BATISTA',
-    'SD MAX',
-    'SD WILLIAM',
-    'SD MOTTA',
-    'SD SOARES',
-    'SD PEGLOW',
-    'SD LARSSON'
-  ]
+    let chamados = []
+    let abaAtual = 'manutencao'
+    let homeFiltroAtual = 'todos'
+    let adminMode = localStorage.getItem('helpdesk_admin_mode') === 'true'
+    let timerUpdater = null
+    let homeExpandedState = {}
+    let deferredPrompt = null
+    let usuarioLogado = null
 
-  const SETOR_FIXO = 'B4'
-  const PRIORIDADE_PADRAO = 'Média'
-  const MOSTRAR_IDENTIDADE_SOLICITANTE = false
-  const STATUS_COM_COMPRA = ['Em orçamento', 'Finalizado compra']
+    function escapeHtml(text) {
+      return String(text ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;')
+    }
 
-const $ = (id) => document.getElementById(id)
+    function showMessage(text, type = 'ok') {
+      const box = $('mensagem')
+      if (!box) return
 
-let chamados = []
-let abaAtual = 'manutencao' // 🔥 CONTROLE DAS ABAS
+      box.className = `msg ${type}`
+      box.textContent = text
+      box.style.display = 'block'
 
-let adminMode = localStorage.getItem('helpdesk_admin_mode') === 'true'
-let timerUpdater = null
-let homeExpandedState = {}
-let deferredPrompt = null
+      clearTimeout(window.__helpdeskMsgTimer)
+      window.__helpdeskMsgTimer = setTimeout(() => {
+        box.style.display = 'none'
+        box.className = 'msg'
+        box.textContent = ''
+      }, 3500)
+    }
 
-// 🔥 USUÁRIO LOGADO
-let usuarioLogado = null
+    function normalizarIdFunc(valor) {
+      return String(valor || '').replace(/\D/g, '')
+    }
 
-// 🔥 FUNÇÃO DE TROCA DE ABA
-function trocarAba(tipo) {
-  abaAtual = String(tipo).toLowerCase()
+    function formatDate(value) {
+      if (!value) return '-'
+      const date = new Date(value)
+      return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString('pt-BR')
+    }
 
-  // Corrige ativação visual
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.classList.remove('active')
-  })
+    function formatDateOnly(value) {
+      if (!value) return '-'
+      const date = new Date(`${value}T00:00:00`)
+      return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('pt-BR')
+    }
 
-  const btnAtiva = document.querySelector(`[onclick="trocarAba('${abaAtual}')"]`)
-  if (btnAtiva) btnAtiva.classList.add('active')
+    function formatDateForInput(value) {
+      if (!value) return ''
+      return String(value).slice(0, 10)
+    }
 
-  renderTickets()
-}
-
-// 🔥 MENSAGENS DO SISTEMA
-function showMessage(text, type = 'ok') {
-  const box = $('mensagem')
-  if (!box) return
-
-  box.className = `msg ${type}`
-  box.textContent = text
-  box.style.display = 'block'
-
-  clearTimeout(window.__helpdeskMsgTimer)
-
-  window.__helpdeskMsgTimer = setTimeout(() => {
-    box.style.display = 'none'
-    box.className = 'msg'
-    box.textContent = ''
-  }, 3500)
-}
-
-// 🔥 MOSTRA USUÁRIO NO TOPO (VERSÃO SEGURA)
-function atualizarUsuarioTopo() {
-  const el = document.getElementById('usuarioTopo')
-  if (!el) return
-
-  if (usuarioLogado && typeof usuarioLogado === 'object') {
-    const nome =
-      usuarioLogado.nome ||
-      usuarioLogado.nome_completo ||
-      usuarioLogado.usuario ||
-      'USUÁRIO'
-
-    el.textContent = `👤 ${escapeHtml(String(nome).toUpperCase())}`
-  } else {
-    el.textContent = '👤 -'
-  }
-}
-
-// 🔒 SEGURANÇA HTML
-function escapeHtml(text) {
-  return String(text ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;')
-}
-// 📅 FORMATADORES DE DATA
-function formatDate(value) {
-  if (!value) return '-'
-  const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString('pt-BR')
-}
-
-function formatDateOnly(value) {
-  if (!value) return '-'
-  const date = new Date(`${value}T00:00:00`)
-  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('pt-BR')
-}
-
-function formatDateForInput(value) {
-  if (!value) return ''
-  return String(value).slice(0, 10)
-}
-
-// 💰 FORMATADOR DE MOEDA
-function formatCurrency(value) {
-  const numeric = Number(value)
-  if (!Number.isFinite(numeric)) return '-'
-  return numeric.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  })
-}
+    function formatCurrency(value) {
+      const numeric = Number(value)
+      if (!Number.isFinite(numeric)) return 'R$ 0,00'
+      return numeric.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      })
+    }
 
     function parseCurrencyInput(value) {
       const cleaned = String(value || '')
@@ -1245,14 +1448,29 @@ function formatCurrency(value) {
       return Number.isFinite(numeric) ? numeric : null
     }
 
-    function shouldShowPurchaseFields(status) {
-      return STATUS_COM_COMPRA.includes(status)
+    function getSaldoConta() {
+      const raw = localStorage.getItem(SALDO_STORAGE_KEY)
+      const valor = Number(raw)
+      return Number.isFinite(valor) ? valor : 0
+    }
+
+    function setSaldoConta(valor) {
+      localStorage.setItem(SALDO_STORAGE_KEY, String(valor))
+      updateStats()
+    }
+
+    function priorityWeight(priority) {
+      if (priority === 'Alta') return 3
+      if (priority === 'Média') return 2
+      return 1
     }
 
     function statusClass(status) {
       if (status === 'Aguardando triagem') return 'st-aguardando'
       if (status === 'Encaminhado') return 'st-encaminhado'
       if (status === 'Em andamento') return 'st-andamento'
+      if (status === 'Em Orçamento') return 'st-orcamento'
+      if (status === 'Finalizado Compra') return 'st-finalizado-compra'
       if (status === 'Finalizado') return 'st-finalizado'
       if (status === 'Negado') return 'st-negado'
       return ''
@@ -1266,25 +1484,39 @@ function formatCurrency(value) {
     }
 
     function ticketClass(priority, status) {
-      if (status === 'Finalizado') return 'resolvido'
       if (status === 'Negado') return 'negado'
+      if (STATUS_FINALIZADOS.includes(status)) return 'resolvido'
       if (priority === 'Alta') return 'alta'
       if (priority === 'Média') return 'media'
       return 'baixa'
     }
 
-    function priorityWeight(priority) {
-      if (priority === 'Alta') return 3
-      if (priority === 'Média') return 2
-      return 1
-    }
-
     function isResolved(status) {
-      return status === 'Finalizado'
+      return STATUS_FINALIZADOS.includes(status)
     }
 
-    function normalizarIdFunc(valor) {
-      return String(valor || '').replace(/\D/g, '')
+    function isClosed(status) {
+      return STATUS_FINALIZADOS.includes(status) || status === 'Negado'
+    }
+
+    function shouldShowPurchaseFields(status) {
+      return STATUS_COM_COMPRA.includes(String(status || '').trim())
+    }
+
+    function normalizeTipo(value) {
+      return String(value || 'manutencao').toLowerCase()
+    }
+
+    function tipoLabel(tipo) {
+      return normalizeTipo(tipo) === 'compra' ? 'Compra' : 'Manutenção'
+    }
+
+    function tipoIcone(tipo) {
+      return normalizeTipo(tipo) === 'compra' ? '💰' : '🛠'
+    }
+
+    function tipoClasse(tipo) {
+      return normalizeTipo(tipo) === 'compra' ? 'compra' : 'manutencao'
     }
 
     function formatDuration(ms) {
@@ -1297,8 +1529,7 @@ function formatCurrency(value) {
       if (dias > 0) partes.push(`${dias}d`)
       if (horas > 0 || dias > 0) partes.push(`${horas}h`)
       partes.push(`${minutos}min`)
-
-     return partes.join(' ')
+      return partes.join(' ')
     }
 
     function getTempoChamado(c) {
@@ -1307,9 +1538,9 @@ function formatCurrency(value) {
       let label = '⏱ Em aberto há'
       let classe = 'running'
 
-      if (c.status === 'Finalizado') {
+      if (STATUS_FINALIZADOS.includes(c.status)) {
         fim = c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
-        label = '✅ Tempo até finalização'
+        label = '✅ Tempo até conclusão'
         classe = 'done'
       } else if (c.status === 'Negado') {
         fim = c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
@@ -1324,17 +1555,16 @@ function formatCurrency(value) {
       }
     }
 
-    // 🔥 ADICIONE ISSO LOGO ABAIXO (ESSENCIAL)
-    function buildTimerHTML(c) {
+    function buildTimerHTML(c, attr = 'data-timer-card') {
       const tempo = getTempoChamado(c)
-
       return `
         <div class="timer-box ${tempo.classe}">
           <div class="timer-label">${tempo.label}</div>
-          <div class="timer-value" data-timer-card="${escapeHtml(c.id)}">${tempo.valor}</div>
+          <div class="timer-value" ${attr}="${escapeHtml(c.id)}">${tempo.valor}</div>
         </div>
       `
     }
+
     function atualizarBotaoInstalarApp() {
       const btn = $('btnInstalarApp')
       if (!btn) return
@@ -1343,7 +1573,7 @@ function formatCurrency(value) {
 
     async function instalarApp() {
       if (!deferredPrompt) {
-        showMessage('A opção de instalar ainda não está disponível neste navegador.', 'erro')
+        showMessage('A instalação ainda não está disponível neste navegador.', 'erro')
         return
       }
 
@@ -1357,10 +1587,33 @@ function formatCurrency(value) {
       }
     }
 
+    function atualizarUsuarioTopo() {
+      const nome =
+        usuarioLogado?.nome ||
+        usuarioLogado?.nome_completo ||
+        usuarioLogado?.usuario ||
+        'USUÁRIO'
+
+      const idFunc = usuarioLogado?.id_func || '-'
+      const setor = usuarioLogado?.setor || SETOR_FIXO
+
+      if ($('usuarioTopo')) $('usuarioTopo').textContent = `👤 ${String(nome).toUpperCase()}`
+      if ($('topSubtitle')) $('topSubtitle').textContent = `🚒 CB São Lourenço do Sul • Setor ${setor}`
+
+      if ($('perfilNome')) $('perfilNome').value = String(nome).toUpperCase()
+      if ($('perfilMatricula')) $('perfilMatricula').value = String(idFunc)
+      if ($('perfilSetor')) $('perfilSetor').value = String(setor)
+
+      if ($('novoNome')) $('novoNome').textContent = String(nome).toUpperCase()
+      if ($('novoMatricula')) $('novoMatricula').textContent = String(idFunc)
+      if ($('novoSetor')) $('novoSetor').textContent = String(setor)
+    }
+
     function updateAdminUI() {
       const status = $('adminStatus')
       const enterBtn = $('btnEntrarAdmin')
       const exitBtn = $('btnSairAdmin')
+      const saldoBtn = $('btnSaldoAdmin')
 
       if (adminMode) {
         if (status) {
@@ -1369,6 +1622,7 @@ function formatCurrency(value) {
         }
         if (enterBtn) enterBtn.classList.add('hidden')
         if (exitBtn) exitBtn.classList.remove('hidden')
+        if (saldoBtn) saldoBtn.classList.remove('hidden')
       } else {
         if (status) {
           status.textContent = '👤'
@@ -1376,6 +1630,7 @@ function formatCurrency(value) {
         }
         if (enterBtn) enterBtn.classList.remove('hidden')
         if (exitBtn) exitBtn.classList.add('hidden')
+        if (saldoBtn) saldoBtn.classList.add('hidden')
       }
 
       renderTickets()
@@ -1391,7 +1646,6 @@ function formatCurrency(value) {
       adminMode = true
       localStorage.setItem('helpdesk_admin_mode', 'true')
       updateAdminUI()
-    atualizarBotaoInstalarApp()
       showMessage('Modo administrador ativado.', 'ok')
     }
 
@@ -1402,201 +1656,164 @@ function formatCurrency(value) {
       showMessage('Modo administrador encerrado.', 'ok')
     }
 
-    function limparFiltros() {
-  if ($('busca')) $('busca').value = ''
-  if ($('filtroStatus')) $('filtroStatus').value = ''
-  if ($('filtroSetor')) $('filtroSetor').value = ''
-  if ($('filtroResponsavel')) $('filtroResponsavel').value = ''
-  if ($('somenteNegados')) $('somenteNegados').checked = false
-
-  renderTickets()
-}
-
-    function abrirChamadosPorStatus(status = '') {
-      $('busca').value = ''
-      $('filtroStatus').value = status
-      $('filtroSetor').value = ''
-      $('filtroResponsavel').value = ''
-      $('somenteNegados').checked = false
-      trocarTela('chamados')
-      renderTickets()
-    }
-
-    function atualizarPerfilSolicitante() {
-      $('perfilNome').value = $('nome').value.trim()
-      $('perfilMatricula').value = $('matricula').value.trim()
-    }
-
-    function atualizarEstadoFormulario() {
-      $('titulo').disabled = false
-      $('descricao').disabled = false
-      $('local').disabled = false
-      $('btnAbrir').disabled = false
-      $('btnLimpar').disabled = false
-
-      atualizarPerfilSolicitante()
-    }
-
-    function limparUsuarioLocal(mostrarMensagem = true) {
-      $('nome').value = 'NÃO IDENTIFICADO'
-      $('matricula').value = ''
-      atualizarEstadoFormulario()
-      clearForm()
-      if (mostrarMensagem) {
-        showMessage('Identificação do solicitante limpa.', 'ok')
+    function definirSaldoConta() {
+      if (!adminMode) return
+      const atual = getSaldoConta()
+      const valor = prompt('Informe o saldo em conta:', String(atual).replace('.', ','))
+      if (valor === null) return
+      const numerico = parseCurrencyInput(valor)
+      if (numerico === null) {
+        showMessage('Saldo inválido.', 'erro')
+        return
       }
-    }
-
-    function carregarUsuarioLocal() {
-      const nomeSalvo = localStorage.getItem('helpdesk_nome') || 'NÃO IDENTIFICADO'
-      const selectNome = $('nome')
-      const opcoesValidas = Array.from(selectNome.options).map(option => option.value)
-      selectNome.value = opcoesValidas.includes(nomeSalvo) ? nomeSalvo : 'NÃO IDENTIFICADO'
-      $('matricula').value = localStorage.getItem('helpdesk_matricula') || ''
-      atualizarEstadoFormulario()
-    }
-
-    // 🔐 CONTROLE DE TELAS (ADICIONADO - CORREÇÃO DO ERRO)
-    function mostrarLogin() {
-      document.getElementById('tela-login')?.classList.remove('hidden')
-      document.getElementById('app')?.classList.add('hidden')
-    }
-
-    function mostrarApp() {
-      document.getElementById('tela-login')?.classList.add('hidden')
-      document.getElementById('app')?.classList.remove('hidden')
-    }
-
-    // 🔄 RESTAURA SESSÃO DO USUÁRIO (VERSÃO CORRIGIDA)
-    function restaurarSessaoUsuario() {
-      try {
-        const usuarioSalvo = localStorage.getItem('usuarioLogado')
-
-        if (!usuarioSalvo) {
-          mostrarLogin()
-          return
-        }
-
-        const usuario = JSON.parse(usuarioSalvo)
-
-        if (!usuario || typeof usuario !== 'object') {
-          mostrarLogin()
-          return
-        }
-
-        usuarioLogado = usuario
-
-        atualizarUsuarioTopo()
-        mostrarApp()
-
-      } catch (error) {
-        console.error('Falha ao restaurar sessão do usuário:', error)
-        localStorage.removeItem('usuarioLogado')
-        mostrarLogin()
-      }
-    }
-    function logout() {
-      usuarioLogado = null
-      adminMode = false
-      localStorage.removeItem('usuarioLogado')
-      localStorage.removeItem('helpdesk_admin_mode')
-      atualizarUsuarioTopo()
-      updateAdminUI()
-      document.getElementById('app')?.classList.add('hidden')
-      document.getElementById('tela-login')?.classList.remove('hidden')
-
-      const loginInput = document.getElementById('login-id-func')
-      if (loginInput) loginInput.value = ''
-
-      showMessage('Sessão encerrada.', 'ok')
-    }
-
-    function validarIdFuncSolicitante() {
-      atualizarEstadoFormulario()
-      showMessage('Abertura liberada para qualquer pessoa com o link.', 'ok')
-    }
-
-    function populateMilitarOptions() {
-      const select = $('nome')
-      if (!select) return
-
-      const nomes = ['NÃO IDENTIFICADO', ...RESPONSAVEIS]
-      select.innerHTML = nomes
-        .map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`)
-        .join('')
+      setSaldoConta(numerico)
+      showMessage('Saldo atualizado com sucesso.', 'ok')
     }
 
     function forceUppercaseField(event) {
       event.target.value = String(event.target.value || '').toUpperCase()
     }
 
-    function salvarIdentificacaoLocal() {
-      localStorage.setItem('helpdesk_nome', $('nome').value.trim())
-      localStorage.setItem('helpdesk_matricula', normalizarIdFunc($('matricula').value))
-      $('matricula').value = normalizarIdFunc($('matricula').value)
-      atualizarEstadoFormulario()
+    function clearForm() {
+      if ($('tipo')) $('tipo').value = ''
+      if ($('prioridadeNovo')) $('prioridadeNovo').value = 'Média'
+      if ($('titulo')) $('titulo').value = ''
+      if ($('descricao')) $('descricao').value = ''
+      if ($('local')) $('local').value = ''
     }
 
-   function populateResponsavelFilter() {
-  const filtro = $('filtroResponsavel')
-  const atual = filtro.value
-
-  const nomesUsados = [...new Set(
-    chamados.map(c => c.responsavel_designado).filter(Boolean)
-  )].sort((a, b) => a.localeCompare(b, 'pt-BR'))
-
-  filtro.innerHTML = `<option value="">Todos os responsáveis</option>` +
-    nomesUsados.map(nome =>
-      `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`
-    ).join('')
-
- if (nomesUsados.includes(atual)) filtro.value = atual
-}
-
-// 🔥 CARREGAR CHAMADOS
-async function loadTickets(showToast = true) {
-  try {
-    const { data, error } = await supabase
-      .from('chamados')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error(error)
-      showMessage('Erro ao carregar chamados', 'erro')
-      return
+    function limparFiltros() {
+      if ($('busca')) $('busca').value = ''
+      if ($('filtroStatus')) $('filtroStatus').value = ''
+      if ($('filtroResponsavel')) $('filtroResponsavel').value = ''
+      if ($('somenteNegados')) $('somenteNegados').checked = false
+      renderTickets()
     }
 
-    chamados = Array.isArray(data) ? data : []
-
-    updateStats()
-    renderHomeOpenList()
-    renderTickets()
-    renderCompras()
-
-    if (showToast) {
-      showMessage('Chamados atualizados', 'ok')
+    function abrirChamadosPorStatus(status = '') {
+      if ($('busca')) $('busca').value = ''
+      if ($('filtroStatus')) $('filtroStatus').value = status
+      if ($('filtroResponsavel')) $('filtroResponsavel').value = ''
+      if ($('somenteNegados')) $('somenteNegados').checked = false
+      trocarTela('chamados')
+      renderTickets()
     }
 
-  } catch (e) {
-    console.error(e)
-    showMessage('Erro de conexão ao carregar chamados', 'erro')
-  }
-}
+    function mostrarLogin() {
+      $('tela-login')?.classList.remove('hidden')
+      $('app')?.classList.add('hidden')
+    }
 
+    function mostrarApp() {
+      $('tela-login')?.classList.add('hidden')
+      $('app')?.classList.remove('hidden')
+    }
 
-// 🔥 CRIAR CHAMADO (VERSÃO FINAL - SEM DUPLICAÇÃO)
-async function createTicket() {
+    function restaurarSessaoUsuario() {
+      try {
+        const usuarioSalvo = localStorage.getItem('usuarioLogado')
+        if (!usuarioSalvo) {
+          mostrarLogin()
+          return
+        }
 
-  if (!usuarioLogado) {
-    showMessage('Faça login para abrir um chamado.', 'erro')
-    return
-  }
+        const usuario = JSON.parse(usuarioSalvo)
+        if (!usuario || typeof usuario !== 'object') {
+          mostrarLogin()
+          return
+        }
 
-  const tipoEl = document.getElementById('tipo')
-  const tipo = String(tipoEl?.value || '').toLowerCase()
+        usuarioLogado = usuario
+        atualizarUsuarioTopo()
+        mostrarApp()
+      } catch (error) {
+        console.error('Falha ao restaurar sessão:', error)
+        localStorage.removeItem('usuarioLogado')
+        mostrarLogin()
+      }
+    }
 
-  if (!tipo) {
+    function logout() {
+      usuarioLogado = null
+      adminMode = false
+      localStorage.removeItem('usuarioLogado')
+      localStorage.removeItem('helpdesk_admin_mode')
+      updateAdminUI()
+      if ($('usuarioTopo')) $('usuarioTopo').textContent = '👤 -'
+      if ($('topSubtitle')) $('topSubtitle').textContent = `🚒 CB São Lourenço do Sul • Setor ${SETOR_FIXO}`
+      mostrarLogin()
+      if ($('login-id-func')) $('login-id-func').value = ''
+      showMessage('Sessão encerrada.', 'ok')
+    }
+
+    async function loginPorIdFunc() {
+      const idFunc = normalizarIdFunc($('login-id-func')?.value || '')
+
+      if (!idFunc) {
+        showMessage('Informe o ID Funcional.', 'erro')
+        return
+      }
+
+      const { data, error } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('id_func', idFunc)
+        .limit(1)
+        .maybeSingle()
+
+      if (error) {
+        console.error(error)
+        showMessage('Erro ao consultar usuário.', 'erro')
+        return
+      }
+
+      if (!data) {
+        showMessage('Usuário não encontrado.', 'erro')
+        return
+      }
+
+      usuarioLogado = data
+      localStorage.setItem('usuarioLogado', JSON.stringify(data))
+      atualizarUsuarioTopo()
+      mostrarApp()
+      await loadTickets(false)
+      showMessage(`Bem-vindo, ${data.nome || data.nome_completo || 'usuário'}.`, 'ok')
+    }
+
+    function trocarTela(nome) {
+      const target = document.getElementById(`screen-${nome}`)
+      if (!target) return
+
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+      target.classList.add('active')
+
+      document.querySelectorAll('.tabbar button').forEach(b => b.classList.remove('active'))
+      const botao = document.querySelector(`.tabbar button[data-screen="${nome}"]`)
+      if (botao) botao.classList.add('active')
+
+      if (nome === 'home') {
+        updateStats()
+        renderHomeOpenList()
+      }
+      if (nome === 'chamados') renderTickets()
+      if (nome === 'compras') renderCompras()
+      if (nome === 'perfil') atualizarUsuarioTopo()
+    }
+
+    async function createTicket() {
+      if (!usuarioLogado) {
+        showMessage('Faça login para abrir um chamado.', 'erro')
+        return
+      }
+
+      const tipo = normalizeTipo($('tipo')?.value || '')
+      const prioridade = $('prioridadeNovo')?.value || 'Média'
+      const titulo = String($('titulo')?.value || '').trim().toUpperCase()
+      const descricao = String($('descricao')?.value || '').trim()
+      const local = String($('local')?.value || '').trim().toUpperCase()
+
+      if (!tipo) {
+
     showMessage('Selecione o tipo do chamado.', 'erro')
     return
   }
