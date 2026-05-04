@@ -1718,6 +1718,11 @@ window.loginPorIdFunc = loginPorIdFunc
 window.trocarAba = trocarAba
 window.logout = logout
 
+// ✅ CORREÇÃO DAS FUNÇÕES DE LOGIN
+window.mostrarLogin = mostrarLogin
+window.mostrarApp = mostrarApp
+window.restaurarSessaoUsuario = restaurarSessaoUsuario
+  
 function buildTicketHTML(c) {
   const exibirCompraNaLista = shouldShowPurchaseFields(c.status) && (
     (c.valor_compra !== null && c.valor_compra !== undefined && c.valor_compra !== '') || c.data_compra
@@ -2359,11 +2364,12 @@ async function loginPorIdFunc() {
   localStorage.setItem('usuarioLogado', JSON.stringify(data))
 
   atualizarUsuarioTopo()
-  mostrarApp()
+
+  // ✅ CORREÇÃO AQUI
+  window.mostrarApp()
 
   showMessage(`Bem-vindo, ${data.nome}`, 'ok')
 }
-
 // 🔗 EXPÕE GLOBAL
 window.loginPorIdFunc = loginPorIdFunc
 
