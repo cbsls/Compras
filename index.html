@@ -8,18 +8,72 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
-body { margin:0; font-family: Arial; background:#0f766e; color:#111; }
-.header { background:#0f766e; color:#fff; padding:20px; }
-.card { background:#fff; margin:10px; padding:15px; border-radius:14px; }
-.btn { background:#2563eb; color:#fff; border:none; padding:10px; border-radius:10px; }
-.nav { position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:#fff; padding:10px; }
+body {
+  margin:0;
+  font-family: Arial;
+  background:#0f766e;
+}
+
+.header {
+  color:#fff;
+  padding:20px;
+}
+
+.card {
+  background:#fff;
+  margin:10px;
+  padding:15px;
+  border-radius:16px;
+}
+
+.btn {
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  padding:10px;
+  border-radius:10px;
+}
+
+.nav {
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#fff;
+  display:flex;
+  justify-content:space-around;
+  padding:10px;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.2);
+}
+
+.nav button {
+  border:none;
+  background:none;
+}
+
 .hidden { display:none }
-.item { cursor:pointer }
+
+.status {
+  padding:4px 8px;
+  border-radius:8px;
+  font-size:12px;
+  display:inline-block;
+}
+
+.aberto { background:#dbeafe }
+.andamento { background:#fde68a }
+.finalizado { background:#bbf7d0 }
+
+.dashboard {
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
+  gap:10px;
+}
 </style>
 </head>
 
 <body>
 
+<!-- LOGIN -->
 <div id="login">
   <div class="card">
     <h3>Login</h3>
@@ -29,6 +83,7 @@ body { margin:0; font-family: Arial; background:#0f766e; color:#111; }
   </div>
 </div>
 
+<!-- APP -->
 <div id="app" class="hidden">
 
 <div class="header">
@@ -37,14 +92,20 @@ body { margin:0; font-family: Arial; background:#0f766e; color:#111; }
   <button id="btnAdmin" class="btn hidden" onclick="ativarAdmin()">ADMIN</button>
 </div>
 
-<div id="home">
-  <div class="card">
-    <button class="btn" onclick="abrirNova('Reparo')">Reparo</button>
-    <button class="btn" onclick="abrirNova('Compra')">Compra</button>
+<!-- DASHBOARD -->
+<div id="dashboard" class="card">
+  <h3>Resumo</h3>
+  <div class="dashboard">
+    <div><b id="dTotal">0</b><br>Total</div>
+    <div><b id="dAberto">0</b><br>Aberto</div>
+    <div><b id="dFinal">0</b><br>Finalizado</div>
   </div>
-  <div id="lista"></div>
 </div>
 
+<!-- LISTA -->
+<div id="lista"></div>
+
+<!-- NOVO -->
 <div id="novo" class="hidden card">
   <h3>Novo Chamado</h3>
 
@@ -60,6 +121,7 @@ body { margin:0; font-family: Arial; background:#0f766e; color:#111; }
   <button class="btn" onclick="criar()">Salvar</button>
 </div>
 
+<!-- MODAL -->
 <div id="modal" class="hidden card">
   <h3 id="mTitulo"></h3>
   <p id="mDesc"></p>
@@ -85,9 +147,11 @@ body { margin:0; font-family: Arial; background:#0f766e; color:#111; }
 
 </div>
 
+<!-- NAV -->
 <div class="nav hidden" id="nav">
-  <button onclick="show('home')">Início</button>
-  <button onclick="show('novo')">Novo</button>
+  <button onclick="show('dashboard')">🏠</button>
+  <button onclick="show('lista')">📋</button>
+  <button onclick="show('novo')">➕</button>
 </div>
 
 <script>
@@ -101,18 +165,14 @@ let user = null
 let isAdmin = false
 let chamadoAtual = null
 
-// LOGIN
 async function login() {
-  const id = idFunc.value
-  const senha = document.getElementById('senha').value
-
   const { data } = await supabaseClient
     .from('usuarios')
     .select('*')
-    .eq('id_func', id)
+    .eq('id_func', idFunc.value)
     .single()
 
-  if (!data || data.senha !== senha) return alert('Erro login')
+  if (!data || data.senha !== senha.value) return alert('Erro login')
 
   user = data
   isAdmin = data.tipo === 'admin'
@@ -129,46 +189,46 @@ async function login() {
   carregarChamados()
 }
 
-// ADMIN MANUAL
 function ativarAdmin() {
-  const senha = prompt('Senha admin:')
-  if (senha === '123456') {
+  if (prompt('Senha admin') === '123456') {
     isAdmin = true
     alert('Admin ativo')
   }
 }
 
-// SALDO
 async function carregarSaldo() {
   const { data } = await supabaseClient.from('financeiro').select('*').single()
   saldo.innerText = 'R$ ' + Number(data.saldo_atual || 0).toFixed(2)
 }
 
-// LISTA
 async function carregarChamados() {
   const { data } = await supabaseClient
     .from('chamados')
     .select('*')
     .order('id', { ascending:false })
 
+  let total=0, aberto=0, finalizado=0
+
   lista.innerHTML = ''
 
-  if (!data || data.length === 0) {
-    lista.innerHTML = '<div class="card">Sem chamados</div>'
-    return
-  }
-
   data.forEach(c => {
+    total++
+    if(c.status === 'Aberto') aberto++
+    if(c.status === 'Finalizado') finalizado++
+
     lista.innerHTML += `
-      <div class="card item" onclick="abrirModal('${c.id}')">
+      <div class="card" onclick="abrirModal('${c.id}')">
         <b>${c.titulo}</b><br>
-        ${c.status}<br>
+        <span class="status">${c.status}</span><br>
         ${c.valor_final ? '💰 R$ '+c.valor_final : ''}
       </div>`
   })
+
+  dTotal.innerText = total
+  dAberto.innerText = aberto
+  dFinal.innerText = finalizado
 }
 
-// MODAL
 async function abrirModal(id) {
   const { data } = await supabaseClient
     .from('chamados')
@@ -180,10 +240,7 @@ async function abrirModal(id) {
 
   mTitulo.innerText = data.titulo
   mDesc.innerText = data.descricao
-
-  mLink.innerHTML = data.link 
-    ? `<a href="${data.link}" target="_blank">🔗 Abrir link</a>` 
-    : ''
+  mLink.innerHTML = data.link ? `<a href="${data.link}" target="_blank">🔗 Link</a>` : ''
 
   modal.classList.remove('hidden')
 
@@ -195,12 +252,10 @@ async function abrirModal(id) {
   }
 }
 
-// FECHAR
 function fecharModal() {
   modal.classList.add('hidden')
 }
 
-// SALVAR ADMIN
 async function salvarAdmin() {
 
   const valor = Number(mValor.value || 0)
@@ -211,7 +266,6 @@ async function salvarAdmin() {
     data_execucao: mData.value
   }).eq('id', chamadoAtual.id)
 
-  // desconta saldo se finalizado
   if (mStatus.value === 'Finalizado' || mStatus.value === 'Comprado') {
     const { data } = await supabaseClient.from('financeiro').select('*').single()
     let novo = Number(data.saldo_atual) - valor
@@ -223,10 +277,7 @@ async function salvarAdmin() {
   carregarSaldo()
 }
 
-// CRIAR
 async function criar() {
-  if (!titulo.value) return alert('Informe o título')
-
   await supabaseClient.from('chamados').insert({
     tipo: tipo.value,
     titulo: titulo.value,
@@ -237,20 +288,16 @@ async function criar() {
   })
 
   alert('Criado')
-  show('home')
+  show('lista')
   carregarChamados()
 }
 
-// UI
 function show(tela) {
-  home.classList.add('hidden')
+  dashboard.classList.add('hidden')
+  lista.classList.add('hidden')
   novo.classList.add('hidden')
-  document.getElementById(tela).classList.remove('hidden')
-}
 
-function abrirNova(tipoSel) {
-  show('novo')
-  tipo.value = tipoSel
+  document.getElementById(tela).classList.remove('hidden')
 }
 
 </script>
