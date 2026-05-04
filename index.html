@@ -1460,35 +1460,46 @@ function formatCurrency(value) {
       $('matricula').value = localStorage.getItem('helpdesk_matricula') || ''
       atualizarEstadoFormulario()
     }
-// 🔄 RESTAURA SESSÃO DO USUÁRIO (VERSÃO CORRIGIDA)
-function restaurarSessaoUsuario() {
-  try {
-    const usuarioSalvo = localStorage.getItem('usuarioLogado')
 
-    if (!usuarioSalvo) {
-      mostrarLogin()
-      return
+    // 🔐 CONTROLE DE TELAS (ADICIONADO - CORREÇÃO DO ERRO)
+    function mostrarLogin() {
+      document.getElementById('tela-login')?.classList.remove('hidden')
+      document.getElementById('app')?.classList.add('hidden')
     }
 
-    const usuario = JSON.parse(usuarioSalvo)
-
-    if (!usuario || typeof usuario !== 'object') {
-      mostrarLogin()
-      return
+    function mostrarApp() {
+      document.getElementById('tela-login')?.classList.add('hidden')
+      document.getElementById('app')?.classList.remove('hidden')
     }
 
-    usuarioLogado = usuario
+    // 🔄 RESTAURA SESSÃO DO USUÁRIO (VERSÃO CORRIGIDA)
+    function restaurarSessaoUsuario() {
+      try {
+        const usuarioSalvo = localStorage.getItem('usuarioLogado')
 
-    atualizarUsuarioTopo()
-    mostrarApp()
+        if (!usuarioSalvo) {
+          mostrarLogin()
+          return
+        }
 
-  } catch (error) {
-    console.error('Falha ao restaurar sessão do usuário:', error)
-    localStorage.removeItem('usuarioLogado')
-    mostrarLogin()
-  }
-}
+        const usuario = JSON.parse(usuarioSalvo)
 
+        if (!usuario || typeof usuario !== 'object') {
+          mostrarLogin()
+          return
+        }
+
+        usuarioLogado = usuario
+
+        atualizarUsuarioTopo()
+        mostrarApp()
+
+      } catch (error) {
+        console.error('Falha ao restaurar sessão do usuário:', error)
+        localStorage.removeItem('usuarioLogado')
+        mostrarLogin()
+      }
+    }
     function logout() {
       usuarioLogado = null
       adminMode = false
