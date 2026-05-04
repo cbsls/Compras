@@ -1403,13 +1403,14 @@ function formatCurrency(value) {
     }
 
     function limparFiltros() {
-      $('busca').value = ''
-      $('filtroStatus').value = ''
-      $('filtroSetor').value = ''
-      $('filtroResponsavel').value = ''
-      $('somenteNegados').checked = false
-      renderTickets()
-    }
+  if ($('busca')) $('busca').value = ''
+  if ($('filtroStatus')) $('filtroStatus').value = ''
+  if ($('filtroSetor')) $('filtroSetor').value = ''
+  if ($('filtroResponsavel')) $('filtroResponsavel').value = ''
+  if ($('somenteNegados')) $('somenteNegados').checked = false
+
+  renderTickets()
+}
 
     function abrirChamadosPorStatus(status = '') {
       $('busca').value = ''
