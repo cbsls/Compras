@@ -3,63 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema de Solicitações</title>
+<title>Chamados</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
 
 <style>
 body {
   margin:0;
   font-family: Arial;
-  background:#f4f6f9;
+  background:#0f766e;
+  color:#111;
 }
 
 .header {
-  background:#2563eb;
+  background:#0f766e;
   color:#fff;
   padding:20px;
-  border-bottom-left-radius:20px;
-  border-bottom-right-radius:20px;
 }
 
 .card {
   background:#fff;
-  padding:15px;
   margin:10px;
-  border-radius:12px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  padding:15px;
+  border-radius:14px;
 }
 
-button {
-  padding:10px;
-  border:none;
-  border-radius:8px;
+.btn {
   background:#2563eb;
   color:#fff;
-  cursor:pointer;
+  border:none;
+  padding:10px;
+  border-radius:10px;
 }
-
-input, select, textarea {
-  width:100%;
-  padding:8px;
-  margin:5px 0;
-}
-
-.hidden { display:none; }
 
 .nav {
   position:fixed;
   bottom:0;
   width:100%;
-  background:#fff;
   display:flex;
   justify-content:space-around;
+  background:#fff;
   padding:10px;
-  box-shadow:0 -2px 6px rgba(0,0,0,0.1);
 }
+
+.hidden { display:none }
+.item { cursor:pointer }
 </style>
 </head>
 
@@ -69,225 +57,201 @@ input, select, textarea {
 <div id="login">
   <div class="card">
     <h3>Login</h3>
-    <input id="idFunc" placeholder="ID Funcional">
-    <input id="senha" placeholder="Senha" type="password">
-    <button onclick="login()">Entrar</button>
+    <input id="idFunc" placeholder="ID">
+    <input id="senha" type="password" placeholder="Senha">
+    <button class="btn" onclick="login()">Entrar</button>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app" class="hidden">
 
-  <div class="header">
-    <h3 id="nomeUser"></h3>
-    <h2 id="saldo">R$ 0,00</h2>
-    <button onclick="addSaldo()" id="btnSaldo" class="hidden">+ Saldo</button>
-  </div>
+<div class="header">
+  <h3 id="nome"></h3>
+  <h2 id="saldo"></h2>
+  <button id="btnAdmin" class="btn hidden">ADMIN</button>
+</div>
+
+<!-- HOME -->
+<div id="home">
 
   <div class="card">
-    <button onclick="abrirNova('Reparo')">🛠️ Reparo</button>
-    <button onclick="abrirNova('Compra')">🛒 Compra</button>
+    <button class="btn" onclick="abrirNova('Reparo')">Reparo</button>
+    <button class="btn" onclick="abrirNova('Compra')">Compra</button>
   </div>
 
   <div id="lista"></div>
 
-  <div id="nova" class="card hidden">
-    <h3>Nova Solicitação</h3>
+</div>
 
-    <select id="tipo">
-      <option>Reparo</option>
-      <option>Compra</option>
+<!-- NOVO -->
+<div id="novo" class="hidden card">
+  <h3>Novo Chamado</h3>
+
+  <select id="tipo">
+    <option>Reparo</option>
+    <option>Compra</option>
+  </select>
+
+  <input id="titulo" placeholder="Título">
+  <textarea id="descricao"></textarea>
+  <input id="link" placeholder="Link">
+
+  <button class="btn" onclick="criar()">Salvar</button>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="hidden card">
+  <h3 id="mTitulo"></h3>
+  <p id="mDesc"></p>
+
+  <div id="adminArea" class="hidden">
+    <select id="mStatus">
+      <option>Aberto</option>
+      <option>Em Orçamento</option>
+      <option>Reparado</option>
+      <option>Comprado</option>
+      <option>Finalizado</option>
     </select>
 
-    <input id="titulo" placeholder="Título">
-    <textarea id="descricao" placeholder="Descrição"></textarea>
-    <input id="link" placeholder="Link">
+    <input id="mValor" placeholder="Valor">
+    <input id="mData" type="date">
 
-    <button onclick="criar()">Enviar</button>
+    <button class="btn" onclick="salvarAdmin()">Salvar</button>
   </div>
+
+  <button onclick="fecharModal()">Fechar</button>
+</div>
 
 </div>
 
 <div class="nav hidden" id="nav">
-  <button onclick="mostrarHome()">Início</button>
-  <button onclick="mostrarNova()">Nova</button>
+  <button onclick="show('home')">Início</button>
+  <button onclick="show('novo')">Novo</button>
 </div>
 
 <script>
 
-// 🔥 CLIENTE SUPABASE CORRIGIDO (SEM DUPLICAÇÃO)
 const supabaseClient = window.supabase.createClient(
   'https://azltlpjyyqecurmebffm.supabase.co',
   'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO'
 )
 
-let usuario = null
+let user = null
 let isAdmin = false
+let chamadoAtual = null
 
-// LOGIN
 async function login() {
-  const id = document.getElementById('idFunc').value.trim()
-  const senha = document.getElementById('senha').value.trim()
+  const id = idFunc.value
+  const senha = document.getElementById('senha').value
 
-  if (!id || !senha) {
-    alert('Informe ID e senha')
-    return
-  }
-
-  const { data, error } = await supabaseClient
+  const { data } = await supabaseClient
     .from('usuarios')
     .select('*')
     .eq('id_func', id)
     .single()
 
-  if (error || !data) {
-    alert('Usuário não encontrado')
-    return
-  }
+  if (!data || data.senha !== senha) return alert('Erro login')
 
-  if (data.senha !== senha) {
-    alert('Senha incorreta')
-    return
-  }
-
-  usuario = data
+  user = data
   isAdmin = data.tipo === 'admin'
 
-  document.getElementById('nomeUser').innerText = data.nome_guerra || data.nome
+  nome.innerText = data.nome_guerra || data.nome
 
-  if (isAdmin) {
-    document.getElementById('btnSaldo').classList.remove('hidden')
-  }
+  if (isAdmin) btnAdmin.classList.remove('hidden')
 
-  document.getElementById('login').classList.add('hidden')
-  document.getElementById('app').classList.remove('hidden')
-  document.getElementById('nav').classList.remove('hidden')
+  loginDiv = document.getElementById('login')
+  loginDiv.classList.add('hidden')
+  app.classList.remove('hidden')
+  nav.classList.remove('hidden')
 
   carregarSaldo()
   carregarChamados()
 }
 
-// SALDO
 async function carregarSaldo() {
   const { data } = await supabaseClient.from('financeiro').select('*').single()
-  document.getElementById('saldo').innerText = 'R$ ' + Number(data.saldo_atual || 0).toFixed(2)
+  saldo.innerText = 'R$ ' + Number(data.saldo_atual).toFixed(2)
 }
 
-async function addSaldo() {
-  const valor = prompt('Valor para adicionar:')
-  if (!valor || isNaN(valor)) return
-
-  const { data } = await supabaseClient.from('financeiro').select('*').single()
-
-  let novo = Number(data.saldo_atual || 0) + Number(valor)
-
-  await supabaseClient.from('financeiro').update({ saldo_atual: novo }).eq('id', 1)
-
-  carregarSaldo()
-}
-
-// CHAMADOS
 async function carregarChamados() {
-  const { data, error } = await supabaseClient
+  const { data } = await supabaseClient
     .from('chamados')
     .select('*')
-    .order('created_at', { ascending: false })
+    .order('id', { ascending:false })
 
-  if (error) {
-    console.error(error)
-    alert('Erro ao carregar chamados')
-    return
-  }
-
-  if (!data || data.length === 0) {
-    document.getElementById('lista').innerHTML = '<div class="card">Nenhum chamado</div>'
-    return
-  }
-
-  let html = ''
+  lista.innerHTML = ''
 
   data.forEach(c => {
-    html += `
-    <div class="card">
-      <b>${c.tipo}</b> - ${c.status}<br>
-      <b>${c.titulo}</b><br>
-      ${c.descricao || ''}<br>
-      ${c.valor_final ? '💰 R$ '+c.valor_final : ''}
-    </div>`
+    lista.innerHTML += `
+      <div class="card item" onclick="abrirModal('${c.id}')">
+        <b>${c.titulo}</b><br>
+        ${c.status}
+      </div>`
   })
-
-  document.getElementById('lista').innerHTML = html
 }
 
-// CRIAR
-async function criar() {
+async function abrirModal(id) {
+  const { data } = await supabaseClient
+    .from('chamados')
+    .select('*')
+    .eq('id', id)
+    .single()
 
-  const titulo = document.getElementById('titulo').value.trim()
-  if (!titulo) return alert('Informe o título')
+  chamadoAtual = data
 
-  await supabaseClient.from('chamados').insert({
-    tipo: document.getElementById('tipo').value,
-    titulo: titulo,
-    descricao: document.getElementById('descricao').value,
-    link: document.getElementById('link').value,
-    status: 'Aberto',
-    id_usuario: usuario.id
-  })
+  mTitulo.innerText = data.titulo
+  mDesc.innerText = data.descricao
 
-  alert('Solicitação criada!')
-  mostrarHome()
-  carregarChamados()
-}
+  modal.classList.remove('hidden')
 
-// STATUS + DESCONTO
-async function updateStatus(id, status) {
-
-  await supabaseClient.from('chamados').update({ status }).eq('id', id)
-
-  if (status === 'Reparado' || status === 'Comprado') {
-    const valor = prompt('Valor final:')
-
-    if (!valor || isNaN(valor)) return
-
-    const { data } = await supabaseClient.from('financeiro').select('*').single()
-    let novo = Number(data.saldo_atual || 0) - Number(valor)
-
-    await supabaseClient.from('financeiro').update({ saldo_atual: novo }).eq('id', 1)
-
-    await supabaseClient.from('chamados').update({
-      valor_final: valor,
-      data_execucao: new Date()
-    }).eq('id', id)
-
-    carregarSaldo()
+  if (isAdmin) {
+    adminArea.classList.remove('hidden')
+    mStatus.value = data.status
+    mValor.value = data.valor_final || ''
   }
+}
 
+function fecharModal() {
+  modal.classList.add('hidden')
+}
+
+async function salvarAdmin() {
+  await supabaseClient.from('chamados').update({
+    status: mStatus.value,
+    valor_final: mValor.value,
+    data_execucao: mData.value
+  }).eq('id', chamadoAtual.id)
+
+  fecharModal()
   carregarChamados()
 }
 
-// ORÇAMENTO
-async function updateValor(id, valor) {
-  if (!valor || isNaN(valor)) return
-  await supabaseClient.from('chamados').update({ valor_orcamento: valor }).eq('id', id)
+async function criar() {
+  await supabaseClient.from('chamados').insert({
+    tipo: tipo.value,
+    titulo: titulo.value,
+    descricao: descricao.value,
+    link: link.value,
+    status: 'Aberto',
+    id_usuario: user.id
+  })
+
+  alert('Criado')
+  show('home')
+  carregarChamados()
 }
 
-// UI
-function mostrarNova() {
-  document.getElementById('nova').classList.remove('hidden')
+function show(tela) {
+  home.classList.add('hidden')
+  novo.classList.add('hidden')
+
+  document.getElementById(tela).classList.remove('hidden')
 }
 
-function mostrarHome() {
-  document.getElementById('nova').classList.add('hidden')
-}
-
-function abrirNova(tipo) {
-  mostrarNova()
-  document.getElementById('tipo').value = tipo
-}
-
-// SERVICE WORKER
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
+function abrirNova(tipoSel) {
+  show('novo')
+  tipo.value = tipoSel
 }
 
 </script>
