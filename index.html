@@ -260,7 +260,7 @@ body{
   color:#1d4ed8;
 }
 
-.emcompra{
+.emorcamento{
   background:#fef3c7;
   color:#b45309;
 }
@@ -463,14 +463,14 @@ body{
     </div>
 
     <div class="dash-card">
-      <div id="dCompra" class="dash-number">0</div>
-      <div class="dash-label">Em compra</div>
-    </div>
+  <div id="dOrcamento" class="dash-number">0</div>
+  <div class="dash-label">Orçamento</div>
+</div>
 
-    <div class="dash-card">
-      <div id="dFinal" class="dash-number">0</div>
-      <div class="dash-label">Finalizados</div>
-    </div>
+<div class="dash-card">
+  <div id="dFinal" class="dash-number">0</div>
+  <div class="dash-label">Finalizados</div>
+</div>
 
   </div>
 
@@ -502,18 +502,25 @@ body{
       </button>
 
       <button
-        class="status-btn"
-        onclick="filtrarStatus('Em compra', this)"
-      >
-        Em compra
-      </button>
+  class="status-btn"
+  onclick="filtrarStatus('Em Orçamento', this)"
+>
+  Orçamento
+</button>
 
-      <button
-        class="status-btn"
-        onclick="filtrarStatus('Finalizado', this)"
-      >
-        Finalizado
-      </button>
+<button
+  class="status-btn"
+  onclick="filtrarStatus('Comprado', this)"
+>
+  Comprado
+</button>
+
+<button
+  class="status-btn"
+  onclick="filtrarStatus('Reparado', this)"
+>
+  Reparado
+</button>
 
       <button
         class="status-btn"
@@ -595,8 +602,9 @@ body{
       <select id="mStatus" class="input">
 
         <option>Aberto</option>
-        <option>Em compra</option>
-        <option>Finalizado</option>
+        <option>Em Orçamento</option>
+        <option>Comprado</option>
+        <option>Reparado</option>
         <option>Negado</option>
 
       </select>
@@ -855,16 +863,16 @@ function atualizarDashboard(){
       c.status === 'Aberto'
     ).length
 
-  document.getElementById('dCompra').innerText =
-    chamadosCache.filter(c =>
-      c.status === 'Em compra'
-    ).length
+  document.getElementById('dOrcamento').innerText =
+  chamadosCache.filter(c =>
+    c.status === 'Em Orçamento'
+  ).length
 
-  document.getElementById('dFinal').innerText =
-    chamadosCache.filter(c =>
-      c.status === 'Finalizado'
-    ).length
-}
+document.getElementById('dFinal').innerText =
+  chamadosCache.filter(c =>
+    c.status === 'Comprado' ||
+    c.status === 'Reparado'
+  ).length
 
 function renderChamados(){
 
@@ -911,11 +919,14 @@ function renderChamados(){
 
     let classe = 'aberto'
 
-    if(c.status === 'Em compra')
-      classe = 'emcompra'
+    if(c.status === 'Em Orçamento')
+  classe = 'emorcamento'
 
-    if(c.status === 'Finalizado')
-      classe = 'finalizado'
+if(
+  c.status === 'Comprado' ||
+  c.status === 'Reparado'
+)
+  classe = 'finalizado'
 
     if(c.status === 'Negado')
       classe = 'negado'
