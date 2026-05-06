@@ -1047,7 +1047,7 @@ async function criar(){
     user.nome_guerra || user.nome,
 
   matricula_solicitante:
-    user.id_func,
+    String(user.id_func || ''),,
 
   tipo:
     document.getElementById('tipo').value,
