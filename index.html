@@ -1042,23 +1042,26 @@ async function criar(){
   }
 
   const payload = {
-    
-    nome_solicitante:
-  user.nome_guerra || user.nome,
 
-    tipo:
-      document.getElementById('tipo').value,
+  nome_solicitante:
+    user.nome_guerra || user.nome,
 
-    titulo: titulo,
+  matricula_solicitante:
+    user.id_func,
 
-    descricao:
-      document.getElementById('descricao').value,
+  tipo:
+    document.getElementById('tipo').value,
 
-    link:
-      document.getElementById('link').value,
+  titulo: titulo,
 
-    status:'Aberto'
-  }
+  descricao:
+    document.getElementById('descricao').value,
+
+  link:
+    document.getElementById('link').value,
+
+  status:'Aberto'
+}
 
   const { error } = await supabaseClient
     .from('chamados')
