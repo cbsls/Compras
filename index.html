@@ -469,7 +469,9 @@ body{
 
 <div class="dash-card">
   <div id="dFinal" class="dash-number">0</div>
-  <div class="dash-label">Finalizados</div>
+ <div class="dash-label">
+  Comprados/Reparados
+</div>
 </div>
 
   </div>
@@ -1131,31 +1133,66 @@ async function salvarAdmin(){
     .value
 
   const payload = {
-    status: status,
-    valor: valor,
-    data: dataExec
-  }
+  status: status,
+  valor: valor,
+  data: dataExec
+}
 
-  const { error } =
+// desconta apenas na primeira finalização
+const statusAnterior = atual.status
+
+if(
+  (
+    status === 'Comprado' ||
+    status === 'Reparado'
+  )
+  &&
+  (
+    statusAnterior !== 'Comprado' &&
+    statusAnterior !== 'Reparado'
+  )
+){
+
+  const { data: financeiro } =
     await supabaseClient
-    .from('chamados')
-    .update(payload)
-    .eq('id', atual.id)
+    .from('financeiro')
+    .select('*')
+    .eq('id',1)
+    .single()
 
-  if(error){
+  const saldoAtual =
+    Number(financeiro?.saldo_atual || 0)
 
-    console.log(error)
+  const novoSaldo =
+    saldoAtual - valor
 
-    alert(
-      'Erro ao salvar.\n' +
-      error.message
-    )
+  await supabaseClient
+    .from('financeiro')
+    .update({
+      saldo_atual: novoSaldo
+    })
+    .eq('id',1)
+}
 
-    return
-  }
+const { error } =
+  await supabaseClient
+  .from('chamados')
+  .update(payload)
+  .eq('id', atual.id)
 
-  fecharModal()
+if(error){
 
+  console.log(error)
+
+  alert(
+    'Erro ao salvar.\n' +
+    error.message
+  )
+
+  return
+}
+
+fecharModal()
   carregarSaldo()
   carregarChamados()
 }
