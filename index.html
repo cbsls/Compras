@@ -7,154 +7,521 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
+<link rel="manifest" href="manifest.json">
+
 <style>
 
-body {
+*{
+  box-sizing:border-box;
+}
+
+body{
   margin:0;
-  font-family: system-ui;
+  font-family:system-ui;
+  background:#eef2f7;
+  color:#1e293b;
+}
+
+/* LOGIN */
+
+.login-screen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.login-card{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  border-radius:28px;
+  padding:24px;
+  box-shadow:0 6px 20px rgba(0,0,0,.12);
+}
+
+.login-title{
+  font-size:28px;
+  font-weight:800;
+  margin-bottom:20px;
+}
+
+.input{
+  width:100%;
+  border:none;
+  background:#f1f5f9;
+  padding:15px;
+  border-radius:16px;
+  margin-bottom:12px;
+  font-size:15px;
+}
+
+.btn{
+  border:none;
+  background:#2563eb;
+  color:#fff;
+  padding:14px 18px;
+  border-radius:16px;
+  font-weight:700;
+  cursor:pointer;
+  width:100%;
+}
+
+.btn-secondary{
   background:#0f766e;
 }
 
-/* HEADER */
-.header {
+/* APP */
+
+.header{
+  background:linear-gradient(135deg,#0f766e,#115e59);
   color:#fff;
-  padding:25px;
+  padding:22px;
+  border-radius:0 0 28px 28px;
+  position:sticky;
+  top:0;
+  z-index:100;
 }
 
-.saldo {
-  font-size:22px;
-  font-weight:bold;
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-/* CARD */
-.card {
+.user-name{
+  font-size:24px;
+  font-weight:800;
+}
+
+.user-sub{
+  opacity:.9;
+  font-size:14px;
+}
+
+.saldo{
+  margin-top:14px;
+  font-size:34px;
+  font-weight:900;
+}
+
+.top-actions{
+  display:flex;
+  gap:10px;
+  margin-top:20px;
+}
+
+.top-actions button{
+  flex:1;
+}
+
+/* DASH */
+
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  padding:14px;
+}
+
+.dash-card{
   background:#fff;
-  margin:12px;
+  border-radius:22px;
   padding:16px;
+  text-align:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+
+.dash-number{
+  font-size:28px;
+  font-weight:900;
+  color:#0f766e;
+}
+
+.dash-label{
+  color:#64748b;
+  font-size:13px;
+}
+
+/* FILTRO */
+
+.filtro{
+  padding:0 14px;
+}
+
+.search{
+  width:100%;
+  border:none;
+  background:#fff;
+  padding:15px;
   border-radius:18px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
 
 /* LISTA */
-.item {
+
+#lista{
   padding:14px;
-  border-radius:14px;
-  margin-bottom:10px;
-  background:#f9fafb;
+  padding-bottom:110px;
+}
+
+.item{
+  background:#fff;
+  border-radius:24px;
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
   cursor:pointer;
-  transition:0.2s;
+  transition:.2s;
 }
 
-.item:hover {
-  transform:scale(1.02);
+.item:active{
+  transform:scale(.98);
 }
 
-/* STATUS */
-.status {
+.item-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.item-title{
+  font-size:20px;
+  font-weight:800;
+}
+
+.item-desc{
+  margin-top:10px;
+  color:#64748b;
+  line-height:1.4;
+}
+
+.item-footer{
+  margin-top:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:14px;
+  color:#475569;
+}
+
+.status{
+  padding:6px 12px;
+  border-radius:999px;
   font-size:12px;
-  padding:4px 8px;
-  border-radius:8px;
-  display:inline-block;
-  margin-top:5px;
+  font-weight:800;
+  white-space:nowrap;
 }
 
-.aberto { background:#dbeafe }
-.andamento { background:#fde68a }
-.finalizado { background:#bbf7d0 }
+.aberto{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
 
-/* BOTÃO */
-.btn {
-  background:#2563eb;
-  color:#fff;
-  border:none;
-  padding:10px;
-  border-radius:12px;
+.andamento{
+  background:#fef3c7;
+  color:#b45309;
+}
+
+.finalizado{
+  background:#dcfce7;
+  color:#15803d;
+}
+
+/* NOVO */
+
+#novo{
+  padding:14px;
+  padding-bottom:120px;
+}
+
+.form-card{
+  background:#fff;
+  border-radius:24px;
+  padding:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
 
 /* NAV */
-.nav {
+
+.nav{
   position:fixed;
   bottom:0;
   width:100%;
   background:#fff;
   display:flex;
   justify-content:space-around;
-  padding:12px;
-  box-shadow:0 -4px 10px rgba(0,0,0,0.2);
+  padding:12px 0;
+  box-shadow:0 -5px 20px rgba(0,0,0,.12);
+  border-radius:24px 24px 0 0;
+  z-index:200;
+}
+
+.nav button{
+  border:none;
+  background:none;
+  font-size:24px;
+  cursor:pointer;
 }
 
 /* MODAL */
-.modal {
+
+.modal{
   position:fixed;
-  bottom:0;
-  width:100%;
-  background:#fff;
-  padding:20px;
-  border-radius:20px 20px 0 0;
-  box-shadow:0 -5px 15px rgba(0,0,0,0.3);
+  inset:0;
+  background:rgba(0,0,0,.45);
+  display:flex;
+  align-items:flex-end;
+  z-index:999;
 }
 
-.hidden { display:none }
+.modal-content{
+  background:#fff;
+  width:100%;
+  border-radius:28px 28px 0 0;
+  padding:24px;
+  max-height:90vh;
+  overflow:auto;
+}
+
+.hidden{
+  display:none !important;
+}
 
 </style>
 </head>
 
 <body>
 
-<div id="login">
-  <div class="card">
-    <h3>Login</h3>
-    <input id="idFunc" placeholder="ID"><br><br>
-    <input id="senha" type="password" placeholder="Senha"><br><br>
-    <button class="btn" onclick="login()">Entrar</button>
+<!-- LOGIN -->
+
+<div id="loginScreen" class="login-screen">
+
+  <div class="login-card">
+
+    <div class="login-title">
+      Sistema de Chamados
+    </div>
+
+    <input
+      id="idFunc"
+      class="input"
+      placeholder="ID Funcional"
+    >
+
+    <input
+      id="senha"
+      type="password"
+      class="input"
+      placeholder="Senha"
+    >
+
+    <button class="btn" onclick="login()">
+      Entrar
+    </button>
+
   </div>
+
 </div>
+
+<!-- APP -->
 
 <div id="app" class="hidden">
 
-<div class="header">
-  <h3 id="nome"></h3>
-  <div class="saldo" id="saldo"></div>
-  <button id="btnAdmin" class="btn hidden" onclick="ativarAdmin()">ADMIN</button>
-</div>
+  <!-- HEADER -->
 
-<div id="lista"></div>
+  <div class="header">
 
-<div id="novo" class="hidden card">
-  <h3>Novo</h3>
-  <input id="titulo" placeholder="Título"><br><br>
-  <textarea id="descricao"></textarea><br><br>
-  <button class="btn" onclick="criar()">Salvar</button>
+    <div class="header-top">
+
+      <div>
+        <div id="nome" class="user-name"></div>
+        <div class="user-sub">
+          CB São Lourenço do Sul
+        </div>
+      </div>
+
+      <button
+        id="btnAdmin"
+        class="btn btn-secondary hidden"
+        onclick="ativarAdmin()"
+        style="width:auto"
+      >
+        ADMIN
+      </button>
+
+    </div>
+
+    <div id="saldo" class="saldo">
+      R$ 0,00
+    </div>
+
+    <div class="top-actions">
+
+      <button
+        class="btn"
+        onclick="mostrarNovo()"
+      >
+        ➕ Novo
+      </button>
+
+      <button
+        class="btn btn-secondary"
+        onclick="carregarChamados()"
+      >
+        🔄 Atualizar
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- DASHBOARD -->
+
+  <div class="dashboard">
+
+    <div class="dash-card">
+      <div id="dashTotal" class="dash-number">0</div>
+      <div class="dash-label">Total</div>
+    </div>
+
+    <div class="dash-card">
+      <div id="dashAberto" class="dash-number">0</div>
+      <div class="dash-label">Abertos</div>
+    </div>
+
+    <div class="dash-card">
+      <div id="dashFinalizado" class="dash-number">0</div>
+      <div class="dash-label">Finalizados</div>
+    </div>
+
+  </div>
+
+  <!-- FILTRO -->
+
+  <div class="filtro">
+
+    <input
+      id="busca"
+      class="search"
+      placeholder="Buscar chamado..."
+      onkeyup="filtrarChamados()"
+    >
+
+  </div>
+
+  <!-- LISTA -->
+
+  <div id="lista"></div>
+
+  <!-- NOVO -->
+
+  <div id="novo" class="hidden">
+
+    <div class="form-card">
+
+      <h2>Novo Chamado</h2>
+
+      <select id="tipo" class="input">
+        <option>Reparo</option>
+        <option>Compra</option>
+      </select>
+
+      <input
+        id="titulo"
+        class="input"
+        placeholder="Título"
+      >
+
+      <textarea
+        id="descricao"
+        class="input"
+        placeholder="Descrição"
+      ></textarea>
+
+      <input
+        id="link"
+        class="input"
+        placeholder="Link / Referência"
+      >
+
+      <button class="btn" onclick="criar()">
+        Salvar Chamado
+      </button>
+
+    </div>
+
+  </div>
+
 </div>
 
 <!-- MODAL -->
+
 <div id="modal" class="modal hidden">
-  <h3 id="mTitulo"></h3>
-  <p id="mDesc"></p>
 
-  <div id="adminArea" class="hidden">
-    <select id="mStatus">
-      <option>Aberto</option>
-      <option>Em Orçamento</option>
-      <option>Reparado</option>
-      <option>Comprado</option>
-      <option>Finalizado</option>
-    </select><br><br>
+  <div class="modal-content">
 
-    <input id="mValor" placeholder="Valor"><br><br>
-    <input id="mData" type="date"><br><br>
+    <h2 id="mTitulo"></h2>
 
-    <button class="btn" onclick="salvarAdmin()">Salvar</button>
+    <p id="mDesc"></p>
+
+    <div id="mInfo"></div>
+
+    <div id="adminArea" class="hidden">
+
+      <select id="mStatus" class="input">
+        <option>Aberto</option>
+        <option>Em Orçamento</option>
+        <option>Reparado</option>
+        <option>Comprado</option>
+        <option>Finalizado</option>
+      </select>
+
+      <input
+        id="mValor"
+        class="input"
+        placeholder="Valor"
+      >
+
+      <input
+        id="mData"
+        type="date"
+        class="input"
+      >
+
+      <button class="btn" onclick="salvarAdmin()">
+        Salvar Alterações
+      </button>
+
+    </div>
+
+    <br>
+
+    <button
+      class="btn btn-secondary"
+      onclick="fecharModal()"
+    >
+      Fechar
+    </button>
+
   </div>
 
-  <button onclick="fecharModal()">Fechar</button>
 </div>
 
-</div>
+<!-- NAV -->
 
-<div class="nav hidden" id="nav">
-  <button onclick="mostrarLista()">🏠</button>
-  <button onclick="mostrarNovo()">➕</button>
+<div id="nav" class="nav hidden">
+
+  <button onclick="mostrarLista()">
+    🏠
+  </button>
+
+  <button onclick="mostrarNovo()">
+    ➕
+  </button>
+
 </div>
 
 <script>
@@ -167,11 +534,19 @@ const supabaseClient = window.supabase.createClient(
 let user = null
 let isAdmin = false
 let atual = null
+let chamadosCache = []
 
-async function login() {
+// LOGIN
 
-  const id = document.getElementById('idFunc').value
-  const senha = document.getElementById('senha').value
+async function login(){
+
+  const id = document.getElementById('idFunc').value.trim()
+  const senha = document.getElementById('senha').value.trim()
+
+  if(!id || !senha){
+    alert('Informe login e senha')
+    return
+  }
 
   const { data } = await supabaseClient
     .from('usuarios')
@@ -179,56 +554,164 @@ async function login() {
     .eq('id_func', id)
     .single()
 
-  if (!data || data.senha !== senha) return alert('Erro login')
+  if(!data || data.senha !== senha){
+    alert('Login inválido')
+    return
+  }
 
   user = data
   isAdmin = data.tipo === 'admin'
 
-  document.getElementById('nome').innerText = data.nome_guerra || data.nome
+  document.getElementById('nome').innerText =
+    data.nome_guerra || data.nome
 
-  if (isAdmin) document.getElementById('btnAdmin').classList.remove('hidden')
+  if(isAdmin){
+    document
+      .getElementById('btnAdmin')
+      .classList
+      .remove('hidden')
+  }
 
-  document.getElementById('login').classList.add('hidden')
-  document.getElementById('app').classList.remove('hidden')
-  document.getElementById('nav').classList.remove('hidden')
+  document
+    .getElementById('loginScreen')
+    .classList
+    .add('hidden')
+
+  document
+    .getElementById('app')
+    .classList
+    .remove('hidden')
+
+  document
+    .getElementById('nav')
+    .classList
+    .remove('hidden')
 
   carregarSaldo()
   carregarChamados()
 }
 
+// ADMIN
+
 function ativarAdmin(){
-  if(prompt('Senha admin')==='123456'){
+
+  const senha = prompt('Senha Admin')
+
+  if(senha === '123456'){
     isAdmin = true
-    alert('Admin ativado')
+    alert('Modo Admin Ativado')
   }
 }
 
+// SALDO
+
 async function carregarSaldo(){
-  const { data } = await supabaseClient.from('financeiro').select('*').single()
-  document.getElementById('saldo').innerText = 'R$ '+Number(data.saldo_atual).toFixed(2)
+
+  const { data } = await supabaseClient
+    .from('financeiro')
+    .select('*')
+    .single()
+
+  document.getElementById('saldo').innerText =
+    'R$ ' + Number(data.saldo_atual || 0).toFixed(2)
 }
 
+// CHAMADOS
+
 async function carregarChamados(){
+
+  const scrollAtual = window.scrollY
 
   const { data } = await supabaseClient
     .from('chamados')
     .select('*')
-    .order('id',{ascending:false})
+    .order('id', { ascending:false })
+
+  chamadosCache = data || []
+
+  renderChamados(chamadosCache)
+
+  atualizarDashboard()
+
+  window.scrollTo(0, scrollAtual)
+}
+
+function atualizarDashboard(){
+
+  document.getElementById('dashTotal').innerText =
+    chamadosCache.length
+
+  document.getElementById('dashAberto').innerText =
+    chamadosCache.filter(c =>
+      c.status !== 'Finalizado'
+    ).length
+
+  document.getElementById('dashFinalizado').innerText =
+    chamadosCache.filter(c =>
+      c.status === 'Finalizado'
+    ).length
+}
+
+function renderChamados(listaChamados){
 
   const lista = document.getElementById('lista')
+
   lista.innerHTML = ''
 
-  data.forEach(c => {
+  if(listaChamados.length === 0){
+
+    lista.innerHTML = `
+      <div class="item">
+        Nenhum chamado encontrado
+      </div>
+    `
+
+    return
+  }
+
+  listaChamados.forEach(c => {
 
     let classe = 'aberto'
-    if(c.status==='Finalizado') classe='finalizado'
-    if(c.status==='Em Orçamento') classe='andamento'
+
+    if(c.status === 'Finalizado')
+      classe = 'finalizado'
+
+    if(c.status === 'Em Orçamento')
+      classe = 'andamento'
 
     const div = document.createElement('div')
+
     div.className = 'item'
+
     div.innerHTML = `
-      <b>${c.titulo}</b><br>
-      <span class="status ${classe}">${c.status}</span>
+
+      <div class="item-top">
+
+        <div class="item-title">
+          ${c.titulo || '-'}
+        </div>
+
+        <div class="status ${classe}">
+          ${c.status || '-'}
+        </div>
+
+      </div>
+
+      <div class="item-desc">
+        ${c.descricao || 'Sem descrição'}
+      </div>
+
+      <div class="item-footer">
+
+        <div>
+          💰 R$ ${c.valor_final || '0,00'}
+        </div>
+
+        <div>
+          📅 ${c.data_execucao || '-'}
+        </div>
+
+      </div>
     `
 
     div.onclick = () => abrirModal(c.id)
@@ -236,6 +719,29 @@ async function carregarChamados(){
     lista.appendChild(div)
   })
 }
+
+// FILTRO
+
+function filtrarChamados(){
+
+  const termo = document
+    .getElementById('busca')
+    .value
+    .toLowerCase()
+
+  const filtrados = chamadosCache.filter(c => {
+
+    return (
+      (c.titulo || '').toLowerCase().includes(termo) ||
+      (c.descricao || '').toLowerCase().includes(termo) ||
+      (c.status || '').toLowerCase().includes(termo)
+    )
+  })
+
+  renderChamados(filtrados)
+}
+
+// MODAL
 
 async function abrirModal(id){
 
@@ -247,58 +753,206 @@ async function abrirModal(id){
 
   atual = data
 
-  document.getElementById('mTitulo').innerText = data.titulo
-  document.getElementById('mDesc').innerText = data.descricao
+  document.getElementById('mTitulo').innerText =
+    data.titulo || '-'
 
-  document.getElementById('modal').classList.remove('hidden')
+  document.getElementById('mDesc').innerText =
+    data.descricao || '-'
+
+  document.getElementById('mInfo').innerHTML = `
+    <br>
+    <b>Tipo:</b> ${data.tipo || '-'}<br><br>
+    <b>Status:</b> ${data.status || '-'}<br><br>
+    <b>Valor:</b> R$ ${data.valor_final || '0,00'}<br><br>
+    <b>Data:</b> ${data.data_execucao || '-'}<br><br>
+
+    ${
+      data.link
+      ? `<a href="${data.link}" target="_blank">🔗 Abrir Link</a>`
+      : ''
+    }
+  `
+
+  document
+    .getElementById('modal')
+    .classList
+    .remove('hidden')
 
   if(isAdmin){
-    document.getElementById('adminArea').classList.remove('hidden')
-    document.getElementById('mStatus').value = data.status
+
+    document
+      .getElementById('adminArea')
+      .classList
+      .remove('hidden')
+
+    document.getElementById('mStatus').value =
+      data.status || 'Aberto'
+
+    document.getElementById('mValor').value =
+      data.valor_final || ''
+
+    document.getElementById('mData').value =
+      data.data_execucao || ''
   }
 }
 
 function fecharModal(){
-  document.getElementById('modal').classList.add('hidden')
+
+  document
+    .getElementById('modal')
+    .classList
+    .add('hidden')
 }
+
+// ADMIN UPDATE
 
 async function salvarAdmin(){
 
-  const valor = Number(document.getElementById('mValor').value || 0)
+  const valor = Number(
+    document.getElementById('mValor').value || 0
+  )
 
-  await supabaseClient.from('chamados').update({
-    status: document.getElementById('mStatus').value,
-    valor_final: valor,
-    data_execucao: document.getElementById('mData').value
-  }).eq('id', atual.id)
+  const status =
+    document.getElementById('mStatus').value
+
+  await supabaseClient
+    .from('chamados')
+    .update({
+      status: status,
+      valor_final: valor,
+      data_execucao:
+        document.getElementById('mData').value
+    })
+    .eq('id', atual.id)
+
+  if(
+    status === 'Finalizado' ||
+    status === 'Comprado'
+  ){
+
+    const { data } = await supabaseClient
+      .from('financeiro')
+      .select('*')
+      .single()
+
+    const novoSaldo =
+      Number(data.saldo_atual || 0) - valor
+
+    await supabaseClient
+      .from('financeiro')
+      .update({
+        saldo_atual: novoSaldo
+      })
+      .eq('id', 1)
+  }
 
   fecharModal()
+
   carregarChamados()
   carregarSaldo()
 }
 
+// CRIAR
+
 async function criar(){
 
-  await supabaseClient.from('chamados').insert({
-    titulo: document.getElementById('titulo').value,
-    descricao: document.getElementById('descricao').value,
-    status:'Aberto',
-    id_usuario:user.id
-  })
+  const titulo =
+    document.getElementById('titulo').value.trim()
 
-  alert('Criado')
+  if(!titulo){
+    alert('Informe o título')
+    return
+  }
+
+  await supabaseClient
+    .from('chamados')
+    .insert({
+
+      tipo:
+        document.getElementById('tipo').value,
+
+      titulo: titulo,
+
+      descricao:
+        document.getElementById('descricao').value,
+
+      link:
+        document.getElementById('link').value,
+
+      status:'Aberto',
+
+      id_usuario:user.id
+    })
+
+  alert('Chamado criado')
+
+  document.getElementById('titulo').value = ''
+  document.getElementById('descricao').value = ''
+  document.getElementById('link').value = ''
+
   mostrarLista()
+
   carregarChamados()
 }
 
+// NAVEGAÇÃO
+
 function mostrarNovo(){
-  document.getElementById('novo').classList.remove('hidden')
-  document.getElementById('lista').classList.add('hidden')
+
+  document
+    .getElementById('novo')
+    .classList
+    .remove('hidden')
+
+  document
+    .getElementById('lista')
+    .classList
+    .add('hidden')
+
+  document
+    .querySelector('.dashboard')
+    .classList
+    .add('hidden')
+
+  document
+    .querySelector('.filtro')
+    .classList
+    .add('hidden')
 }
 
 function mostrarLista(){
-  document.getElementById('novo').classList.add('hidden')
-  document.getElementById('lista').classList.remove('hidden')
+
+  document
+    .getElementById('novo')
+    .classList
+    .add('hidden')
+
+  document
+    .getElementById('lista')
+    .classList
+    .remove('hidden')
+
+  document
+    .querySelector('.dashboard')
+    .classList
+    .remove('hidden')
+
+  document
+    .querySelector('.filtro')
+    .classList
+    .remove('hidden')
+}
+
+// AUTO UPDATE
+
+setInterval(() => {
+  carregarChamados()
+}, 15000)
+
+// SW
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js')
 }
 
 </script>
