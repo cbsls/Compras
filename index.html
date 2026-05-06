@@ -337,6 +337,12 @@ body{
   line-height:1.6;
 }
 
+.label{
+  display:block;
+  margin-top:16px;
+  font-weight:800;
+}
+
 </style>
 </head>
 
@@ -379,8 +385,6 @@ body{
 <!-- APP -->
 
 <div id="app" class="hidden">
-
-  <!-- HEADER -->
 
   <div class="header">
 
@@ -554,18 +558,37 @@ body{
 
     <div id="adminArea" class="hidden">
 
+      <label class="label">
+        Status
+      </label>
+
       <select id="mStatus" class="input">
+
+        <option value="">
+          Selecione o Status
+        </option>
+
         <option>Aberto</option>
         <option>Em Orçamento</option>
         <option>Comprado</option>
         <option>Reparado</option>
+
       </select>
+
+      <label class="label">
+        Valor
+      </label>
 
       <input
         id="mValor"
         class="input"
-        placeholder="Valor"
+        placeholder="R$ 0,00"
+        oninput="formatarMoeda(this)"
       >
+
+      <label class="label">
+        Data
+      </label>
 
       <input
         id="mData"
@@ -621,17 +644,10 @@ let atual = null
 let chamadosCache = []
 let filtroAtual = 'Todos'
 
-// LOGIN
-
 async function login(){
 
   const id = document.getElementById('idFunc').value.trim()
   const senha = document.getElementById('senha').value.trim()
-
-  if(!id || !senha){
-    alert('Informe login e senha')
-    return
-  }
 
   const { data, error } = await supabaseClient
     .from('usuarios')
@@ -662,8 +678,6 @@ async function login(){
   carregarChamados()
 }
 
-// ADMIN
-
 function toggleAdmin(){
 
   if(isAdmin){
@@ -675,8 +689,6 @@ function toggleAdmin(){
 
     document.getElementById('btnAdmin')
       .innerText = '🔐 Entrar Admin'
-
-    alert('Modo admin encerrado')
 
     return
   }
@@ -693,15 +705,11 @@ function toggleAdmin(){
     document.getElementById('btnAdmin')
       .innerText = '🚪 Sair Admin'
 
-    alert('Modo admin ativado')
-
   }else{
 
     alert('Senha inválida')
   }
 }
-
-// SALDO
 
 async function carregarSaldo(){
 
@@ -725,23 +733,15 @@ async function ajustarSaldo(){
 
   if(!valor || isNaN(valor)) return
 
-  const { error } = await supabaseClient
+  await supabaseClient
     .from('financeiro')
     .update({
       saldo_atual:Number(valor)
     })
     .eq('id',1)
 
-  if(error){
-    console.log(error)
-    alert('Erro ao ajustar saldo')
-    return
-  }
-
   carregarSaldo()
 }
-
-// CHAMADOS
 
 async function carregarChamados(){
 
@@ -817,17 +817,6 @@ function renderChamados(){
     )
   }
 
-  if(listaFiltrada.length === 0){
-
-    lista.innerHTML = `
-      <div class="item">
-        Nenhum chamado encontrado
-      </div>
-    `
-
-    return
-  }
-
   listaFiltrada.forEach(c => {
 
     let classe = 'aberto'
@@ -870,7 +859,7 @@ function renderChamados(){
         </div>
 
         <div>
-          📅 ${c.data_execucao || '-'}
+          📅 ${c.data || '-'}
         </div>
 
       </div>
@@ -881,8 +870,6 @@ function renderChamados(){
     lista.appendChild(div)
   })
 }
-
-// FILTROS
 
 function filtrarChamados(){
   renderChamados()
@@ -900,20 +887,13 @@ function filtrarStatus(status, el){
   renderChamados()
 }
 
-// MODAL
-
 async function abrirModal(id){
 
-  const { data, error } = await supabaseClient
+  const { data } = await supabaseClient
     .from('chamados')
     .select('*')
     .eq('id', id)
     .single()
-
-  if(error || !data){
-    alert('Erro ao abrir chamado')
-    return
-  }
 
   atual = data
 
@@ -927,7 +907,7 @@ async function abrirModal(id){
     <b>Tipo:</b> ${data.tipo || '-'}<br><br>
     <b>Status:</b> ${data.status || '-'}<br><br>
     <b>Valor:</b> R$ ${Number(data.valor_final || 0).toFixed(2)}<br><br>
-    <b>Data:</b> ${data.data_execucao || '-'}<br><br>
+    <b>Data:</b> ${data.data || '-'}<br><br>
 
     ${
       data.link
@@ -945,13 +925,15 @@ async function abrirModal(id){
       .classList.remove('hidden')
 
     document.getElementById('mStatus').value =
-      data.status || 'Aberto'
+      data.status || ''
 
     document.getElementById('mValor').value =
-      data.valor_final || ''
+      data.valor_final
+      ? 'R$ ' + Number(data.valor_final).toFixed(2).replace('.',',')
+      : ''
 
     document.getElementById('mData').value =
-      data.data_execucao || ''
+      data.data || ''
 
   }else{
 
@@ -966,8 +948,6 @@ function fecharModal(){
     .classList.add('hidden')
 }
 
-// SALVAR ADMIN
-
 async function salvarAdmin(){
 
   if(!isAdmin){
@@ -975,9 +955,17 @@ async function salvarAdmin(){
     return
   }
 
-  const valor = Number(
-    document.getElementById('mValor').value || 0
-  )
+  const valorTexto =
+    document.getElementById('mValor').value
+
+  const valor =
+    Number(
+      valorTexto
+        .replace('R$','')
+        .replace(/\./g,'')
+        .replace(',','.')
+        .trim()
+    ) || 0
 
   const status =
     document.getElementById('mStatus').value
@@ -985,34 +973,39 @@ async function salvarAdmin(){
   const dataExec =
     document.getElementById('mData').value
 
-  const valorAnterior =
-    Number(atual.valor_final || 0)
-
   const statusAnterior =
     atual.status
 
+  const payload = {
+    status: status,
+    valor_final: valor,
+    data: dataExec
+  }
+
   const { error } = await supabaseClient
     .from('chamados')
-    .update({
-      status:status,
-      valor_final:valor,
-      data_execucao:dataExec
-    })
+    .update(payload)
     .eq('id', atual.id)
 
   if(error){
+
     console.log(error)
-    alert('Erro ao salvar')
+
+    alert(
+      'Erro ao salvar.\n' +
+      error.message
+    )
+
     return
   }
 
-  // DESCONTO SOMENTE EM COMPRADO OU REPARADO
-
   const novoDebito =
-    (status === 'Comprado' || status === 'Reparado')
+    status === 'Comprado' ||
+    status === 'Reparado'
 
   const jaDebitado =
-    (statusAnterior === 'Comprado' || statusAnterior === 'Reparado')
+    statusAnterior === 'Comprado' ||
+    statusAnterior === 'Reparado'
 
   if(novoDebito && !jaDebitado){
 
@@ -1027,18 +1020,16 @@ async function salvarAdmin(){
     await supabaseClient
       .from('financeiro')
       .update({
-        saldo_atual:novoSaldo
+        saldo_atual: novoSaldo
       })
       .eq('id',1)
   }
 
   fecharModal()
 
-  carregarChamados()
   carregarSaldo()
+  carregarChamados()
 }
-
-// CRIAR
 
 async function criar(){
 
@@ -1055,7 +1046,7 @@ async function criar(){
     tipo:
       document.getElementById('tipo').value,
 
-    titulo:titulo,
+    titulo: titulo,
 
     descricao:
       document.getElementById('descricao').value,
@@ -1063,9 +1054,7 @@ async function criar(){
     link:
       document.getElementById('link').value,
 
-    status:'Aberto',
-
-    id_usuario:user.id_func
+    status:'Aberto'
   }
 
   const { error } = await supabaseClient
@@ -1078,7 +1067,7 @@ async function criar(){
 
     alert(
       'Erro ao criar chamado.\n' +
-      'Verifique as colunas da tabela chamados.'
+      error.message
     )
 
     return
@@ -1094,8 +1083,6 @@ async function criar(){
 
   carregarChamados()
 }
-
-// NAVEGAÇÃO
 
 function mostrarNovo(){
 
@@ -1127,13 +1114,28 @@ function mostrarLista(){
     .classList.remove('hidden')
 }
 
-// AUTO UPDATE
+function formatarMoeda(campo){
+
+  let valor = campo.value
+
+  valor = valor.replace(/\D/g,'')
+
+  valor = (Number(valor) / 100)
+    .toFixed(2) + ''
+
+  valor = valor.replace('.',',')
+
+  valor = valor.replace(
+    /(\d)(?=(\d{3})+(?!\d))/g,
+    '$1.'
+  )
+
+  campo.value = 'R$ ' + valor
+}
 
 setInterval(() => {
   carregarChamados()
 }, 15000)
-
-// SERVICE WORKER
 
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js')
