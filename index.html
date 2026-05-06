@@ -855,7 +855,7 @@ function renderChamados(){
       <div class="item-footer">
 
         <div>
-          💰 R$ ${Number(c.valor_final || 0).toFixed(2)}
+          💰 R$ ${Number(c.valor || 0).toFixed(2)}
         </div>
 
         <div>
@@ -906,7 +906,7 @@ async function abrirModal(id){
   document.getElementById('mInfo').innerHTML = `
     <b>Tipo:</b> ${data.tipo || '-'}<br><br>
     <b>Status:</b> ${data.status || '-'}<br><br>
-    <b>Valor:</b> R$ ${Number(data.valor_final || 0).toFixed(2)}<br><br>
+    <b>Valor:</b> R$ ${Number(data.valor || 0).toFixed(2)}<br><br>
     <b>Data:</b> ${data.data || '-'}<br><br>
 
     ${
@@ -928,9 +928,9 @@ async function abrirModal(id){
       data.status || ''
 
     document.getElementById('mValor').value =
-      data.valor_final
-      ? 'R$ ' + Number(data.valor_final).toFixed(2).replace('.',',')
-      : ''
+  data.valor
+  ? 'R$ ' + Number(data.valor).toFixed(2).replace('.',',')
+  : ''
 
     document.getElementById('mData').value =
       data.data || ''
@@ -977,10 +977,10 @@ async function salvarAdmin(){
     atual.status
 
   const payload = {
-    status: status,
-    valor_final: valor,
-    data: dataExec
-  }
+  status: status,
+  valor: valor,
+  data: dataExec
+}
 
   const { error } = await supabaseClient
     .from('chamados')
