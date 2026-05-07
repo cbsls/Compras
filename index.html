@@ -597,11 +597,39 @@ body{
 
     <div id="adminArea" class="hidden">
 
+      <div id="extraCampos" class="hidden">
+
+  <label class="label">
+    Local
+  </label>
+
+  <input
+    id="mLocal"
+    class="input"
+    placeholder="Local"
+  >
+
+  <label class="label">
+    Atendente
+  </label>
+
+  <input
+    id="mAtendente"
+    class="input"
+    placeholder="Atendente"
+  >
+
+</div>
+      
       <label class="label">
         Status
       </label>
 
-      <select id="mStatus" class="input">
+     <select
+  id="mStatus"
+  class="input"
+  onchange="controlarCamposExtras()"
+>
 
         <option>Aberto</option>
         <option>Em Orçamento</option>
@@ -1018,6 +1046,28 @@ function filtrarStatus(status, el){
   renderChamados()
 }
 
+  function controlarCamposExtras(){
+
+  const status =
+    document.getElementById('mStatus').value
+
+  const mostrar =
+    status === 'Em Orçamento' ||
+    status === 'Comprado' ||
+    status === 'Reparado'
+
+  if(mostrar){
+
+    document.getElementById('extraCampos')
+      .classList.remove('hidden')
+
+  }else{
+
+    document.getElementById('extraCampos')
+      .classList.add('hidden')
+  }
+}
+
 async function abrirModal(id){
 
   const { data } =
@@ -1092,6 +1142,14 @@ async function abrirModal(id){
     document.getElementById('mStatus').value =
       data.status || ''
 
+    document.getElementById('mLocal').value =
+  data.local || ''
+
+document.getElementById('mAtendente').value =
+  data.atendente || ''
+
+controlarCamposExtras()
+
     document.getElementById('mValor').value =
       data.valor
       ? 'R$ ' +
@@ -1144,10 +1202,20 @@ async function salvarAdmin(){
     document.getElementById('mData')
     .value
 
-  const payload = {
+  const local =
+  document.getElementById('mLocal')
+  .value
+
+const atendente =
+  document.getElementById('mAtendente')
+  .value
+
+ const payload = {
   status: status,
   valor: valor,
-  data: dataExec
+  data: dataExec,
+  local: local,
+  atendente: atendente
 }
 
 // desconta apenas na primeira finalização
