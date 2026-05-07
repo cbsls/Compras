@@ -825,12 +825,25 @@ async function ajustarSaldo(){
 
   if(!valor) return
 
-  await supabaseClient
-    .from('financeiro')
-    .update({
-      saldo_atual:Number(valor)
-    })
-    .eq('id',1)
+  const { error: erroSaldo } =
+    await supabaseClient
+      .from('financeiro')
+      .update({
+        saldo_atual:Number(valor)
+      })
+      .eq('id',1)
+
+  if(erroSaldo){
+
+    console.log(erroSaldo)
+
+    alert(
+      'Erro ao atualizar saldo.\n' +
+      erroSaldo.message
+    )
+
+    return
+  }
 
   carregarSaldo()
 }
@@ -866,17 +879,16 @@ function atualizarDashboard(){
     ).length
 
   document.getElementById('dOrcamento').innerText =
-  chamadosCache.filter(c =>
-    c.status === 'Em Orçamento'
-  ).length
+    chamadosCache.filter(c =>
+      c.status === 'Em Orçamento'
+    ).length
 
-document.getElementById('dFinal').innerText =
-  chamadosCache.filter(c =>
-    c.status === 'Comprado' ||
-    c.status === 'Reparado'
-  ).length
-  }
-
+  document.getElementById('dFinal').innerText =
+    chamadosCache.filter(c =>
+      c.status === 'Comprado' ||
+      c.status === 'Reparado'
+    ).length
+}
 function renderChamados(){
 
   const lista =
