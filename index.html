@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>📋 Chamados CB SLS</title>
+<title>📋 Compras CB SLS</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
@@ -379,7 +379,7 @@ body{
   <div class="login-card">
 
     <div class="login-title">
-      Sistema de Chamados
+      Demanda de Pedidos
     </div>
 
     <input
@@ -502,7 +502,7 @@ body{
     <input
       id="busca"
       class="search"
-      placeholder="Buscar chamado..."
+      placeholder="Buscar Solicitações..."
       onkeyup="filtrarChamados()"
     >
 
@@ -572,10 +572,12 @@ body{
       </select>
 
       <input
-        id="titulo"
-        class="input"
-        placeholder="Título"
-      >
+  id="titulo"
+  class="input"
+  placeholder="Título"
+  style="text-transform:uppercase"
+  oninput="this.value = this.value.toUpperCase()"
+>
 
       <textarea
         id="descricao"
