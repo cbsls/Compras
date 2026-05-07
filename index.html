@@ -204,29 +204,6 @@ body{
   box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
 
-.status-filtros{
-  display:flex;
-  gap:10px;
-  overflow:auto;
-  padding:14px 0;
-}
-
-.status-btn{
-  border:none;
-  background:#fff;
-  padding:12px 16px;
-  border-radius:999px;
-  white-space:nowrap;
-  font-weight:700;
-  box-shadow:0 4px 12px rgba(0,0,0,.08);
-  cursor:pointer;
-}
-
-.status-btn.active{
-  background:#075E54;
-  color:#fff;
-}
-
 /* LISTA */
 
 #lista{
@@ -506,51 +483,42 @@ body{
       onkeyup="filtrarChamados()"
     >
 
-    <div class="status-filtros">
-
-      <button
-        class="status-btn active"
-        onclick="filtrarStatus('Todos', this)"
-      >
-        Todos
-      </button>
-
-      <button
-        class="status-btn"
-        onclick="filtrarStatus('Aberto', this)"
-      >
-        Aberto
-      </button>
-
-      <button
-  class="status-btn"
-  onclick="filtrarStatus('Em Orçamento', this)"
+    <select
+  id="filtroStatus"
+  class="input"
+  onchange="filtrarSelectStatus()"
+  style="
+    margin-top:14px;
+    background:#fff;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+  "
 >
-  Orçamento
-</button>
 
-<button
-  class="status-btn"
-  onclick="filtrarStatus('Comprado', this)"
->
-  Comprado
-</button>
+  <option value="Todos">
+    Todos
+  </option>
 
-<button
-  class="status-btn"
-  onclick="filtrarStatus('Reparado', this)"
->
-  Reparado
-</button>
+  <option value="Aberto">
+    Aberto
+  </option>
 
-      <button
-        class="status-btn"
-        onclick="filtrarStatus('Negado', this)"
-      >
-        Negado
-      </button>
+  <option value="Em Orçamento">
+    Orçamento
+  </option>
 
-    </div>
+  <option value="Comprado">
+    Comprado
+  </option>
+
+  <option value="Reparado">
+    Reparado
+  </option>
+
+  <option value="Negado">
+    Negado
+  </option>
+
+</select>
 
   </div>
 
@@ -915,13 +883,29 @@ async function ajustarSaldo(){
 
   if(!valor) return
 
-  const { error: erroSaldo } =
-    await supabaseClient
-      .from('financeiro')
-      .update({
-        saldo_atual:Number(valor)
-      })
-      .eq('id',1)
+  
+  const { error: erroFinanceiro } =
+  await supabaseClient
+    .from('financeiro')
+    .update({
+      saldo_atual: novoSaldo
+    })
+    .eq('id',1)
+
+if(!erroFinanceiro){
+
+  // ATUALIZA IMEDIATAMENTE NA TELA
+
+  document.getElementById('saldo').innerText =
+    Number(novoSaldo)
+      .toLocaleString(
+        'pt-BR',
+        {
+          style:'currency',
+          currency:'BRL'
+        }
+      )
+}
 
   if(erroSaldo){
 
@@ -1090,6 +1074,15 @@ if(
 }
 
 function filtrarChamados(){
+  renderChamados()
+}
+
+  function filtrarSelectStatus(){
+
+  filtroAtual =
+    document.getElementById('filtroStatus')
+    .value
+
   renderChamados()
 }
 
@@ -1335,8 +1328,7 @@ if(error){
 }
 
 fecharModal()
-  carregarSaldo()
-  carregarChamados()
+carregarChamados()
 }
 
 async function criar(){
