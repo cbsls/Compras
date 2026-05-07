@@ -14,6 +14,12 @@
 
 <meta name="theme-color" content="#075E54">
 
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta name="apple-mobile-web-app-title" content="Solicitações">
+  
 <style>
 
 *{
@@ -1623,6 +1629,75 @@ setInterval(() => {
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js')
 }
+
+</script>
+
+  <script>
+
+let deferredPrompt = null;
+
+// CRIA BOTÃO INSTALAR
+const installBtn = document.createElement('button');
+
+installBtn.innerText = '📲 Instalar App';
+
+installBtn.style.position = 'fixed';
+installBtn.style.bottom = '90px';
+installBtn.style.right = '14px';
+installBtn.style.zIndex = '9999';
+installBtn.style.border = 'none';
+installBtn.style.background = '#075E54';
+installBtn.style.color = '#fff';
+installBtn.style.padding = '14px 18px';
+installBtn.style.borderRadius = '18px';
+installBtn.style.fontWeight = '700';
+installBtn.style.boxShadow = '0 4px 14px rgba(0,0,0,.25)';
+installBtn.style.display = 'none';
+
+document.body.appendChild(installBtn);
+
+// EVENTO PWA
+window.addEventListener(
+  'beforeinstallprompt',
+  (e) => {
+
+    e.preventDefault();
+
+    deferredPrompt = e;
+
+    installBtn.style.display = 'block';
+  }
+);
+
+// INSTALAR
+installBtn.addEventListener(
+  'click',
+  async () => {
+
+    if(!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+
+    const { outcome } =
+      await deferredPrompt.userChoice;
+
+    if(outcome === 'accepted'){
+
+      installBtn.style.display = 'none';
+    }
+
+    deferredPrompt = null;
+  }
+);
+
+// ESCONDE SE JÁ INSTALADO
+window.addEventListener(
+  'appinstalled',
+  () => {
+
+    installBtn.style.display = 'none';
+  }
+);
 
 </script>
 
