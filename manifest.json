@@ -1,13 +1,12 @@
 {
-  "name": "Sistema de Solicitações",
-  "short_name": "Solicitações",
-  "start_url": "./index.html",
-  "scope": "./",
+  "name": "Sistema de Compras",
+  "short_name": "Compras",
+  "start_url": "/Compras/index.html",
+  "scope": "/Compras/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#075E54",
   "theme_color": "#075E54",
-  "description": "Sistema de chamados CB São Lourenço do Sul",
   "icons": [
     {
       "src": "./icon.png",
