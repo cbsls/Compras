@@ -7,6 +7,8 @@
 <title>📋 Chamados CB SLS</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <link rel="manifest" href="manifest.json">
 
@@ -583,6 +585,43 @@ body{
 
 </div>
 
+  <!-- RELATÓRIOS -->
+
+<div id="relatorios" class="hidden">
+
+  <div style="padding:14px">
+
+    <div class="form-card">
+
+      <h2>Relatórios PDF</h2>
+
+      <button
+        class="btn btn-full"
+        onclick="gerarRelatorio('Comprado')"
+      >
+        📄 Comprados
+      </button>
+
+      <button
+        class="btn btn-full"
+        onclick="gerarRelatorio('Reparado')"
+      >
+        📄 Reparados
+      </button>
+
+      <button
+        class="btn btn-full"
+        onclick="gerarRelatorio('Em Orçamento')"
+      >
+        📄 Em Orçamento
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
 <!-- MODAL -->
 
 <div id="modal" class="modal hidden">
@@ -691,6 +730,10 @@ body{
 
   <button onclick="mostrarNovo()">
     ➕
+  </button>
+
+  <button onclick="mostrarRelatorios()">
+    📄
   </button>
 
 </div>
@@ -1353,8 +1396,29 @@ function mostrarNovo(){
   document.getElementById('novo')
     .classList.remove('hidden')
 
+  document.getElementById('relatorios')
+    .classList.add('hidden')
+
   document.getElementById('lista')
     .classList.add('hidden')
+
+  document.querySelector('.dashboard')
+    .classList.add('hidden')
+
+  document.querySelector('.filtro-area')
+    .classList.add('hidden')
+}
+
+  function mostrarRelatorios(){
+
+  document.getElementById('novo')
+    .classList.add('hidden')
+
+  document.getElementById('lista')
+    .classList.add('hidden')
+
+  document.getElementById('relatorios')
+    .classList.remove('hidden')
 
   document.querySelector('.dashboard')
     .classList.add('hidden')
@@ -1366,6 +1430,9 @@ function mostrarNovo(){
 function mostrarLista(){
 
   document.getElementById('novo')
+    .classList.add('hidden')
+
+  document.getElementById('relatorios')
     .classList.add('hidden')
 
   document.getElementById('lista')
@@ -1397,6 +1464,147 @@ function formatarMoeda(campo){
   campo.value = 'R$ ' + valor
 }
 
+  async function gerarRelatorio(statusRelatorio){
+
+  if(!isAdmin){
+    alert('Somente admin')
+    return
+  }
+
+  const { data, error } =
+    await supabaseClient
+      .from('chamados')
+      .select('*')
+      .eq('status', statusRelatorio)
+      .order('data',{ascending:false})
+
+  if(error){
+
+    console.log(error)
+
+    alert('Erro ao gerar relatório')
+
+    return
+  }
+
+  const { jsPDF } = window.jspdf
+
+  const doc = new jsPDF({
+    orientation:'portrait',
+    unit:'mm',
+    format:'a4'
+  })
+
+  let y = 20
+
+  doc.setFontSize(18)
+
+  doc.text(
+    `Relatório - ${statusRelatorio}`,
+    14,
+    y
+  )
+
+  y += 12
+
+  // CABEÇALHO
+
+  doc.setFontSize(10)
+
+  doc.setFillColor(230,230,230)
+
+  doc.rect(10, y, 190, 10, 'F')
+
+  doc.text('Item', 12, y + 7)
+  doc.text('Valor', 90, y + 7)
+  doc.text('Data', 120, y + 7)
+  doc.text('Local', 145, y + 7)
+  doc.text('Atendente', 175, y + 7)
+
+  y += 10
+
+  let total = 0
+
+  data.forEach(item => {
+
+    const valor =
+      Number(item.valor || 0)
+
+    total += valor
+
+    doc.rect(10, y, 190, 10)
+
+    doc.text(
+      String(item.titulo || '-')
+        .slice(0,30),
+      12,
+      y + 7
+    )
+
+    doc.text(
+      valor.toLocaleString(
+        'pt-BR',
+        {
+          style:'currency',
+          currency:'BRL'
+        }
+      ),
+      90,
+      y + 7
+    )
+
+    doc.text(
+      String(item.data || '-'),
+      120,
+      y + 7
+    )
+
+    doc.text(
+      String(item.local || '-')
+        .slice(0,18),
+      145,
+      y + 7
+    )
+
+    doc.text(
+      String(item.atendente || '-')
+        .slice(0,12),
+      175,
+      y + 7
+    )
+
+    y += 10
+
+    if(y > 270){
+
+      doc.addPage()
+
+      y = 20
+    }
+  })
+
+  y += 10
+
+  doc.setFontSize(12)
+
+  doc.text(
+    'TOTAL: ' +
+    total.toLocaleString(
+      'pt-BR',
+      {
+        style:'currency',
+        currency:'BRL'
+      }
+    ),
+    14,
+    y
+  )
+
+  doc.save(
+    `relatorio-${statusRelatorio}.pdf`
+  )
+}
+  
 setInterval(() => {
   carregarChamados()
 }, 15000)
