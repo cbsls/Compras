@@ -784,6 +784,7 @@ const channelChamados =
       async () => {
 
         await carregarChamados()
+        showToast('Status atualizado')
 
       }
     )
@@ -802,6 +803,7 @@ const channelFinanceiro =
       async () => {
 
         await carregarSaldo()
+        showToast('Saldo atualizado')
 
       }
     )
@@ -883,7 +885,7 @@ showToast('Sistema conectado')
     !data ||
     data.senha !== senha
   ){
-    alert('Login inválido')
+    showToast('Login inválido','error')
     return
   }
 
@@ -953,7 +955,7 @@ function toggleAdmin(){
 
   }else{
 
-    alert('Senha inválida')
+    showToast('Senha inválida','error')
   }
 }
 
@@ -980,7 +982,7 @@ async function carregarSaldo(){
 async function ajustarSaldo(){
 
   if(!isAdmin){
-    alert('Somente admin')
+    showToast('Somente admin','warning')
     return
   }
 
@@ -1429,10 +1431,10 @@ if(error){
 
   console.log(error)
 
-  alert(
-    'Erro ao salvar.\n' +
-    error.message
-  )
+ showToast(
+  'Erro ao salvar',
+  'error'
+)
 
   return
 }
@@ -1504,7 +1506,7 @@ async function criar(){
     return
   }
 
-  alert('Chamado criado')
+  showToast('Chamado criado')
 
   document.getElementById('titulo').value = ''
   document.getElementById('descricao').value = ''
