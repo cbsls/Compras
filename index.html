@@ -1081,6 +1081,18 @@ async function ajustarSaldo(){
     )
 }
 
+  function formatarDataBR(data){
+
+  if(!data) return '-'
+
+  const partes = data.split('-')
+
+  if(partes.length !== 3)
+    return data
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`
+}
+
 async function carregarChamados(){
 
   const { data, error } =
@@ -1219,7 +1231,7 @@ if(
         </div>
 
         <div>
-          📅 ${c.data || '-'}
+          📅 ${formatarDataBR(c.data)}
         </div>
 
       </div>
@@ -1324,7 +1336,7 @@ async function abrirModal(id){
     <br><br>
 
     <b>Data:</b>
-    ${data.data || '-'}
+    ${formatarDataBR(data.data)}
     <br><br>
 
     ${
@@ -1787,7 +1799,7 @@ function formatarMoeda(campo){
     )
 
     doc.text(
-      String(item.data || '-'),
+      formatarDataBR(item.data)
       120,
       y + 5
     )
