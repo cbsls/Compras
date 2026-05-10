@@ -1846,8 +1846,20 @@ function formatarMoeda(campo){
 
 if('serviceWorker' in navigator){
 
-  navigator.serviceWorker.register('/Compras/sw.js')
+  navigator.serviceWorker.register(
+    '/Compras/sw.js?v=' + Date.now()
+  )
+  .then(reg => {
 
+    // 🔥 força atualização
+
+    reg.update()
+
+    console.log(
+      'Service Worker atualizado'
+    )
+
+  })
 }
 
 </script>
@@ -1921,19 +1933,34 @@ window.addEventListener(
 
 </script>
 
-  <script>
+<script>
 
-if ('serviceWorker' in navigator) {
+if('serviceWorker' in navigator){
 
-  navigator.serviceWorker.getRegistrations()
+  navigator.serviceWorker
+    .getRegistrations()
     .then(registrations => {
 
-      for (let registration of registrations) {
-        registration.update();
+      registrations.forEach(reg => {
+
+        reg.update()
+
+      })
+
+    })
+
+  // 🔥 recarrega automaticamente
+  // quando houver nova versão
+
+  navigator.serviceWorker
+    .addEventListener(
+      'controllerchange',
+      () => {
+
+        window.location.reload()
+
       }
-
-    });
-
+    )
 }
 
 </script>
