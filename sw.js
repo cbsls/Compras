@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sistema-solicitacoes-v38';
+const CACHE_NAME = 'sistema-solicitacoes-v39';
 
 const urlsToCache = [
   './',
