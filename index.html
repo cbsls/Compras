@@ -738,6 +738,44 @@ let atual = null
 let chamadosCache = []
 let filtroAtual = 'Todos'
 
+// 🔥 REALTIME SUPABASE
+
+const channelChamados =
+  supabaseClient
+    .channel('realtime-chamados')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'chamados'
+      },
+      async () => {
+
+        await carregarChamados()
+
+      }
+    )
+    .subscribe()
+
+const channelFinanceiro =
+  supabaseClient
+    .channel('realtime-financeiro')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'financeiro'
+      },
+      async () => {
+
+        await carregarSaldo()
+
+      }
+    )
+    .subscribe()
+
 window.addEventListener('load', async () => {
 
   const saved =
@@ -759,8 +797,10 @@ window.addEventListener('load', async () => {
   document.getElementById('nav')
     .classList.remove('hidden')
 
-  carregarSaldo()
-  carregarChamados()
+  await carregarSaldo()
+
+  await carregarChamados()
+
 })
 
 async function login(){
@@ -879,47 +919,48 @@ async function ajustarSaldo(){
     return
   }
 
-  const valor = prompt('Novo saldo:')
+  const valor =
+    prompt('Novo saldo:')
 
   if(!valor) return
 
-  
-  const { error: erroFinanceiro } =
-  await supabaseClient
-    .from('financeiro')
-    .update({
-      saldo_atual: novoSaldo
-    })
-    .eq('id',1)
+  const novoSaldo =
+    Number(
+      valor
+        .replace(/\./g,'')
+        .replace(',','.')
+    )
 
-if(!erroFinanceiro){
+  const { error } =
+    await supabaseClient
+      .from('financeiro')
+      .update({
+        saldo_atual: novoSaldo
+      })
+      .eq('id',1)
 
-  // ATUALIZA IMEDIATAMENTE NA TELA
+  if(error){
 
-  document.getElementById('saldo').innerText =
-    Number(novoSaldo)
-      .toLocaleString(
-        'pt-BR',
-        {
-          style:'currency',
-          currency:'BRL'
-        }
-      )
-}
-
-  if(erroSaldo){
-
-    console.log(erroSaldo)
+    console.log(error)
 
     alert(
       'Erro ao atualizar saldo.\n' +
-      erroSaldo.message
+      error.message
     )
 
     return
   }
 
-  carregarSaldo()
+  // 🔥 ATUALIZA IMEDIATO
+
+  document.getElementById('saldo').innerText =
+    novoSaldo.toLocaleString(
+      'pt-BR',
+      {
+        style:'currency',
+        currency:'BRL'
+      }
+    )
 }
 
 async function carregarChamados(){
@@ -1616,10 +1657,6 @@ function formatarMoeda(campo){
   )
 }
   
-setInterval(() => {
-  carregarChamados()
-}, 15000)
-
 if('serviceWorker' in navigator){
 
   navigator.serviceWorker.register('/Compras/sw.js')
