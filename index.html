@@ -834,7 +834,34 @@ window.addEventListener('load', async () => {
 
 })
 
+  function showToast(msg, tipo='success'){
+
+  const toast =
+    document.getElementById('toast')
+
+  toast.innerText = msg
+
+  toast.className =
+    'toast show'
+
+  if(tipo === 'error'){
+    toast.classList.add('error')
+  }
+
+  if(tipo === 'warning'){
+    toast.classList.add('warning')
+  }
+
+  setTimeout(() => {
+
+    toast.classList.remove('show')
+
+  }, 2500)
+}
+
 async function login(){
+
+showToast('Sistema conectado')
 
   const id =
     document.getElementById('idFunc')
@@ -1795,6 +1822,8 @@ if ('serviceWorker' in navigator) {
 }
 
 </script>
+
+<div id="toast" class="toast"></div>
 
 </body>
 </html>
