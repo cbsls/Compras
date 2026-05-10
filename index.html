@@ -874,7 +874,14 @@ function toggleAdmin(){
     return
   }
 
-  const senha = prompt('Senha Admin')
+  let senha =
+    prompt('Senha Admin')
+
+  if(!senha) return
+
+  // 🔥 SOMENTE NÚMEROS
+
+  senha = senha.replace(/\D/g,'')
 
   if(senha === '123456'){
 
@@ -1314,8 +1321,30 @@ const atendente =
   atendente: atendente
 }
 
-// desconta apenas na primeira finalização
-const statusAnterior = atual.status
+// 🔥 PRIMEIRO ATUALIZA O CHAMADO
+
+const { error } =
+  await supabaseClient
+    .from('chamados')
+    .update(payload)
+    .eq('id', atual.id)
+
+if(error){
+
+  console.log(error)
+
+  alert(
+    'Erro ao salvar.\n' +
+    error.message
+  )
+
+  return
+}
+
+// 🔥 DEPOIS ATUALIZA SALDO
+
+const statusAnterior =
+  atual.status
 
 if(
   (
@@ -1331,10 +1360,10 @@ if(
 
   const { data: financeiro } =
     await supabaseClient
-    .from('financeiro')
-    .select('*')
-    .eq('id',1)
-    .single()
+      .from('financeiro')
+      .select('*')
+      .eq('id',1)
+      .single()
 
   const saldoAtual =
     Number(financeiro?.saldo_atual || 0)
@@ -1350,12 +1379,6 @@ if(
     .eq('id',1)
 }
 
-const { error } =
-  await supabaseClient
-  .from('chamados')
-  .update(payload)
-  .eq('id', atual.id)
-
 if(error){
 
   console.log(error)
@@ -1367,6 +1390,9 @@ if(error){
 
   return
 }
+
+await carregarChamados()
+await carregarSaldo()
 
 fecharModal()
 carregarChamados()
