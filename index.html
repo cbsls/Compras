@@ -931,13 +931,36 @@ function toggleAdmin(){
     document.getElementById('btnAdmin')
       .innerText = '🔐 Admin'
 
+    showToast('Modo admin desativado')
+
     return
   }
 
-  let senha =
-  prompt('Senha Admin (somente números)')
+  document.getElementById('adminModal')
+    .classList.remove('hidden')
 
-  if(!senha) return
+  document.getElementById('adminSenha')
+    .value = ''
+
+  setTimeout(() => {
+
+    document.getElementById('adminSenha')
+      .focus()
+
+  }, 200)
+}
+
+function fecharAdminModal(){
+
+  document.getElementById('adminModal')
+    .classList.add('hidden')
+}
+
+function confirmarAdmin(){
+
+  let senha =
+    document.getElementById('adminSenha')
+    .value
 
   // 🔥 SOMENTE NÚMEROS
 
@@ -953,12 +976,18 @@ function toggleAdmin(){
     document.getElementById('btnAdmin')
       .innerText = '🚪 Admin'
 
+    fecharAdminModal()
+
+    showToast('Modo admin ativado')
+
   }else{
 
-    showToast('Senha inválida','error')
+    showToast(
+      'Senha inválida',
+      'error'
+    )
   }
 }
-
 async function carregarSaldo(){
 
   const { data } =
@@ -1827,5 +1856,46 @@ if ('serviceWorker' in navigator) {
 
 <div id="toast" class="toast"></div>
 
+<!-- MODAL ADMIN -->
+
+<div
+  id="adminModal"
+  class="modal hidden"
+>
+
+  <div class="modal-content">
+
+    <div class="modal-title">
+      Acesso Admin
+    </div>
+
+    <input
+      id="adminSenha"
+      type="password"
+      class="input"
+      placeholder="Digite a senha"
+      inputmode="numeric"
+      pattern="[0-9]*"
+    >
+
+    <button
+      class="btn btn-full"
+      onclick="confirmarAdmin()"
+    >
+      Entrar
+    </button>
+
+    <button
+      class="btn btn-full"
+      style="margin-top:10px;background:#64748b"
+      onclick="fecharAdminModal()"
+    >
+      Cancelar
+    </button>
+
+  </div>
+
+</div>
+  
 </body>
 </html>
