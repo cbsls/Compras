@@ -817,6 +817,22 @@ window.addEventListener('load', async () => {
   if(!saved) return
 
   user = JSON.parse(saved)
+  
+  // 🔥 RESTAURA ADMIN
+
+const adminSalvo =
+  localStorage.getItem('adminAtivo')
+
+if(adminSalvo === 'true'){
+
+  isAdmin = true
+
+  document.getElementById('adminBadge')
+    .classList.remove('hidden')
+
+  document.getElementById('btnAdmin')
+    .innerText = '🚪 Sair Admin'
+}
 
   document.getElementById('nome').innerText =
     user.nome_guerra || user.nome
@@ -923,15 +939,7 @@ function toggleAdmin(){
 
   if(isAdmin){
 
-    isAdmin = false
-
-    document.getElementById('adminBadge')
-      .classList.add('hidden')
-
-    document.getElementById('btnAdmin')
-      .innerText = '🔐 Admin'
-
-    showToast('Modo admin desativado')
+    sairAdmin()
 
     return
   }
@@ -970,11 +978,18 @@ function confirmarAdmin(){
 
     isAdmin = true
 
+    // 🔥 SALVA ADMIN
+
+    localStorage.setItem(
+      'adminAtivo',
+      'true'
+    )
+
     document.getElementById('adminBadge')
       .classList.remove('hidden')
 
     document.getElementById('btnAdmin')
-      .innerText = '🚪 Admin'
+      .innerText = '🚪 Sair Admin'
 
     fecharAdminModal()
 
@@ -987,6 +1002,25 @@ function confirmarAdmin(){
       'error'
     )
   }
+}
+
+function sairAdmin(){
+
+  isAdmin = false
+
+  // 🔥 REMOVE ADMIN
+
+  localStorage.removeItem(
+    'adminAtivo'
+  )
+
+  document.getElementById('adminBadge')
+    .classList.add('hidden')
+
+  document.getElementById('btnAdmin')
+    .innerText = '🔐 Admin'
+
+  showToast('Modo admin desativado')
 }
 async function carregarSaldo(){
 
