@@ -1961,18 +1961,9 @@ if('serviceWorker' in navigator){
 
     })
 
-  // 🔥 recarrega automaticamente
-  // quando houver nova versão
-
-  navigator.serviceWorker
-    .addEventListener(
-      'controllerchange',
-      () => {
-
-        window.location.reload()
-
-      }
-    )
+  console.log(
+    'Service Worker atualizado'
+  )
 }
 
 </script>
