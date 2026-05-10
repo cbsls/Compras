@@ -344,6 +344,37 @@ body{
   font-weight:800;
 }
 
+/* TOAST */
+
+.toast{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#075E54;
+  color:#fff;
+  padding:14px 18px;
+  border-radius:14px;
+  font-weight:700;
+  z-index:999999;
+  box-shadow:0 6px 18px rgba(0,0,0,.25);
+  opacity:0;
+  transition:.3s;
+}
+
+.toast.show{
+  opacity:1;
+  top:35px;
+}
+
+.toast.error{
+  background:#dc2626;
+}
+
+.toast.warning{
+  background:#d97706;
+}
+  
 </style>
 </head>
 
@@ -875,7 +906,7 @@ function toggleAdmin(){
   }
 
   let senha =
-    prompt('Senha Admin')
+  prompt('Senha Admin (somente números)')
 
   if(!senha) return
 
@@ -946,19 +977,7 @@ async function ajustarSaldo(){
       })
       .eq('id',1)
 
-  if(error){
-
-    console.log(error)
-
-    alert(
-      'Erro ao atualizar saldo.\n' +
-      error.message
-    )
-
-    return
-  }
-
-  // 🔥 ATUALIZA IMEDIATO
+   // 🔥 ATUALIZA IMEDIATO
 
   document.getElementById('saldo').innerText =
     novoSaldo.toLocaleString(
@@ -1395,7 +1414,7 @@ await carregarChamados()
 await carregarSaldo()
 
 fecharModal()
-carregarChamados()
+
 }
 
 async function criar(){
