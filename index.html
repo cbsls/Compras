@@ -1656,7 +1656,12 @@ function formatarMoeda(campo){
   async function gerarRelatorio(statusRelatorio){
 
   if(!isAdmin){
-    alert('Somente admin')
+
+    showToast(
+      'Somente admin',
+      'warning'
+    )
+
     return
   }
 
@@ -1671,7 +1676,10 @@ function formatarMoeda(campo){
 
     console.log(error)
 
-    alert('Erro ao gerar relatório')
+    showToast(
+      'Erro ao gerar relatório',
+      'error'
+    )
 
     return
   }
@@ -1679,55 +1687,91 @@ function formatarMoeda(campo){
   const { jsPDF } = window.jspdf
 
   const doc = new jsPDF({
-    orientation:'portrait',
+    orientation:'landscape',
     unit:'mm',
     format:'a4'
   })
 
-  let y = 20
+  let y = 15
 
-  doc.setFontSize(18)
+  // 🔥 TÍTULO
+
+  doc.setFontSize(16)
 
   doc.text(
-    `Relatório - ${statusRelatorio}`,
+    `RELATÓRIO - ${statusRelatorio.toUpperCase()}`,
     14,
     y
   )
 
-  y += 12
+  y += 10
 
-  // CABEÇALHO
+  // 🔥 CABEÇALHO
 
-  doc.setFontSize(10)
+  doc.setFontSize(9)
 
   doc.setFillColor(230,230,230)
 
-  doc.rect(10, y, 190, 10, 'F')
+  doc.rect(10, y, 277, 8, 'F')
 
-  doc.text('Item', 12, y + 7)
-  doc.text('Valor', 90, y + 7)
-  doc.text('Data', 120, y + 7)
-  doc.text('Local', 145, y + 7)
-  doc.text('Atendente', 175, y + 7)
+  doc.text('ITEM', 12, y + 5)
+  doc.text('TIPO', 65, y + 5)
+  doc.text('VALOR', 90, y + 5)
+  doc.text('DATA', 120, y + 5)
+  doc.text('LOCAL', 145, y + 5)
+  doc.text('ATENDENTE', 190, y + 5)
+  doc.text('SOLICITANTE', 235, y + 5)
 
-  y += 10
+  y += 8
 
-  let total = 0
+  let totalGeral = 0
 
   data.forEach(item => {
 
     const valor =
       Number(item.valor || 0)
 
-    total += valor
+    totalGeral += valor
 
-    doc.rect(10, y, 190, 10)
+    // 🔥 NOVA PÁGINA
+
+    if(y > 190){
+
+      doc.addPage()
+
+      y = 20
+
+      doc.setFillColor(230,230,230)
+
+      doc.rect(10, y, 277, 8, 'F')
+
+      doc.text('ITEM', 12, y + 5)
+      doc.text('TIPO', 65, y + 5)
+      doc.text('VALOR', 90, y + 5)
+      doc.text('DATA', 120, y + 5)
+      doc.text('LOCAL', 145, y + 5)
+      doc.text('ATENDENTE', 190, y + 5)
+      doc.text('SOLICITANTE', 235, y + 5)
+
+      y += 8
+    }
+
+    // 🔥 LINHA
+
+    doc.rect(10, y, 277, 8)
 
     doc.text(
       String(item.titulo || '-')
-        .slice(0,30),
+        .slice(0,28),
       12,
-      y + 7
+      y + 5
+    )
+
+    doc.text(
+      String(item.tipo || '-')
+        .slice(0,10),
+      65,
+      y + 5
     )
 
     doc.text(
@@ -1739,52 +1783,56 @@ function formatarMoeda(campo){
         }
       ),
       90,
-      y + 7
+      y + 5
     )
 
     doc.text(
       String(item.data || '-'),
       120,
-      y + 7
+      y + 5
     )
 
     doc.text(
       String(item.local || '-')
-        .slice(0,18),
+        .slice(0,22),
       145,
-      y + 7
+      y + 5
     )
 
     doc.text(
       String(item.atendente || '-')
-        .slice(0,12),
-      175,
-      y + 7
+        .slice(0,18),
+      190,
+      y + 5
     )
 
-    y += 10
+    doc.text(
+      String(
+        item.nome_solicitante || '-'
+      ).slice(0,22),
+      235,
+      y + 5
+    )
 
-    if(y > 270){
-
-      doc.addPage()
-
-      y = 20
-    }
+    y += 8
   })
 
   y += 10
 
+  // 🔥 TOTAL
+
   doc.setFontSize(12)
 
   doc.text(
-    'TOTAL: ' +
-    total.toLocaleString(
-      'pt-BR',
-      {
-        style:'currency',
-        currency:'BRL'
-      }
-    ),
+    `TOTAL GERAL: ${
+      totalGeral.toLocaleString(
+        'pt-BR',
+        {
+          style:'currency',
+          currency:'BRL'
+        }
+      )
+    }`,
     14,
     y
   )
@@ -1792,8 +1840,10 @@ function formatarMoeda(campo){
   doc.save(
     `relatorio-${statusRelatorio}.pdf`
   )
+
+  showToast('Relatório gerado')
 }
-  
+
 if('serviceWorker' in navigator){
 
   navigator.serviceWorker.register('/Compras/sw.js')
