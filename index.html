@@ -909,7 +909,7 @@ showToast('Sistema conectado')
 
   localStorage.setItem(
     'user',
-    JSON.stringify(data)
+    JSON.ify(data)
   )
 
   document.getElementById('nome').innerText =
@@ -1033,7 +1033,7 @@ async function carregarSaldo(){
   document.getElementById('saldo').innerText =
     Number(
       data?.saldo_atual || 0
-    ).toLocaleString(
+    ).toLocale(
       'pt-BR',
       {
         style:'currency',
@@ -1072,7 +1072,7 @@ async function ajustarSaldo(){
    // 🔥 ATUALIZA IMEDIATO
 
   document.getElementById('saldo').innerText =
-    novoSaldo.toLocaleString(
+    novoSaldo.toLocale(
       'pt-BR',
       {
         style:'currency',
@@ -1799,10 +1799,10 @@ function formatarMoeda(campo){
     )
 
     doc.text(
-      formatarDataBR(item.data)
-      120,
-      y + 5
-    )
+  formatarDataBR(item.data),
+  120,
+  y + 5
+)
 
     doc.text(
       String(item.local || '-')
