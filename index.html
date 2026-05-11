@@ -1030,16 +1030,16 @@ async function carregarSaldo(){
     .select('*')
     .single()
 
-  document.getElementById('saldo').innerText =
-    Number(
-      data?.saldo_atual || 0
-    ).toLocale(
-      'pt-BR',
-      {
-        style:'currency',
-        currency:'BRL'
-      }
-    )
+ document.getElementById('saldo').innerText =
+  Number(
+    data?.saldo_atual || 0
+  ).toLocaleString(
+    'pt-BR',
+    {
+      style:'currency',
+      currency:'BRL'
+    }
+  )
 }
 
 async function ajustarSaldo(){
