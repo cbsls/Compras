@@ -1343,15 +1343,19 @@ async function abrirModal(id){
       data.link
       ? `
         <a
-          href="${data.link}"
-          target="_blank"
-          style="
-            color:#2563eb;
-            font-weight:700;
-          "
-        >
-          🔗 Abrir Link
-        </a>
+  href="${
+    (
+      data.link || ''
+    ).match(/https?:\/\/\S+/)?.[0] || '#'
+  }"
+  target="_blank"
+  style="
+    color:#2563eb;
+    font-weight:700;
+  "
+>
+  🔗 Abrir Link
+</a>
       `
       : ''
     }
